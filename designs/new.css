@@ -1,0 +1,242 @@
+:root {
+    --sidebar-width: 250px;
+    --header-height: 60px;
+    --sidebar-bg: #f8f9fa;
+    --header-bg: #fff;
+    --accent-color: #4a90e2;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    width: 100%;
+    height: var(--header-height);
+    background: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+/* "ORGanize+" Title (Not Bold) */
+.header-title {
+    font-size: 15px;
+    font-weight: bold; /* Removed bold */
+    margin: 15px;
+    flex-grow: 1;
+    text-align: left;
+}
+
+/* Header Buttons Container */
+.header-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-right: 20px; /* Magdagdag ng puwang sa kanan */
+}
+
+/* Add Task & Logout Buttons */
+.task-btn, .logout-btn {
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: 0.3s;
+    color: white;
+}
+
+.task-btn {
+    background: #007bff; /* Blue */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.task-btn:hover {
+    background: #0056b3; /* Darker blue */
+    transform: scale(1.05); /* Slightly bigger on hover */
+}
+
+.logout-btn {
+    background: #dc3545; /* Red background */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.logout-btn:hover {
+    background: #b52a37; /* Darker red */
+    transform: scale(1.05); /* Slightly bigger on hover */
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Fix Logout Button Design */
+.logout-btn {
+    background: #dc3545; /* Red background */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: 0.3s;
+    margin-left: 10px; /* Adjust spacing */
+}
+
+/* Hover Effect */
+.logout-btn:hover {
+    background: #6e171f; /* Darker red */
+}
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar.closed {
+    transform: translateX(-100%);
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 20px;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    padding: 12px;
+}
+
+.sidebar-menu li a {
+    text-decoration: dimgray;
+    color: #000000;
+    font-size: 15px;
+}
+
+.sidebar-menu li:hover {
+    background: #e9ecef;
+}
+
+.main-content {
+    font-size: 16px;
+    margin-top: var(--header-height);
+    margin-left: var(--sidebar-width);
+    padding: 20px;
+    width: calc(100% - var(--sidebar-width)); /* Para sumakto sa screen */
+    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+.sidebar.closed + .main-content {
+    margin-left: 0;
+    width: 100%; /* Para sakto sa screen kapag nakasara ang sidebar */
+}
+
+
+.homepage-title {
+    margin-top: 80px; /* Dagdagan ang spacing para di dikit sa header */
+    text-align: center;
+    font-size: 22px;
+}
+
+
+/* Floating Button */
+.fab-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    text-align: center;
+}
+
+.fab {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    position: relative;
+}
+
+.fab-tooltip {
+    position: absolute;
+    bottom: 10px;
+    right: 80px;
+    background: #595858;
+    color: rgb(219, 218, 218);
+    padding: 5px 15px;
+    border-radius: 5px;
+    font-size: 13px;    
+    display: none;
+}
+
+.fab-container:hover .fab-tooltip {
+    display: flex;
+    transition: 0.4s;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background: white;
+    width: 400px;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+
+
