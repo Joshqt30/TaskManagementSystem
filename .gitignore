@@ -1,0 +1,4 @@
+AppData/
+node_modules/
+*.log
+*.cache
