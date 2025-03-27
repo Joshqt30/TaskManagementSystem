@@ -1,0 +1,277 @@
+:root {
+  --sidebar-width: 260px;
+  --header-height: 55px;
+  --transition-speed: 0.3s;
+
+  /* Theme Colors */
+  --bg-color: #FBF9F1;        /* Overall page background */
+  --header-bg: #C1BFB9;       /* Header background */
+  --sidebar-bg: #F0EDE5;      /* Sidebar background */
+  --card-bg: #F0EDE5;         /* Card background */
+  --text-color: #000000;      /* Primary text color */
+  --hover-light: #CECCC5;     /* Hover color for links */
+  --active-bg: #CECCC5;       /* Active link background */
+  --create-task-color: #000000; /* Button color */
+  --sidebar-border: #CECCC5;  /* Border color used in header & cards */
+}
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--sidebar-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  z-index: 999;
+}
+
+.header-left,
+.header-center,
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.header-title {
+  font-weight: bolder;
+  font-size: 18px;
+  color: var(--text-color);
+}
+
+/* Center Navigation */
+.header-center {
+  flex: 1;
+  justify-content: center;
+}
+
+.header-nav {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+}
+
+.header-nav .nav-link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 5px 10px;
+}
+
+.header-nav .nav-link:hover {
+  background-color: var(--hover-light);
+  border-radius: 5px;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  display: flex;
+  width: 100%;
+  margin-top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  font-weight: bold;
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  transition: width var(--transition-speed) ease-in-out;
+  overflow: hidden;
+  padding-top: 15px;
+  padding: 12px 10px;
+}
+
+.sidebar.sidebar-hidden {
+  width: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 10px;
+}
+
+.sidebar .nav-link {
+  color: #656460; /* Slightly darker text for links */
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 7px;
+  border-radius: 10px;
+  margin-bottom: 3px;
+}
+
+.sidebar .nav-link:hover {
+  background-color: var(--hover-light);
+}
+
+.sidebar .nav-link.active {
+  background-color: var(--active-bg);
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Welcome Text */
+.welcome-text {
+  font-size: 23px;
+  font-weight: 550;
+  color: var(--text-color);
+  margin-top: 40px; /* Adjust as needed */
+}
+
+/* My Tasks Section */
+.mytasks-section {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.mytasks-section .section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.task-tabs {
+  margin-bottom: 15px;
+}
+
+/* Create Task Button (Rectangular) */
+.btn-custom {
+  background-color: #000; /* or var(--create-task-color) if you have a variable */
+  color: #fff;
+  font-weight: normal;
+  border: none;
+  padding: 6px 14px; /* enough space for text */
+  border-radius: 4px; /* slight rounding */
+  cursor: pointer;
+}
+.btn-custom:hover {
+  background-color: #333;
+}
+
+
+/* Task Body Container */
+.task-body {
+  min-height: 200px; /* Flexible container for tasks */
+  overflow-y: auto;
+}
+
+/* Chart Card */
+.card.task-card {
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  border: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-card {
+  min-height: 450px; /* Enough space for chart */
+}
+
+.card-header {
+  background: none;
+  border-bottom: 0.5px solid var(--sidebar-border);
+  padding: 20px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.card-body {
+  padding: 15px;
+  flex: 1;
+  color: var(--text-color);
+}
+
+/* Chart Container */
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 250px; /* Adjust if needed */
+  padding: 10px;
+}
+
+#taskGraph {
+  max-height: 100%;
+  max-width: 100%;
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* Chart Legend */
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  margin: 10px 0;
+  margin-left: 20px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+/* Legend Colors */
+.todo {
+  background-color: #EA2E2E; /* Red */
+}
+.in-progress {
+  background-color: #5BA4E5; /* Blue */
+}
+.completed {
+  background-color: #54D376; /* Green */
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+  .main-content {
+    padding: 15px;
+  }
+  .welcome-text {
+    font-size: 16px;
+  }
+}
