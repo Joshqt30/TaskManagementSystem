@@ -1,45 +1,29 @@
+/* Mobile styles separate file called (mobile.css) */
 @media screen and (max-width: 768px) {
-    .header-buttons {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 10px; 
-        align-items: flex-end;
+  .header {
+    padding: 0 10px;
+    flex-wrap: wrap;
+  }
+  
+  .sidebar {
+    width: 0;
+    overflow: hidden;
+  }
+  
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px;
+  }
 
-    }
+  .page-heading {
+    font-size: 18px;
+  }
+  .welcome-text {
+    font-size: 16px;
+  }
+  .chart-card {
+    min-height: 350px;
+  }
 
-    .task-btn, .logout-btn {
-        font-size: 13px;
-        padding: 8px 10px;
-        max-width: 100px;
-    }
-
-    /* Sidebar Auto Close on Small Screens */
-    .sidebar {
-        position: fixed;
-        left: -250px;
-        width: 250px;
-        height: 100vh;
-        transition: left 0.3s ease-in-out;
-        z-index: 1000;
-        background: #f8f9fa;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    }
-
-    .sidebar.active {
-        left: 0;
-    }
-
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-    }
-
-    /* Fix Overflow for Chat */
-    .chat-container {
-        max-height: 400px;
-        overflow: auto;
-    }
 }

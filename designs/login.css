@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+    margin: 0;
+    background-color: white;
+}
+.login {
+    margin-left: 70px;
+    margin-top: 100px;
+    height: 600px;
+    width: 600px;
+    background-color: white;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.login-btn {
+    cursor: pointer;
+}
+
+h1{
+    color: black;
+    margin-left: 220px;
+    font-size: 50px;
+    margin-bottom: 40px;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+    margin-bottom: 50px;
+}
+label {
+    color: black;
+    margin-left: 100px;
+    font-size: 20px;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+}
+.con {
+    width: 60%;
+    height: 100vh;
+    background-color: black;
+    position: absolute;
+    top: 0;
+    right: 0;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 60% 100%);
+    align-items: center;
+    align-content: center;
+    text-align: center;
+}
+input {
+    border: none;
+    border-bottom: 2px solid black;
+    background: transparent;
+    width: 400px;
+    outline: none;
+    margin-bottom: 40px;
+    margin-top: 20px;
+    margin-left: 100px;
+}
+button {
+    margin-left: 100px;
+    margin-top: 0px;
+    padding: 10px;
+    border-radius: 20px;
+    width: 400px;
+    font-size: 20px;
+    font: bolder;
+}
+p {
+    color: black;
+    margin-left: 160px;
+    margin-top: 40px;
+    font-size: 20px;
+    font-family: 'Inter', sans-serif;
+}
+.icon {
+    height: 20px;
+    color: white;
+    margin-left: 280px;
+}
+
+.wc, .w {
+    color: white;
+    font-size: 100px;
+    margin: 0; 
+    padding: 0;
+    display: block; 
+    margin-left: 250px;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+}
+
+.state {
+    color: white;
+    font-size: 20px;
+    margin-top: 20px;
+    margin-left: 280px; 
+    font-family: 'Inter', sans-serif;
+}

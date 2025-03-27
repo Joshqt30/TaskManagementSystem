@@ -1,32 +1,40 @@
-document.getElementById('toggleBtn').addEventListener('click', function() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('closed');
+document.addEventListener('DOMContentLoaded', function() {
+  var toggleBtn = document.getElementById('toggleBtn');
+  var sidebar = document.getElementById('sidebar');
 
-    const mainContent = document.getElementById('mainContent');
-    if (sidebar.classList.contains('closed')) {
-        mainContent.style.marginLeft = '0';
-        mainContent.style.width = '100%';
-    } else {
-        mainContent.style.marginLeft = '250px';
-        mainContent.style.width = 'calc(100% - 250px)';
-    }
-});
+  // Toggle sidebar width
+  toggleBtn.addEventListener('click', function() {
+    sidebar.classList.toggle('sidebar-hidden');
+  });
 
-
-// Task Modal Functions
-function openTaskModal() {
-    document.getElementById('taskModal').style.display = 'block';
-}
-
-function closeTaskModal() {
-    document.getElementById('taskModal').style.display = 'none';
-}
-
-document.getElementById('logoutBtn').addEventListener('click', function() {
-    alert("Logging out..."); 
-    window.location.href = "login.html"; // Redirect to login page
-});
-
-document.getElementById('toggleBtn').addEventListener('click', function() {
-    document.getElementById('sidebar').classList.toggle('active');
+  // Initialize Chart.js example
+  var chartCanvas = document.getElementById('taskGraph');
+  if (chartCanvas) {
+    var ctx = chartCanvas.getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ["Completed", "In Progress", "To Do"],
+        datasets: [{
+          data: [5, 5, 5], // Adjust task data if backend is ready
+          backgroundColor: ["#54D376", "#5BA4E5", "#EA2E2E"]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true, 
+            position: 'bottom', 
+            labels: {
+              color: '#000000',
+              boxWidth: 12, 
+              padding: 10
+            }
+          }
+        }
+      }
+    });
+  }
 });
