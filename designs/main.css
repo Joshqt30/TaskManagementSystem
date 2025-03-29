@@ -6,12 +6,12 @@
   /* Theme Colors */
   --bg-color: #FBF9F1;        /* Overall page background */
   --header-bg: #C1BFB9;       /* Header background */
-  --sidebar-bg: #F0EDE5;      /* Sidebar background */
+  --sidebar-bg: #3D5654;      /* Sidebar background */
   --card-bg: #F0EDE5;         /* Card background */
-  --text-color: #000000;      /* Primary text color */
-  --hover-light: #CECCC5;     /* Hover color for links */
-  --active-bg: #CECCC5;       /* Active link background */
-  --create-task-color: #000000; /* Button color */
+  --text-color: #3D5654;      /* Primary text color */
+  --hover-light: #FFFFFF;     /* Hover color for links */
+  --active-bg: #FFFFFF;       /* Active link background */
+  --create-task-color: #3D5654; /* Button color */
   --sidebar-border: #CECCC5;  /* Border color used in header & cards */
 }
 
@@ -103,6 +103,8 @@ body {
   overflow: hidden;
   padding-top: 15px;
   padding: 12px 10px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 
 .sidebar.sidebar-hidden {
@@ -116,7 +118,7 @@ body {
 }
 
 .sidebar .nav-link {
-  color: #656460; /* Slightly darker text for links */
+  color: white; /* Slightly darker text for links */
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -131,6 +133,7 @@ body {
 
 .sidebar .nav-link.active {
   background-color: var(--active-bg);
+  color: #3D5654
 }
 
 /* Main Content */
@@ -167,7 +170,7 @@ body {
 
 /* Create Task Button (Rectangular) */
 .btn-custom {
-  background-color: #000; /* or var(--create-task-color) if you have a variable */
+  background-color: #3D5654 ; /* or var(--create-task-color) if you have a variable */
   color: #fff;
   font-weight: normal;
   border: none;
@@ -176,7 +179,7 @@ body {
   cursor: pointer;
 }
 .btn-custom:hover {
-  background-color: #333;
+  background-color: #354847;
 }
 
 
