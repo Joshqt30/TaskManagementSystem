@@ -1,18 +1,19 @@
+/* CSS Variables for Theme and Layout */
 :root {
   --sidebar-width: 260px;
   --header-height: 55px;
   --transition-speed: 0.3s;
-
   /* Theme Colors */
-  --bg-color: #FBF9F1;        /* Overall page background */
-  --header-bg: #C1BFB9;       /* Header background */
-  --sidebar-bg: #3D5654;      /* Sidebar background */
-  --card-bg: #F0EDE5;         /* Card background */
-  --text-color: #3D5654;      /* Primary text color */
-  --hover-light: #FFFFFF;     /* Hover color for links */
-  --active-bg: #FFFFFF;       /* Active link background */
-  --create-task-color: #3D5654; /* Button color */
-  --sidebar-border: #CECCC5;  /* Border color used in header & cards */
+  --bg-color: #E3F2F1;
+  --header-bg: #E3F2F1;
+  --sidebar-bg: #3D5654;
+  --card-bg: #FFFFFF;
+  --text-color: #3D5654;
+  --hover-light: #FFFFFF;
+  --active-bg: #FFFFFF;
+  --create-task-color: #3D5654;
+  --sidebar-border: #CECCC5;
+  --orange-color: orange;
 }
 
 /* Global Reset */
@@ -21,7 +22,6 @@
   padding: 0;
   box-sizing: border-box;
 }
-
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-color);
@@ -39,24 +39,30 @@ body {
   width: 100%;
   height: var(--header-height);
   background: var(--header-bg);
-  border-bottom: 1px solid var(--sidebar-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 15px;
   z-index: 999;
 }
-
+.orglogo {
+  height: 30px;
+  width: auto;
+  margin-top: 4px;
+  margin-left: 1px;
+  margin-right: 6px;
+}
 .header-left,
 .header-center,
 .header-right {
   display: flex;
   align-items: center;
 }
-
 .header-title {
-  font-weight: bolder;
-  font-size: 18px;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 50px;
   color: var(--text-color);
 }
 
@@ -65,20 +71,17 @@ body {
   flex: 1;
   justify-content: center;
 }
-
 .header-nav {
   list-style: none;
   display: flex;
   gap: 15px;
 }
-
 .header-nav .nav-link {
   color: var(--text-color);
   text-decoration: none;
   font-weight: 600;
   padding: 5px 10px;
 }
-
 .header-nav .nav-link:hover {
   background-color: var(--hover-light);
   border-radius: 5px;
@@ -100,40 +103,84 @@ body {
   background-color: var(--sidebar-bg);
   border-right: 1px solid var(--sidebar-border);
   transition: width var(--transition-speed) ease-in-out;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  padding-top: 15px;
-  padding: 12px 10px;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
 }
-
 .sidebar.sidebar-hidden {
   width: 0;
 }
 
-.sidebar ul {
-  list-style: none;
-  margin: 0;
-  padding: 0 10px;
+/* Sidebar Middle: Profile & Navigation (Centered as per original) */
+.sidebar-middle {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.sidebar-profile {
+  padding:50px 10px;
+  text-align: center;
+}
+.sidebar-profile i {
+  font-size: 60px;
+  color: white;
+}
+.user-name {
+  margin-top: 10px;
+  font-size: 14px;
+  color: white;
+  font-weight: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 8px;
 }
 
-.sidebar .nav-link {
-  color: white; /* Slightly darker text for links */
+/* Sidebar Menu */
+.sidebar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  /* Using original spacing so that the menu remains centered as you provided */
+}
+.sidebar-menu .nav-item {
+  margin-bottom: 5px;
+}
+.sidebar-menu .nav-link {
+  color: white;
   text-decoration: none;
   display: flex;
   align-items: center;
-  padding: 7px;
-  border-radius: 10px;
-  margin-bottom: 3px;
+  padding: 8px 15px;
+  border-radius: 30px;
+  transition: background-color 0.2s;
 }
-
-.sidebar .nav-link:hover {
+.sidebar-menu .nav-link:hover {
   background-color: var(--hover-light);
+  color: var(--text-color);
+}
+/* Adjusted Active Link: reduce padding and border-radius to make it less large */
+.sidebar-menu .nav-link.active {
+  background-color: var(--active-bg);
+  color: #3D5654;
+  padding: 10px 15px; /* Reduced padding */
+  border-radius: 30px; /* Reduced border-radius */
+}
+/* Sidebar icons: set to orange */
+.sidebar-menu .nav-link i {
+  color: var(--orange-color);
 }
 
-.sidebar .nav-link.active {
-  background-color: var(--active-bg);
-  color: #3D5654
+/* Custom Styling for the Burger Toggle Button */
+#toggleBtn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  color: rgb(45, 113, 62);
+}
+#toggleBtn:hover {
+  opacity: 0.9;
 }
 
 /* Main Content */
@@ -142,88 +189,72 @@ body {
   padding: 20px;
   overflow-y: auto;
 }
-/* Welcome Text */
 .welcome-text {
   font-size: 23px;
   font-weight: 550;
   color: var(--text-color);
-  margin-top: 40px; /* Adjust as needed */
+  margin-top: 10px;
+  margin-bottom: 50px;
+  margin-left: 20px;
 }
-
-/* My Tasks Section */
 .mytasks-section {
   background: none;
   border: none;
-  padding: 0;
+  padding: 34px;
 }
-
 .mytasks-section .section-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   margin-bottom: 10px;
+  margin-left: 20px;
 }
-
 .task-tabs {
   margin-bottom: 15px;
 }
-
-/* Create Task Button (Rectangular) */
 .btn-custom {
-  background-color: #3D5654 ; /* or var(--create-task-color) if you have a variable */
+  background-color: #3D5654;
   color: #fff;
-  font-weight: normal;
   border: none;
-  padding: 6px 14px; /* enough space for text */
-  border-radius: 4px; /* slight rounding */
+  padding: 6px 14px;
+  border-radius: 4px;
   cursor: pointer;
 }
 .btn-custom:hover {
   background-color: #354847;
 }
-
-
-/* Task Body Container */
 .task-body {
-  min-height: 200px; /* Flexible container for tasks */
+  min-height: 200px;
   overflow-y: auto;
 }
-
-/* Chart Card */
 .card.task-card {
   background-color: var(--card-bg);
-  border-radius: 10px;
+  border-radius: 15px;
   border: 1px solid var(--sidebar-border);
   display: flex;
   flex-direction: column;
 }
-
 .chart-card {
-  min-height: 450px; /* Enough space for chart */
+  min-height: 450px;
 }
-
 .card-header {
   background: none;
-  border-bottom: 0.5px solid var(--sidebar-border);
+  border-bottom: 0.5px solid #C99C33;
   padding: 20px;
   font-weight: 600;
   color: var(--text-color);
 }
-
 .card-body {
   padding: 15px;
   flex: 1;
   color: var(--text-color);
 }
-
-/* Chart Container */
 .chart-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 250px; /* Adjust if needed */
+  height: 250px;
   padding: 10px;
 }
-
 #taskGraph {
   max-height: 100%;
   max-width: 100%;
@@ -231,15 +262,13 @@ body {
   border-radius: 10px;
   padding: 10px;
 }
-
-/* Chart Legend */
 .chart-legend {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-top: 10px;
+  margin-top: 30px;
+  padding: 8px 15 px;
 }
-
 .legend-item {
   display: flex;
   align-items: center;
@@ -249,31 +278,17 @@ body {
   margin: 10px 0;
   margin-left: 20px;
 }
-
 .legend-color {
   width: 20px;
   height: 20px;
   border-radius: 5px;
   margin-right: 10px;
 }
+.todo { background-color: #EA2E2E; }
+.in-progress { background-color: #5BA4E5; }
+.completed { background-color: #54D376; }
 
-/* Legend Colors */
-.todo {
-  background-color: #EA2E2E; /* Red */
-}
-.in-progress {
-  background-color: #5BA4E5; /* Blue */
-}
-.completed {
-  background-color: #54D376; /* Green */
-}
-
-/* Responsive Adjustments */
 @media screen and (max-width: 768px) {
-  .main-content {
-    padding: 15px;
-  }
-  .welcome-text {
-    font-size: 16px;
-  }
+  .main-content { padding: 15px; }
+  .welcome-text { font-size: 16px; }
 }
