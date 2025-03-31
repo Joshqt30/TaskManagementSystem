@@ -98,7 +98,7 @@ body {
 
 /* Sidebar */
 .sidebar {
-  font-weight: bold;
+  font-weight: normal;
   width: var(--sidebar-width);
   background-color: var(--sidebar-bg);
   border-right: 1px solid var(--sidebar-border);
@@ -120,8 +120,10 @@ body {
   height: 100%;
 }
 .sidebar-profile {
-  padding:50px 10px;
+  background-color: #425C5A; /* Adjust based on your theme */
+  padding: 20px;
   text-align: center;
+  border-bottom: 1px solid #7A8C8D; /* Optional: Adds a separator */
 }
 .sidebar-profile i {
   font-size: 60px;
@@ -155,10 +157,16 @@ body {
   padding: 8px 15px;
   border-radius: 30px;
   transition: background-color 0.2s;
+  margin-top: 1px;
+  margin-right: 20px;
+  margin-bottom: 2px;
+  margin-left: 10px;
+
 }
 .sidebar-menu .nav-link:hover {
   background-color: var(--hover-light);
   color: var(--text-color);
+  padding: 10px 15px; /* Adjusted padding for hover effect */
 }
 /* Adjusted Active Link: reduce padding and border-radius to make it less large */
 .sidebar-menu .nav-link.active {
@@ -170,6 +178,8 @@ body {
 /* Sidebar icons: set to orange */
 .sidebar-menu .nav-link i {
   color: var(--orange-color);
+  width: 20px; /* or an appropriate value based on your design */
+  text-align: center;
 }
 
 /* Custom Styling for the Burger Toggle Button */
