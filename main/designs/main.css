@@ -10,10 +10,10 @@
   --card-bg: #FFFFFF;
   --text-color: #3D5654;
   --hover-light: #FFFFFF;
-  --active-bg: #FFFFFF;
+  --active-bg: #E0F7FA;  /* Soft light blue for active link */
   --create-task-color: #3D5654;
   --sidebar-border: #CECCC5;
-  --orange-color: orange;
+  --gold-color: #D4AF37;  /* Gold color for icons and borders */
 }
 
 /* Global Reset */
@@ -120,22 +120,24 @@ body {
   height: 100%;
 }
 .sidebar-profile {
-  background-color: #425C5A; /* Adjust based on your theme */
-  padding: 20px;
+  background-color: #425C5A;
+  padding: 45px 10px;
   text-align: center;
-  border-bottom: 1px solid #7A8C8D; /* Optional: Adds a separator */
+  margin-bottom: 55px;
 }
 .sidebar-profile i {
-  font-size: 60px;
+  font-size: 65px;
   color: white;
+  border: 2px solid var(--gold-color);  /* Gold border for profile icon */
+  border-radius: 50%;
+  padding: 5px;
 }
 .user-name {
-  margin-top: 10px;
-  font-size: 14px;
+  margin-top: 15px;
+  font-size: 15px;
   color: white;
   font-weight: 100;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  padding-bottom: 8px;
+  padding-bottom: 10px;
 }
 
 /* Sidebar Menu */
@@ -144,42 +146,52 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  /* Using original spacing so that the menu remains centered as you provided */
 }
+
+/* Reduce spacing between menu items by using uniform margin */
 .sidebar-menu .nav-item {
-  margin-bottom: 5px;
+  margin-bottom: 3px; /* Reduced vertical gap */
 }
 .sidebar-menu .nav-link {
   color: white;
-  text-decoration: none;
   display: flex;
   align-items: center;
   padding: 8px 15px;
-  border-radius: 30px;
-  transition: background-color 0.2s;
-  margin-top: 1px;
-  margin-right: 20px;
-  margin-bottom: 2px;
-  margin-left: 10px;
+  border-radius: 35px;
+  transition: background-color 0.3s ease-in-out, padding 0.3s ease-in-out;
+  margin: 2px 10px;  /* Uniform margin: 5px vertical, 10px horizontal */
+}
 
-}
 .sidebar-menu .nav-link:hover {
-  background-color: var(--hover-light);
-  color: var(--text-color);
-  padding: 10px 15px; /* Adjusted padding for hover effect */
-}
-/* Adjusted Active Link: reduce padding and border-radius to make it less large */
-.sidebar-menu .nav-link.active {
   background-color: var(--active-bg);
   color: #3D5654;
-  padding: 10px 15px; /* Reduced padding */
-  border-radius: 30px; /* Reduced border-radius */
+  margin: 2px 10px; /* Uniform margin: 5px vertical, 10px horizontal */
+  padding: 12px 15px; /* Maintain padding on hover */
 }
-/* Sidebar icons: set to orange */
+
+/* Active and Hover States */
+.sidebar-menu .nav-link.active,
+.sidebar-menu .nav-link:hover {
+  background-color: var(--active-bg);
+  color: #3D5654;
+  margin: 2px 10px;
+  padding: 12px 15px; /* Maintain padding on hover */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Adding shadow on active and hover */
+}
+
+/* Sidebar icons: set to gold with fixed width for alignment */
 .sidebar-menu .nav-link i {
-  color: var(--orange-color);
-  width: 20px; /* or an appropriate value based on your design */
+  color: var(--gold-color);
+  width: 20px;
   text-align: center;
+}
+
+/* Add a bottom divider line to the menu */
+.sidebar-menu::after {
+  content: "";
+  display: block;
+  border-top: 1px solid var(--gold-color);
+  margin: 10px 0px;
 }
 
 /* Custom Styling for the Burger Toggle Button */
@@ -230,7 +242,8 @@ body {
   cursor: pointer;
 }
 .btn-custom:hover {
-  background-color: #354847;
+  background-color: #D4AF37;
+  color: #3D5654; /* Lighter color for text on hover */
 }
 .task-body {
   min-height: 200px;
@@ -238,17 +251,17 @@ body {
 }
 .card.task-card {
   background-color: var(--card-bg);
-  border-radius: 15px;
-  border: 1px solid var(--sidebar-border);
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Adding shadow */
 }
 .chart-card {
   min-height: 450px;
 }
 .card-header {
   background: none;
-  border-bottom: 0.5px solid #C99C33;
+  border-bottom: 0.5px solid #c8af6f;
   padding: 20px;
   font-weight: 600;
   color: var(--text-color);
@@ -270,29 +283,30 @@ body {
   max-width: 100%;
   background-color: var(--card-bg);
   border-radius: 10px;
-  padding: 10px;
+  padding: 5px;
 }
 .chart-legend {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin-top: 30px;
-  padding: 8px 15 px;
+  padding: 8px 15px;
 }
 .legend-item {
   display: flex;
   align-items: center;
   font-size: 16px;
   font-weight: bold;
-  color: #000;
-  margin: 10px 0;
+  color: #3D5654;
+  margin: 14px 0;
   margin-left: 20px;
+  margin-top: 15px;
 }
 .legend-color {
   width: 20px;
   height: 20px;
   border-radius: 5px;
-  margin-right: 10px;
+  margin-right: 20px;
 }
 .todo { background-color: #EA2E2E; }
 .in-progress { background-color: #5BA4E5; }
