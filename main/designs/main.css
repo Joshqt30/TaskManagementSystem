@@ -224,12 +224,12 @@ body {
   overflow-y: auto;
 }
 .welcome-text {
-  font-size: 23px;
-  font-weight: 550;
+  font-size: 24px;
+  font-weight: 600;
   color: var(--text-color);
   margin-top: 10px;
-  margin-bottom: 50px;
-  margin-left: 20px;
+  margin-bottom: 38px;
+  margin-left: 23px;
 }
 .mytasks-section {
   background: none;
@@ -243,8 +243,35 @@ body {
   margin-left: 20px;
 }
 .task-tabs {
-  margin-bottom: 15px;
+  margin-bottom: 0  ;
+  font-size: 12px;
+  padding-left: 15px;
 }
+
+/* Custom style para sa task tabs */
+.task-tabs .nav-link {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-weight: 600;
+  padding: 10px 15px;
+  position: relative;
+}
+
+.task-tabs .nav-link.active {
+  /* Gold/dilaw underline para sa active tab */
+  border-bottom: 1px solid var(--gold-color);
+  color: var(--text-color);
+}
+
+/* Divider line sa ilalim ng tabs (optional) */
+/* Kung gusto mo ng hiwalay na full-width separator line sa ilalim ng lahat ng tabs */
+.tab-divider {
+  height: 1px;
+  border-bottom: 1px solid var(--gold-color);
+  margin-top: 15px; /* Pwede mong i-adjust ang spacing dito */
+}
+
 .btn-custom {
   background-color: #3D5654;
   color: #fff;
