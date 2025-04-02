@@ -264,12 +264,10 @@ body {
   color: var(--text-color);
 }
 
-/* Divider line sa ilalim ng tabs (optional) */
-/* Kung gusto mo ng hiwalay na full-width separator line sa ilalim ng lahat ng tabs */
 .tab-divider {
   height: 1px;
   border-bottom: 1px solid var(--gold-color);
-  margin-top: 15px; /* Pwede mong i-adjust ang spacing dito */
+  margin-top: 15px; 
 }
 
 .btn-custom {
