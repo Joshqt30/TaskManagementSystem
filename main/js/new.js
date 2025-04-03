@@ -1,3 +1,5 @@
+// my js file
+
 document.addEventListener('DOMContentLoaded', function() {
   var toggleBtn = document.getElementById('toggleBtn');
   var sidebar = document.getElementById('sidebar');

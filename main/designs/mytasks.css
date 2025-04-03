@@ -1,0 +1,58 @@
+/* Main Content area */
+.main-content {
+    background-color: var(--bg-color); /* pastel green from your :root vars */
+    overflow-y: auto; /* in case content grows longer than the viewport */
+  }
+  
+  /* Heading for "My Tasks" */
+  .page-heading {
+    font-family: "Inter Tight", sans-serif;
+    font-weight: 800;
+    color: var(--text-color); /* #3D5654 or whichever color you want */
+  }
+  
+  /* Table styling */
+  .table thead th {
+    border-bottom: 1px solid #3D5654; /* Slightly thicker bottom border */
+    font-weight: 600;
+  }
+  .table tbody tr.table-light {
+    background-color: #f8f9fa; /* Light background for subheader row */
+  }
+  .table .badge {
+    font-size: 0.9rem; /* Slightly smaller text in badges */
+  }
+
+  .tab-divider {
+    height: 1px;
+    border-bottom: 1px solid var(--gold-color);
+    margin-top: 15px; 
+  }
+  
+  /* Button styling for "New Task", "Date View", and "Add Task" */
+  .btn-primary {
+    margin-top: 15px;
+    background-color: #3D5654;
+    border-color: #3D5654;
+  }
+  .btn-primary:hover {
+    background-color: #2e413f;
+    border-color: #2e413f;
+  }
+  .btn-secondary {
+    margin-top: 15px;
+    background-color: #3D5654;
+    border-color: #2e413f;
+  }
+  .btn-secondary:hover {
+    background-color: #2e413f;
+    border-color: #2e413f;
+  }
+  .btn-outline-secondary {
+    border-color: #2e413f;
+    color: #2e413f;
+  }
+  .btn-outline-secondary:hover {
+    background-color: #3D5654;
+    color: #3D5654  ;
+  }
