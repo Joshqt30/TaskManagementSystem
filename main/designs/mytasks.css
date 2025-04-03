@@ -1,58 +1,100 @@
-/* Main Content area */
-.main-content {
-    background-color: var(--bg-color); /* pastel green from your :root vars */
-    overflow-y: auto; /* in case content grows longer than the viewport */
-  }
-  
-  /* Heading for "My Tasks" */
-  .page-heading {
-    font-family: "Inter Tight", sans-serif;
-    font-weight: 800;
-    color: var(--text-color); /* #3D5654 or whichever color you want */
-  }
-  
-  /* Table styling */
-  .table thead th {
-    border-bottom: 1px solid #3D5654; /* Slightly thicker bottom border */
-    font-weight: 600;
-  }
-  .table tbody tr.table-light {
-    background-color: #f8f9fa; /* Light background for subheader row */
-  }
-  .table .badge {
-    font-size: 0.9rem; /* Slightly smaller text in badges */
-  }
+/* mytasks.css */
 
-  .tab-divider {
-    height: 1px;
-    border-bottom: 1px solid var(--gold-color);
-    margin-top: 15px; 
-  }
-  
-  /* Button styling for "New Task", "Date View", and "Add Task" */
-  .btn-primary {
-    margin-top: 15px;
-    background-color: #3D5654;
-    border-color: #3D5654;
-  }
-  .btn-primary:hover {
-    background-color: #2e413f;
-    border-color: #2e413f;
-  }
-  .btn-secondary {
-    margin-top: 15px;
-    background-color: #3D5654;
-    border-color: #2e413f;
-  }
-  .btn-secondary:hover {
-    background-color: #2e413f;
-    border-color: #2e413f;
-  }
-  .btn-outline-secondary {
-    border-color: #2e413f;
-    color: #2e413f;
-  }
-  .btn-outline-secondary:hover {
-    background-color: #3D5654;
-    color: #3D5654  ;
-  }
+:root {
+  --bg-color: #E3F2F1;      /* Pastel green background */
+  --text-color: #3D5654;
+  --gold-color: #D4AF37;
+  --primary-blue: #007BFF;  /* Blue for buttons and badges */
+}
+
+/* Main Content Area */
+.main-content {
+  background-color: var(--bg-color);
+  overflow-y: auto;
+  font-family: "Inter", sans-serif;
+}
+
+/* Headings */
+.page-heading {
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 800;
+  color: var(--text-color);
+  font-size: 24px;
+}
+
+.tab-divider {
+  height: 1px;
+  border-bottom: 1px solid var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+/* Minimal Table Styles */
+.minimal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+.minimal-table thead th {
+  text-align: left;
+  font-weight: 600;
+  padding: 0.75rem;
+  color: var(--text-color);
+  font-size: 1rem;
+  border: none;
+}
+.minimal-table thead tr {
+  border-bottom: 1px solid #3D5654; /* Subtle gray divider */
+}
+.minimal-table tbody tr {
+  background-color: var();
+  border-bottom: 1px solid #3D5654; /* Subtle divider between rows */
+}
+.minimal-table tbody tr:last-child {
+  border-bottom: none;
+}
+.minimal-table tbody td {
+  padding: 0.75rem;
+  font-size: 1rem;
+  color: var(--text-color);
+  border: none;
+}
+/* Subheader Row */
+.minimal-table tbody tr.table-light {
+  background-color: #E3F2F1 !important;
+  font-weight: 600;
+  border-bottom: 1px solid #3D5654;
+}
+
+/* Badge for "In progress" */
+.badge.in-progress {
+  background-color: var(--primary-blue);
+  color: #fff;
+  font-size: 16px;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* Buttons Custom Styling */
+.btn-primary.new-task-btn,
+.btn-secondary.date-view-btn {
+  margin-top: 15px;
+  border-radius: 8px !important;
+  background-color: var(--text-color);
+  border-color: var(--text-color);
+}
+.btn-primary.new-task-btn:hover,
+.btn-secondary.date-view-btn:hover {
+  background-color: #2e413f;
+  border-color: #2e413f;
+}
+.btn-outline-secondary.add-task-btn {
+  border-color: var(--text-color);
+  color: var(--text-color);
+  border-radius: 12px;
+}
+.btn-outline-secondary.add-task-btn:hover {
+  background-color: var(--text-color);
+  color: #fff;
+}
