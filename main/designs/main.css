@@ -1,4 +1,6 @@
-/* CSS Variables for Theme and Layout */
+/* main.css t */
+
+
 :root {
   --transition-speed: 0.3s;
   /* Theme Colors */
@@ -24,6 +26,12 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+body.page-transition {
+  opacity: 0;
 }
 
 /* Content Wrapper */
@@ -96,8 +104,8 @@ body {
   cursor: pointer;
 }
 .btn-custom:hover {
-  background-color: #D4AF37;
-  color: #3D5654;
+  background-color: #2f3f3d;
+  color: #ffffff;
 }
 .task-body {
   min-height: 200px;

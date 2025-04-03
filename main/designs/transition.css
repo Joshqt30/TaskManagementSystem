@@ -1,0 +1,29 @@
+/* transition.css separate file*/
+
+
+
+
+body {
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+  }
+  
+  body.page-transition {
+    opacity: 0;
+  }
+
+  
+
+  /* Transition overlay - gumagamit ng parehong background ng iyong page */
+#transitionOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2); /* Gumamit ng iyong background color */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 9999;
+  }
