@@ -1,34 +1,46 @@
 <?php
-// Registration logic (if needed)
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    require 'config.php';  // Include the database connection
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'vendor/autoload.php';
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $username = $_POST['username'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Check if passwords match
+    // Password Validation
     if ($password !== $confirm_password) {
         $error_message = "Passwords do not match!";
     } else {
-        $password = password_hash($password, PASSWORD_DEFAULT);  // Encrypt the password
-        $otp = rand(1000, 9999);  // Generate OTP
-        $otp_expiry = date('Y-m-d H:i:s', strtotime('+5 minutes'));  // OTP expiry time (5 minutes from now)
+        // Send Email Confirmation
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = getenv('EMAIL_USER'); // Use environment variable
+            $mail->Password = getenv('EMAIL_PASS'); // Use environment variable
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
 
-        // Insert user data into the database
-        $stmt = $pdo->prepare("INSERT INTO users (email, username, password, otp, otp_expiry) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$email, $username, $password, $otp, $otp_expiry]);
+            // Email Settings
+            $mail->setFrom(getenv('EMAIL_USER'), 'Task Management System');
+            $mail->addAddress($email);
 
-        // Send OTP email
-        mail($email, "OTP for Registration", "Your OTP is: " . $otp);
+            $mail->isHTML(true);
+            $mail->Subject = 'Registration Confirmation';
+            $mail->Body = '<h3>Welcome, ' . htmlspecialchars($username) . '!</h3><p>You have successfully registered.</p>';
 
-        // Redirect to verification page
-        header("Location: verification.php?email=" . $email);
-        exit();
+            $mail->send();
+            echo "✅ Confirmation email sent!";
+        } catch (Exception $e) {
+            echo "❌ Email Error: {$mail->ErrorInfo}";
+        }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
