@@ -1,23 +1,18 @@
 <?php
-// OTP verification logic
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    require 'config.php';  // Include the database connection
+    require 'config.php';
 
     $email = $_POST['email'];
-    $otp = $_POST['otp'];
+    $otp = implode("", $_POST['otp']); // Join OTP input fields
 
-    // Prepare and execute a query to get the user data
     $stmt = $pdo->prepare("SELECT otp, otp_expiry FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
     if ($user) {
-        // Check if OTP is valid and not expired
         if ($user['otp'] == $otp && strtotime($user['otp_expiry']) > time()) {
-            // Mark user as verified and clear OTP fields
             $stmt = $pdo->prepare("UPDATE users SET is_verified = 1, otp = NULL, otp_expiry = NULL WHERE email = ?");
             $stmt->execute([$email]);
-            // Redirect to login page or dashboard
             header("Location: login.php");
             exit;
         } else {
@@ -26,10 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $error_message = "User not found!";
     }
-} else {
-    $error_message = "Invalid request.";
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -55,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php endif; ?>
 
             <form action="verification.php" method="POST">
-                <input type="hidden" name="email" value="<?php echo $_GET['email']; ?>">
+            <input type="hidden" name="email" value="<?php echo isset($_GET['email']) ? htmlspecialchars($_GET['email']) : ''; ?>">
 
                 <div class="otp-inputs">
                     <input type="text" maxlength="1" class="otp-box" id="otp1" name="otp[]">
