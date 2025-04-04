@@ -37,6 +37,29 @@ document.addEventListener('DOMContentLoaded', function() {
     sidebar.classList.toggle('sidebar-hidden');
   });
 
+
+  function verifyOTP() {
+    const otp1 = document.getElementById('otp1').value;
+    const otp2 = document.getElementById('otp2').value;
+    const otp3 = document.getElementById('otp3').value;
+    const otp4 = document.getElementById('otp4').value;
+
+    // Check if all OTP fields are filled
+    if (otp1 && otp2 && otp3 && otp4) {
+        const otp = otp1 + otp2 + otp3 + otp4;
+        // For debugging, you could alert or log the OTP:
+        console.log('OTP Entered: ' + otp);
+        // Set the hidden field value
+        document.getElementById('otp').value = otp;
+        // Submit the form
+        document.getElementById('otpForm').submit();
+    } else {
+        alert('Please enter all OTP digits');
+    }
+}
+
+
+
   // Initialize Chart.js example
   var chartCanvas = document.getElementById('taskGraph');
   if (chartCanvas) {
