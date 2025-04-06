@@ -1,15 +1,18 @@
 <?php
-include 'config.php'; // Contains your $pdo connection
 
-use Dotenv\Dotenv;
-$dotenv = Dotenv::createImmutable(__DIR__);
+// Include the Composer autoload file to load all dependencies, including PHPMailer and Dotenv
+require_once __DIR__ . '/vendor/autoload.php';  
+
+// Load environment variables from .env file
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
+include 'config.php'; // Contains your $pdo connection
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require 'vendor/autoload.php';
 
+// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Grab the submitted values
     $email = trim($_POST['email']);
@@ -38,28 +41,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->isSMTP();
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
-                $mail->Username = getenv('EMAIL_USER');
-                $mail->Password = getenv('EMAIL_PASS');                
+
+                // Fetch email credentials from the .env file
+                $emailUser = $_ENV['EMAIL_USER'];  // Get the email from .env
+                $emailPass = $_ENV['EMAIL_PASS'];  // Get the password from .env
+
+                if (!$emailUser || !$emailPass) {
+                    throw new Exception("Email credentials not found in the .env file.");
+                }
+
+                $mail->Username = $emailUser; // Use the environment variable for email
+                $mail->Password = $emailPass;  // Use the environment variable for the app password
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port = 587;
 
                 // Email settings
-                $mail->setFrom(getenv('EMAIL_USER'), 'Task Management System');
+                $mail->setFrom($emailUser, 'Task Management System');
                 $mail->addAddress($email);
 
                 $mail->isHTML(true);
                 $mail->Subject = 'Your OTP Verification Code';
                 // Include the OTP in the email body
                 $mail->Body = "<h3>Hello, " . htmlspecialchars($username) . "!</h3>
-                               <p>Your OTP code is: <strong>{$otp}</strong></p>
-                               <p>This code will expire in 5 minutes.</p>";
+                            <p>Your OTP code is: <strong>{$otp}</strong></p>
+                            <p>This code will expire in 5 minutes.</p>";
 
                 $mail->send();
                 // Redirect to the verification page with the email in the query string
                 header("Location: verification.php?email=" . urlencode($email));
                 exit;
             } catch (Exception $e) {
-                $error_message = "Email could not be sent. Mailer Error: {$mail->ErrorInfo}";
+                $error_message = "Email could not be sent. Please try again later.";
             }
         } else {
             $error_message = "Registration failed. Please try again.";
