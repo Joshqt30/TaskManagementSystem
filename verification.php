@@ -1,16 +1,19 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    require 'config.php';
+include 'config.php';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
-    $otp = implode("", $_POST['otp']); // Join OTP input fields
+    $otp = implode("", $_POST['otp']); // Combine the four input fields
 
+    // Query the user record by email
     $stmt = $pdo->prepare("SELECT otp, otp_expiry FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
     if ($user) {
-        if ($user['otp'] == $otp && strtotime($user['otp_expiry']) > time()) {
+        // Check if OTP matches and is not expired
+        if ($user['otp'] === $otp && strtotime($user['otp_expiry']) > time()) {
+            // Mark user as verified and clear the OTP fields
             $stmt = $pdo->prepare("UPDATE users SET is_verified = 1, otp = NULL, otp_expiry = NULL WHERE email = ?");
             $stmt->execute([$email]);
             header("Location: login.php");
@@ -22,8 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error_message = "User not found!";
     }
 }
-?>
 
+// Get the email for display (from GET parameter when the page loads)
+$emailValue = isset($_GET['email']) ? htmlspecialchars($_GET['email']) : '';
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -42,23 +47,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container">
         <div class="otp-verification">
             <div class="class-otp">OTP CODE VERIFICATION</div>
-            <p>We have sent the OTP code to your email, please enter the code in the column below.</p>
+            <p>We have sent the OTP code to your email. Please enter the code below.</p>
 
             <?php if (isset($error_message)): ?>
-                <p style="color: red;"><?php echo $error_message; ?></p>
+                <p style="color: red;"><?php echo htmlspecialchars($error_message); ?></p>
             <?php endif; ?>
 
             <form action="verification.php" method="POST">
-            <input type="hidden" name="email" value="<?php echo isset($_GET['email']) ? htmlspecialchars($_GET['email']) : ''; ?>">
-
+                <!-- Pass the email along in a hidden field -->
+                <input type="hidden" name="email" value="<?php echo $emailValue; ?>">
                 <div class="otp-inputs">
                     <input type="text" maxlength="1" class="otp-box" id="otp1" name="otp[]">
                     <input type="text" maxlength="1" class="otp-box" id="otp2" name="otp[]">
                     <input type="text" maxlength="1" class="otp-box" id="otp3" name="otp[]">
                     <input type="text" maxlength="1" class="otp-box" id="otp4" name="otp[]">
                 </div>
-
-                <button type="submit" class="next-btn">Next</button>
+                <button type="submit" class="next-btn">Verify</button>
             </form>
         </div>
     </div>

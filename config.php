@@ -12,6 +12,11 @@ $options = [
     PDO::ATTR_EMULATE_PREPARES   => false,                  // Disables emulation of prepared statements
 ];
 
+$conn = mysqli_connect($host, $user, $pass, $db);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (PDOException $e) {
