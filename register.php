@@ -66,25 +66,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port = 587;
 
-                // Set consistent sender information
-                $mail->setFrom($_ENV['EMAIL_USER'], 'Task Management System');
+                $mail->setFrom($_ENV['EMAIL_USER'], 'Task Management System', false);
+                $mail->addReplyTo($_ENV['EMAIL_USER'], 'Task Management Support');
                 $mail->addAddress($email);
+                $mail->addCustomHeader('X-Mailer', 'PHP/' . phpversion());
+                $mail->addCustomHeader('X-Priority', '3');
+                $mail->addCustomHeader('Return-Path', $_ENV['EMAIL_USER']); // Helps with spam checks
+                
 
                 // Use HTML email and plain text alternative
                 $mail->isHTML(true);
                 $mail->Subject = 'Your OTP Code for Task Management System';
 
-                // HTML version of the email
-                $mail->Body = "<h3>Hello, " . htmlspecialchars($username) . "!</h3>
-                               <p>Your one-time passcode (OTP) is: <strong>{$otp}</strong></p>
-                               <p>This OTP is valid for 3 hours.</p>
-                               <hr>
-                               <p>Please do not reply to this email. If you did not request an OTP, simply ignore this message.</p>";
+                    // HTML version of the email
+                    $mail->Body = "
+                    <div style='font-family: Arial, sans-serif; color: #333;'>
+                        <h2>Hello, " . htmlspecialchars($username) . "!</h2>
+                        <p>We're excited to have you on board. Your one-time passcode (OTP) is:</p>
+                        <h1 style='color: #014BFE;'>$otp</h1>
+                        <p><strong>This OTP is valid for 3 hours.</strong></p>
+                        <p>If you did not request this, please ignore this email.</p>
+                        <p>For any issues, contact our support team at <a href='mailto:organizeplusmail@gmail.com'>organizeplusmail@gmail.com</a>.</p>
+                        <hr>
+                        <p>Best regards,<br><strong>Task Management System Team</strong></p>
+                    </div>
+                ";
+                
 
-                // Plain text alternative (non-HTML)
-                $mail->AltBody = "Hello $username,\n\nYour one-time passcode (OTP) is: $otp\nThis OTP is valid for 3 hours.\n\nPlease do not reply to this email. If you did not request an OTP, ignore this message.";
+                    // Plain text alternative (non-HTML)
+                    $mail->AltBody = "Welcome, $username!\n\nYour OTP code is: $otp\nThis OTP is valid for 3 hours.\n\nIf you didn't request this, ignore this email.\n\nBest regards,\nTask Management System Team";
 
-                $mail->send();
+                    $mail->send();
                 header("Location: verification.php?email=" . urlencode($email));
                 exit;
             } catch (Exception $e) {

@@ -50,6 +50,10 @@
       justify-content: space-between;
       padding: 0 20px;
     }
+
+    .header-title {
+      font-size: 20px !important;
+    }
     
     .header-nav .nav-link {
       color: #455a64;
@@ -304,7 +308,7 @@
   <!-- Header -->
   <header class="header">
     <div class="header-left d-flex align-items-center">
-      <img src="ORGanizepics/logo.png" class="orglogo" alt="Logo" />
+      <img src="ORGanizepics/layers.png" class="orglogo" alt="Logo" />
       <span class="header-title">ORGanize+</span>
     </div>  
     <div class="header-center">

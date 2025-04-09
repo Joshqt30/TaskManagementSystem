@@ -44,11 +44,15 @@
       top: 0;
       left: 0;
       right: 0;
-      z-index: 1000;
+      z-index: 1000;  
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
+    }
+
+    .header-title {
+      font-size: 20px !important;
     }
     
     .header-nav .nav-link {
@@ -300,7 +304,7 @@
   <!-- Header -->
   <header class="header">
     <div class="header-left d-flex align-items-center">
-      <img src="ORGanizepics/logo.png" class="orglogo" alt="Logo" />
+      <img src="ORGanizepics/layers.png" class="orglogo" alt="Logo" />
       <span class="header-title">ORGanize+</span>
     </div>
     <div class="header-center">
