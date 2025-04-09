@@ -4,30 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ORGanizePLUS | Task Management</title>
+
+    <link rel="stylesheet" href="designs/aboutus.css">
 </head>
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-body {
-    font-family: 'Ariel', sans-serif;
-    line-height: 1.5;
-}
-</style>
-
-
-
-
-
 <body>
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
             <div class="logo">
                 <i class="fas fa-tasks"></i>
-                <img src="icons8-layer-50.png">
+                <img src="ORGanizepics/logo.png">
                 <span>ORGanizePLUS</span>
             </div>
             <div class="nav-links">
@@ -41,76 +27,6 @@ body {
             </div>
         </div>
     </nav>
-<style>
-
-nav {
-    background: white;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #2F4F4F;
-}
-
-.logo i {
-    margin-right: 0.5rem;
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.nav-links a {
-    color: #117546;
-    text-decoration: none;
-    transition: transform 0.3s ease;
-    display: inline-block;
-}
-
-.nav-links a:hover {
-    transform: scale(1.2);
-}
-.btn-icon {
-    background: transparent;
-    transition: transform 0.3s ease;
-}
-
-.btn-icon:hover {
-  transform: scale(1.5);
-}
-</style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     <!-- Hero Section -->
     <section class="hero">
@@ -127,89 +43,6 @@ nav {
             </div>
         </div>
     </section>
-
-<style>
-  .hero {
-    background: #2F4F4F;
-    padding: 50px;
-    color: white;
-}
-
-.hero-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 50px;
-    align-items: center;
-}
-
-.hero-image {
-    background: #e2e2e2;
-    height: 250px;
-    border-radius: 0.5rem;
-}
-
-.hero-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
-
-.hero-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 25px;
-}
-
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    border: none;
-}
-
-.btn-primary {
-    background: #F59E0B;
-    color: white;
-}
-
-.btn-primary:hover {
-    background: #D97706;
-}
-
-.btn-outline {
-    background: transparent;
-    border: 2px solid white;
-    color: white;
-}
-
-.btn-outline:hover {
-    background: rgb(255, 255, 255);
-    color: #040501;
-}
-</style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     <!-- Features Section -->
     <section class="features">
@@ -244,83 +77,6 @@ nav {
         </div>
     </section>
 
-<style>
-  .features {
-    background: #F5F7F7;
-    padding: 5rem 2rem;
-}
-
-.features-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-.section-header {
-    margin-bottom: 40px;
-}
-
-.section-header h2 {
-    font-size: 40px;
-    color: #2F4F4F;
-    margin-bottom: 5px;
-}
-
-.section-header p {
-    color: #666;
-}
-
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    transition: transform 0.5s ease;
-}
-
-.feature-card {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 20px 30px rgba(8, 7, 7, 0.1);
-}
-.feature-card:hover{
-  transform: scale(1.05);
-}
-
-.feature-icon {
-    width: 4rem;
-    height: 4rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.feature-icon i {
-    font-size: 20px;
-    color: #030505;
-}
-
-.feature-card h3 {
-    margin-bottom: 5px;
-    color: #2F4F4F;
-}
-
-.feature-card p {
-    color: #070303;
-}
-</style>
-
-
-
-
-
-
-
-
-
-
-
     <!-- Get Started Section -->
     <section class="get-started">
         <div class="get-started-container">
@@ -329,59 +85,6 @@ nav {
             <button class="btn btn-white">Get Started</button>
         </div>
     </section>
-
-<style>
-  .get-started {
-    background: #2F4F4F;
-    padding: 4em 2rem;
-    text-align: center;
-    color: white;
-    text-align: left;
-    margin: 20px;
-    
-}
-
-.get-started-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.get-started h2 {
-    font-size: 20px;
-    margin-bottom: 20px;
-}
-
-.get-started p {
-    margin-bottom: 40px;
-    color: #e2e2e2;
-}
-
-.btn-white {
-    background: white;
-    color: #2F4F4F;
-    transition: transform 0.3s ease;
-}
-
-.btn-white:hover {
-    background: #ffffff;
-    color: rgb(0, 0, 0);
-    transform: scale(1.2);
-}
-</style>    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     <!-- Footer -->
     <footer>
@@ -419,76 +122,6 @@ nav {
             </div>
         </div>
     </footer>
-
-<style>
-  footer {
-    background: #2F4F4F;
-    color: white;
-    padding: 3rem 2rem;
-    margin: 20px;
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.footer-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
-}
-
-.footer-logo {
-    display: flex;
-    align-items: center;
-}
-
-.footer-logo i {
-    margin-right: 0.5rem;
-    font-size: 1.5rem;
-}
-.footer-logo{
-  margin: 10px;
-}
-.footer-section h4 {
-    margin-bottom: 10px;
-}
-
-.footer-links {
-    list-style: none;
-}
-
-.footer-links li {
-    margin-bottom: 5px;
-}
-
-.footer-links a {
-    color: white;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.footer-links a:hover {
-    color: #e2e2e2;
-}
-
-.footer-bottom {
-    border-top: 1px solid rgba(255,255,255,0.2);
-    margin-top: 20px;
-    padding-top: 20px;
-    text-align: center;
-}
-.btm-icons {
-    margin-left: 40px;
-    background: transparent;
-    transition: transform 0.3s ease;
-}
-
-.btm-icons:hover {
-  transform: scale(1.5);
-}
-</style>
 
 </body>
 </html>

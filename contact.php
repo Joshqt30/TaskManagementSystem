@@ -37,7 +37,7 @@
 
    
     .header {
-      background-color: #f0f7f7;
+      background-color: #DBE8E7;
       border-bottom: 1px solid #e0e0e0;
       height: 60px;
       position: fixed;
@@ -188,7 +188,7 @@
     
    
     footer {
-      background-color: #455a64;
+      background-color: #425C5A;
       color: white;
       padding: 30px 0;
       width: 100%;
@@ -241,17 +241,6 @@
       line-height: 1.5;
     }
     
-    .footer-social {
-      display: flex;
-      gap: 15px;
-      align-items: flex-start;
-    }
-    
-    .footer-social a {
-      color: white;
-      font-size: 18px;
-    }
-    
     .footer-bottom {
       text-align: center;
       margin-top: 20px;
@@ -295,10 +284,6 @@
         text-align: center;
       }
       
-      .footer-social {
-        justify-content: center;
-      }
-      
       .contact-cards {
         flex-direction: column;
         align-items: center;
@@ -321,13 +306,11 @@
     <div class="header-center">
       <ul class="nav header-nav">
         <li class="nav-item"><a class="nav-link" href="main.html">About Us</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Get In Touch</a></li>
+        <li class="nav-item"><a class="nav-link" href="main.html">Back to Home</a></li>
       </ul>
     </div>
     <div class="header-right">
       <div class="d-flex align-items-center">
-        <a href="#" class="me-3"><i class="fa-regular fa-comment"></i></a>
-        <a href="#" class="me-3"><i class="fa-regular fa-bell"></i></a>
         <div class="dropdown">
           <button class="btn rounded-circle user-btn text-dark" type="button" data-bs-toggle="dropdown">
             <i class="fa-solid fa-user" style="font-size:20px;"></i>
@@ -488,12 +471,6 @@
         <div class="footer-column">
           <h5>Contact Us</h5>
           <p>432 Queen's Highway 1100<br>Queen City Weekday Square (Magic)<br>organizeplusmail@gmail.com</p>
-        </div>
-        
-        <div class="footer-social">
-          <a href="#"><i class="fa-brands fa-facebook"></i></a>
-          <a href="#"><i class="fa-brands fa-twitter"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
         </div>
       </div>
     </div>
