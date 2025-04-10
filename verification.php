@@ -1,4 +1,22 @@
 <?php
+
+session_start();
+
+// If email is not provided via POST/GET and not in session, redirect to register
+if (empty($_POST['email']) && empty($_GET['email']) && empty($_SESSION['verify_email'])) {
+    header("Location: register.php");
+    exit;
+}
+
+
+// Store email in session for subsequent requests
+if (!empty($_POST['email']) || !empty($_GET['email'])) {
+    $_SESSION['verify_email'] = $_POST['email'] ?? $_GET['email'];
+}
+
+$email = $_SESSION['verify_email'] ?? '';
+
+
 include 'config.php';
 
 // Grab the email from POST (if the form is submitted) or GET (initial load)
@@ -60,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <p class="error-message"><?= htmlspecialchars($error_message) ?></p>
             <?php endif; ?>
 
-          <form action="verification.php" method="POST">
+            <form action="verification.php" method="POST" class="otp-form">
               <!-- Hidden input to pass the email -->
               <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
               <div class="otp-inputs">

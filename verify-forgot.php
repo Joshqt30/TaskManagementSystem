@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <!-- HTML for OTP verification -->
-            <form action="verify-forgot.php" method="POST">
+            <form action="verify-forgot.php" method="POST" class="otp-form">
             <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
                 <div class="otp-inputs">
                     <input type="text" maxlength="1" class="otp-box" name="otp[]">

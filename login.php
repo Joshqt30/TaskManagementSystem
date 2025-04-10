@@ -1,5 +1,5 @@
 <?php
-// Enable error reporting for debugging (remove these in production)
+session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -8,10 +8,9 @@ include 'config.php';
 $error_message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username_or_email = trim($_POST['username_or_email']);
-    $password = $_POST['password'];
-
-    // Determine if the input is an email or username
+    // Convert email to lowercase if it's an email
     if (filter_var($username_or_email, FILTER_VALIDATE_EMAIL)) {
+        $username_or_email = strtolower($username_or_email);
         $stmt = $pdo->prepare("SELECT id, username, password, is_verified FROM users WHERE email = ?");
     } else {
         $stmt = $pdo->prepare("SELECT id, username, password, is_verified FROM users WHERE username = ?");
@@ -21,19 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch();
 
     if ($user) {
-        if (password_verify($password, $user['password'])) {
+        if (password_verify($_POST['password'], $user['password'])) {
             if ($user['is_verified'] == 1) {
-                // Login successful, redirect to main.php
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
                 header("Location: main.php");
                 exit;
             } else {
-                $error_message = "Your account is not verified yet. Please verify your email first.";
+                $error_message = "Account not verified. Verify your email first.";
             }
         } else {
-            $error_message = "Username or Incorrect password!";
+            $error_message = "Incorrect password!";
         }
     } else {
-        $error_message = "Username or email not found!";
+        $error_message = "Username/Email not found!";
     }
 }
 ?>

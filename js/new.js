@@ -59,51 +59,60 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-// ✅ OTP INPUT AUTO NAVIGATION & VALIDATION (FIXED VERSION)
-const otpInputs = document.querySelectorAll('.otp-box');
+    // OTP Auto-Advance Functionality
+    const otpInputs = document.querySelectorAll('.otp-box');
+    
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            const value = e.target.value;
+            
+            // Allow only digits
+            if (!/^\d$/.test(value)) {
+                e.target.value = '';
+                return;
+            }
 
-otpInputs.forEach((input, index) => {
-    input.addEventListener('input', (e) => {
-        const value = e.target.value;
-        if (!/^\d$/.test(value)) {
-            e.target.value = '';
-            return;
-        }
+            // Auto-focus next input
+            if (index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        });
 
-        if (index < otpInputs.length - 1) {
-            otpInputs[index + 1].focus();
-        }
+        input.addEventListener('keydown', (e) => {
+            // Handle backspace
+            if (e.key === 'Backspace' && index > 0 && !e.target.value) {
+                otpInputs[index - 1].focus();
+            }
+        });
     });
 
-    input.addEventListener('keydown', (e) => {
-        // Fixed backspace handling: only move focus if field is empty
-        if (e.key === 'Backspace' && index > 0 && !e.target.value) {
-            otpInputs[index - 1].focus();
-        }
-    });
-});
-
-  // Password validation
-document.querySelector("form").addEventListener("submit", function(e) {
-  const password = document.querySelector("input[name='password']");
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
-  
-  if (!regex.test(password.value)) {
-      e.preventDefault();
-      alert("Password must contain:\n- 8-20 characters\n- 1 uppercase\n- 1 lowercase\n- 1 number");
-  }
-});
-
-// ✅ Add this block at the VERY BOTTOM of your JS file (before the last closing });
-document.querySelectorAll('form').forEach(form => {
-  if (form.querySelector('.otp-box')) { // Check if form has OTP inputs
-      form.addEventListener("submit", function(e) {
-          e.preventDefault();
+    // ✅ Add this block at the VERY BOTTOM of your JS file (before the last closing });
+    document.querySelectorAll('form.otp-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        const otpValues = Array.from(form.querySelectorAll('.otp-box'))
+                            .map(input => input.value)
+                            .join('');
+        
+        if (otpValues.length === 4) {
+          e.preventDefault
           if (confirm("Checking OTP...")) {
-              this.submit();
+            form.submit();
           }
+        } else {
+          alert("Please fill all OTP fields!");
+        }
       });
-  }
-});
+    });  
+
+          // Password validation
+    document.querySelector("form").addEventListener("submit", function(e) {
+      const password = document.querySelector("input[name='password']");
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
+      
+      if (!regex.test(password.value)) {
+          e.preventDefault();
+          alert("Password must contain:\n- 8-20 characters\n- 1 uppercase\n- 1 lowercase\n- 1 number");
+      }
+    });
 
 });
