@@ -33,7 +33,7 @@
     <div class="header-center">
       <ul class="nav header-nav">
         <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
       </ul>
     </div>
     <div class="header-right">
@@ -44,7 +44,7 @@
         <ul class="dropdown-menu dropdown-menu-end">
           <li><a class="dropdown-item" href="settings.html">Account Settings</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="login.html">Logout</a></li>
+          <li><a class="dropdown-item" href="login.php">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -63,7 +63,7 @@
         </div>
         <ul class="nav flex-column sidebar-menu">
           <li class="nav-item">
-            <a href="main.html" class="nav-link">
+            <a href="main.php" class="nav-link">
               <i class="fa-solid fa-house me-2"></i> Home
             </a>
           </li>
@@ -73,17 +73,17 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="inbox.html" class="nav-link">
               <i class="fa-solid fa-message me-2"></i> Inbox
             </a>
           </li>
           <li class="nav-item">
-            <a href="calendar.html" class="nav-link">
+            <a href="calendar.php" class="nav-link">
               <i class="fa-solid fa-calendar me-2"></i> Calendar
             </a>
           </li>
           <li class="nav-item">
-            <a href="Statistics.html" class="nav-link active">
+            <a href="Statistics.php" class="nav-link active">
               <i class="fa-solid fa-chart-pie me-2"></i> Tasks Statistics
             </a>
           </li>
@@ -129,7 +129,7 @@
     </div>
 
     <div class="status">
-      <p>Project Status</p>
+      <p>Tasks Statistics</p>
       <hr />
       <div class="card-body chart-body">
         <div class="chart-container">

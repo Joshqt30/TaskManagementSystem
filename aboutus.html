@@ -23,7 +23,7 @@ body {
     <nav>
         <div class="nav-container">
             <div class="logo">
-                <img src="ORGanizepics\layers.png" alt="Logo">
+                <img src="ORGanizepics\Logo.png" alt="Logo">
                 <span>ORGanize+</span>
             </div>  
             <div class="nav-links">
@@ -170,6 +170,23 @@ nav {
 
 </style>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-container">
@@ -250,6 +267,26 @@ nav {
     color: #040501;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <!-- Features Section -->
     <section class="features">
@@ -445,17 +482,10 @@ nav {
                     <p>673 Quezon Highway 1116 Quezon City National Capital Region</p>
                     <p>organize+@gmail.com</p>
                 </div>
-                <div class="footer-section">
-                  <h4 style="margin-left: 90px;">Social Media</h4>
-                 <img src="ORGanizepics\Footer-Facebook.png" alt="Footer-Facebook" width="40px" height="40px" alt="Facebook" buttom class="btm-icons">
-                 <img src="ORGanizepics\Footer-Twitter.png" alt="Footer-Twitter" width="40px" height="40px" alt="Twitter" buttom class="btm-icons">
-                 <img src="ORGanizepics\Footer-Instagram.png" alt="Footer-Instagram" width="40px" height="40px" alt="Instagram" buttom class="btm-icons">
-                </div>
-            </div>
-            <div class="footer-bottom"> 
-                <p  style="float: centered;">All Rights Reserved.</p>
-                <p style="float: centered;">© ORGanize+, 2025</p>
-            </div>
+        </div>
+        <div class="footer-bottom"> 
+            <p  style="float: centered;">All Rights Reserved.</p>
+            <p style="float: centered;">© ORGanize+, 2025</p>
         </div>
     </footer>
 
@@ -474,8 +504,7 @@ nav {
 
 .footer-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .footer-logo {
@@ -489,7 +518,69 @@ nav {
 }
 
 .footer-logo{
-  margin: 10px;
+  margin: 30px;
+}
+
+.footer-logo img {
+    height: 30px;
+    width: auto;
+    margin-top: 4px;
+    margin-left: 1px;
+    margin-right: 6px;
+
+}
+
+.footer-section h4 {
+    margin-bottom: 10px;
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 5px;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #e2e2e2;
+}
+
+footer {
+    background: #3D5654;
+    color: white;
+    padding: 3rem 2rem;
+    margin: 20px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+}
+
+.footer-logo i {
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.footer-logo{
+  margin: 30px;
 }
 
 .footer-logo img {
@@ -527,16 +618,7 @@ nav {
     border-top: 1px solid rgba(255,255,255,0.2);
     margin-top: 20px;
     padding-top: 20px;
-    text-align: center;
-}
-.btm-icons {
-    margin-left: 40px;
-    background: transparent;
-    transition: transform 0.3s ease;
-}
-
-.btm-icons:hover {
-  transform: scale(1.5);
+    text-align: center;  
 }
 </style>
 

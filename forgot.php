@@ -3,31 +3,33 @@ include 'config.php'; // DB connection
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+    
+    // Check if the email exists in the database
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? AND is_verified = 1"); // <-- Add "AND is_verified = 1"
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
     if ($user) {
-        $otp = rand(100000, 999999); // generate 6-digit OTP
-
-        // Store OTP in DB or session
-        $stmt = $pdo->prepare("UPDATE users SET otp = ? WHERE email = ?");
+        $otp = rand(1000, 9999); // generate 4-digit OTP
+        
+        // Store OTP in the database or session
+        $stmt = $pdo->prepare("UPDATE users SET otp = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE email = ?");
         $stmt->execute([$otp, $email]);
 
-        // Send OTP to email (use actual mail logic in production)
+        // Send OTP to email (you can use an actual email sending method here)
         // mail($email, "Password Reset OTP", "Your OTP is: $otp");
 
         session_start();
         $_SESSION['reset_email'] = $email;
 
-        header("Location: verification.php?purpose=reset");
+        // Redirect to verification page
+        header("Location: verify-forgot.php");
         exit;
     } else {
         $error = "Email not found!";
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

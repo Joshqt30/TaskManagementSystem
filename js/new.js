@@ -6,28 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.insertAdjacentHTML('afterbegin', '<div id="transitionOverlay"></div>');
   }
 
-  const overlay = document.getElementById('transitionOverlay');
-  const currentPage = window.location.pathname.split("/").pop();
-
-  document.querySelectorAll('.sidebar-menu .nav-link').forEach(link => {
-    const linkPage = link.getAttribute('href');
-    if (linkPage === currentPage) {
-      link.classList.add('active');
-    } else {
-      link.classList.remove('active');
-    }
-
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      const url = this.getAttribute('href');
-      overlay.style.opacity = 1;
-      document.body.classList.add('page-transition');
-      setTimeout(() => {
-        window.location.href = url;
-      }, 200);
-    });
-  });
-
   toggleBtn.addEventListener('click', function () {
     sidebar.classList.toggle('sidebar-hidden');
   });
@@ -48,6 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+
+  // Initialize the chart only if the canvas element exists
+  // and Chart.js library is loaded
   var chartCanvas = document.getElementById('taskGraph');
   if (chartCanvas) {
     var ctx = chartCanvas.getContext('2d');
@@ -78,28 +59,51 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ✅ OTP INPUT AUTO NAVIGATION & VALIDATION
-  const otpInputs = document.querySelectorAll('.otp-box');
+// ✅ OTP INPUT AUTO NAVIGATION & VALIDATION (FIXED VERSION)
+const otpInputs = document.querySelectorAll('.otp-box');
 
-  otpInputs.forEach((input, index) => {
+otpInputs.forEach((input, index) => {
     input.addEventListener('input', (e) => {
-      const value = e.target.value;
-      if (!/^\d$/.test(value)) {
-        e.target.value = ''; // Reset if non-numeric input
-        return;
-      }
-  
-      if (index < otpInputs.length - 1) {
-        otpInputs[index + 1].focus(); // Focus next field
-      }
+        const value = e.target.value;
+        if (!/^\d$/.test(value)) {
+            e.target.value = '';
+            return;
+        }
+
+        if (index < otpInputs.length - 1) {
+            otpInputs[index + 1].focus();
+        }
     });
-  
+
     input.addEventListener('keydown', (e) => {
-      if (e.key === 'Backspace' && index > 0) {
-        otpInputs[index - 1].focus(); // Focus previous field if Backspace is pressed
-      }
+        // Fixed backspace handling: only move focus if field is empty
+        if (e.key === 'Backspace' && index > 0 && !e.target.value) {
+            otpInputs[index - 1].focus();
+        }
     });
-  });
+});
+
+  // Password validation
+document.querySelector("form").addEventListener("submit", function(e) {
+  const password = document.querySelector("input[name='password']");
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
   
+  if (!regex.test(password.value)) {
+      e.preventDefault();
+      alert("Password must contain:\n- 8-20 characters\n- 1 uppercase\n- 1 lowercase\n- 1 number");
+  }
+});
+
+// ✅ Add this block at the VERY BOTTOM of your JS file (before the last closing });
+document.querySelectorAll('form').forEach(form => {
+  if (form.querySelector('.otp-box')) { // Check if form has OTP inputs
+      form.addEventListener("submit", function(e) {
+          e.preventDefault();
+          if (confirm("Checking OTP...")) {
+              this.submit();
+          }
+      });
+  }
+});
 
 });

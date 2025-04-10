@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error_message = "Your account is not verified yet. Please verify your email first.";
             }
         } else {
-            $error_message = "Incorrect password!";
+            $error_message = "Username or Incorrect password!";
         }
     } else {
         $error_message = "Username or email not found!";
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <!-- Forgot password positioned under the password field, right aligned -->
             <div class="forgot-container">
-                <a href="#" class="forgot">Forgot password?</a> 
+                <a href="forgot.php" class="forgot">Forgot password?</a> 
             </div>
             
             <button type="submit">Login</button>

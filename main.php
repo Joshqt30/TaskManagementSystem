@@ -35,7 +35,7 @@
     <div class="header-center">
       <ul class="nav header-nav">
         <li class="nav-item"><a class="nav-link" href="aboutus.html">About Us</a></li>
-        <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
       </ul>
     </div>
     <div class="header-right">
@@ -65,7 +65,7 @@
         </div>
         <ul class="nav flex-column sidebar-menu">
           <li class="nav-item">
-            <a href="main.html" class="nav-link active">
+            <a href="main.php" class="nav-link active">
               <i class="fa-solid fa-house me-2"></i> Home
             </a>
           </li>
@@ -85,7 +85,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="Statistics.html" class="nav-link">
+            <a href="Statistics.php" class="nav-link">
               <i class="fa-solid fa-chart-pie me-2"></i> Tasks Statistics
             </a>
           </li>

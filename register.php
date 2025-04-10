@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/vendor/autoload.php';  
 
 // Load environment variables from .env file
@@ -24,6 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if passwords match
     elseif ($password !== $confirm_password) {
         $error_message = "Passwords do not match!";
+    }
+    // Password strength check
+    elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/', $password)) {
+        $error_message = "Password must be 8-20 chars with uppercase, lowercase, and number!";
     }
     else {
         // Check if the email is already in the database
@@ -71,32 +74,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->addAddress($email);
                 $mail->addCustomHeader('X-Mailer', 'PHP/' . phpversion());
                 $mail->addCustomHeader('X-Priority', '3');
-                $mail->addCustomHeader('Return-Path', $_ENV['EMAIL_USER']); // Helps with spam checks
-                
+                $mail->addCustomHeader('Return-Path', $_ENV['EMAIL_USER']);
 
-                // Use HTML email and plain text alternative
                 $mail->isHTML(true);
-                $mail->Subject = 'Your OTP Code for Task Management System';
-
-                    // HTML version of the email
-                    $mail->Body = "
+                $mail->Subject = 'Your OTP Code for ORGanize+';
+                $mail->Body = "
                     <div style='font-family: Arial, sans-serif; color: #333;'>
                         <h2>Hello, " . htmlspecialchars($username) . "!</h2>
-                        <p>We're excited to have you on board. Your one-time passcode (OTP) is:</p>
+                        <p>We're excited to have you. Your one-time passcode (OTP) is:</p>
                         <h1 style='color: #014BFE;'>$otp</h1>
                         <p><strong>This OTP is valid for 3 hours.</strong></p>
                         <p>If you did not request this, please ignore this email.</p>
                         <p>For any issues, contact our support team at <a href='mailto:organizeplusmail@gmail.com'>organizeplusmail@gmail.com</a>.</p>
                         <hr>
-                        <p>Best regards,<br><strong>Task Management System Team</strong></p>
+                        <p>Best regards,<br><strong>ORGanize+ Team</strong></p>
                     </div>
                 ";
-                
+                $mail->AltBody = "Welcome, $username!\n\nYour OTP code is: $otp\nThis OTP is valid for 3 hours.\n\nIf you didn't request this, ignore this email.\n\nBest regards,\nORGanize+ Team";
 
-                    // Plain text alternative (non-HTML)
-                    $mail->AltBody = "Welcome, $username!\n\nYour OTP code is: $otp\nThis OTP is valid for 3 hours.\n\nIf you didn't request this, ignore this email.\n\nBest regards,\nTask Management System Team";
-
-                    $mail->send();
+                $mail->send();
                 header("Location: verification.php?email=" . urlencode($email));
                 exit;
             } catch (Exception $e) {
@@ -125,11 +121,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <h1>Register</h1>
       <form method="POST">
           <div class="log-con">
-              <input type="email" name="email" class="log" placeholder="Email" required>
+              <input type="email" name="email" class="log" placeholder="Email" 
+                  value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required>
               <img src="ORGanizepics/email.png" class="ics" alt="Email Icon">
           </div>
           <div class="log-con">
-              <input type="text" name="username" class="log" placeholder="Username" required>
+              <input type="text" name="username" class="log" placeholder="Username" 
+                  value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required>
               <img src="ORGanizepics/user.png" class="ics" alt="User Icon">
           </div>
           <div class="log-con">
@@ -144,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </form>
       
       <?php if (isset($error_message)): ?>
-          <p style="color: red; text-align: center;"><?php echo htmlspecialchars($error_message); ?></p>
+          <p style="color: red; text-align: center;"><?= htmlspecialchars($error_message) ?></p>
       <?php endif; ?>
       
       <p>Already have an account? <a href="login.php">Login</a></p>

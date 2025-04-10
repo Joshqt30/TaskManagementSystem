@@ -46,6 +46,13 @@ h2 {
     font-size: 18px;
 }
 
+/* Add this to designs/verification.css */
+.error-message {
+    color: red;
+    text-align: center;
+    margin: 10px 0;
+}
+
 .class-otp {
     margin-bottom: 10px; /* Reduced margin to ensure it aligns with the paragraph */
     color: #3D5654;

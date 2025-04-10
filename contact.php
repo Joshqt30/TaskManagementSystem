@@ -309,8 +309,8 @@
     </div>
     <div class="header-center">
       <ul class="nav header-nav">
-        <li class="nav-item"><a class="nav-link" href="main.html">About Us</a></li>
-        <li class="nav-item"><a class="nav-link" href="main.html">Back to Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="main.php">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="main.php">Back to Home</a></li>
       </ul>
     </div>
     <div class="header-right">
@@ -322,7 +322,7 @@
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="settings.html">Account Settings</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="login.html">Logout</a></li>
+            <li><a class="dropdown-item" href="login.php">Logout</a></li>
           </ul>
         </div>
       </div>
@@ -468,8 +468,8 @@
       <div class="footer-links">
         <div class="footer-column">
           <h5>Help</h5>
-          <a href="#">About Us</a>
-          <a href="#">Get In Touch</a>
+          <a href="aboutus.html">About Us</a>
+          <a href="contact.php">Contact</a>
         </div>
         
         <div class="footer-column">

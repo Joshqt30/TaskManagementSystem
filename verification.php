@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$emailValue = htmlspecialchars($email);
+// $emailValue = htmlspecialchars($email);
 ?>
 
 <!DOCTYPE html>
@@ -57,12 +57,12 @@ $emailValue = htmlspecialchars($email);
           <p>We have sent the OTP code to your email. Please enter the code below.</p>
 
           <?php if ($error_message): ?>
-              <p style="color: red;"><?php echo htmlspecialchars($error_message); ?></p>
-          <?php endif; ?>
+              <p class="error-message"><?= htmlspecialchars($error_message) ?></p>
+            <?php endif; ?>
 
           <form action="verification.php" method="POST">
               <!-- Hidden input to pass the email -->
-              <input type="hidden" name="email" value="<?php echo $emailValue; ?>">
+              <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
               <div class="otp-inputs">
                   <input type="text" maxlength="1" class="otp-box" name="otp[]">
                   <input type="text" maxlength="1" class="otp-box" name="otp[]">
