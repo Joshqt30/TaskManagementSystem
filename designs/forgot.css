@@ -1,0 +1,126 @@
+/* ===== PAGE BACKGROUND ===== */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #E3F2F1;
+  }
+  
+  /* ===== HEADER STYLES ===== */
+  /* Header container: full width, fixed height, same bg as body */
+  header {
+    width: 100%;
+    height: 100px;
+    background-color: #E3F2F1;
+    display: flex;            /* align logo + title horizontally */
+    color: #3D5654;
+  }
+  
+  /* Logo image inside header */
+  header .ic {
+    height: 70px;
+    margin-left: 20px;        /* same as login page */
+    margin-top: 10px;        /* same as login page */
+  }
+  
+  /* Site title inside header */
+  header h2 {
+    margin-left: 10px;        /* spacing from logo */
+    margin-top: 30px;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+    color: #3D5654;
+    font-size: 24px;         /* adjust size as needed */
+  }
+  /* ===== END HEADER STYLES ===== */
+  
+  /* ===== MAIN CONTENT WRAPPER ===== */
+  /* centers the form vertically & horizontally below the header */
+  .main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px); /* subtract header height */
+    background-color: #E3F2F1;       /* same bg */
+  }
+  /* ===== END MAIN CONTENT ===== */
+  
+  /* ===== FORGOT FORM CARD ===== */
+  .forgot-container {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  /* form typography */
+  .forgot-container h1 {
+    color: #3D5654;
+    margin-bottom: 1.2rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+  .forgot-container p {
+    color: #000000;
+    font-family: 'inter', sans-serif;
+    margin-bottom: 2rem;
+  }
+  
+  /* input + icon */
+  .input-group .form-control {
+    border-radius: 25px;
+    padding: 12px 45px 12px 15px;
+    height: 48px;
+    border: 1px solid #3D5654   ;
+  }
+/* Round only the left corners of the input */
+.input-group .form-control {
+    border-radius: 25px 0 0 25px;
+    border: 1px solid #3D5654;
+    padding-right: 45px; /* leave room for the icon */
+  }
+  
+  .input-group .form-control:focus {
+    outline: none;           /* no dotted outline */
+    box-shadow: none;        /* no inner glow */
+    border-color: #3D5654;   /* keep your custom border color */
+  }
+
+  /* Round only the right corners of the icon wrapper */
+  .input-group-text {
+    border-radius: 0 25px 25px 0;
+    border: 1px solid #3D5654;
+    border-left: none;        /* avoid a double border in the middle */
+    background-color: white;  /* match the input’s background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+  }
+  
+  /* submit button */
+  .next-button {
+    width: 100%;
+    background-color: #3D5654;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color .3s;
+  }
+  .next-button:hover {
+    background-color: #2d3e3c;
+  }
+  
+  /* mobile tweak */
+  @media (max-width: 480px) {
+    .forgot-container {
+      margin: 1rem;
+      padding: 2rem;
+    }
+  }
+  

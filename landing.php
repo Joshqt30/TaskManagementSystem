@@ -136,6 +136,6 @@
 
  
     </div>
-
+    <script src="js/new.js"></script>
 </body>
 </html>

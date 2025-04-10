@@ -149,5 +149,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
       <p>Already have an account? <a href="login.php">Login</a></p>
   </div>
+  <script src="js/new.js"></script>
 </body>
 </html>

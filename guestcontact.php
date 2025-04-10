@@ -481,7 +481,7 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
+  <script src="js/new.js"></script>
   <script>
     // For FAQ's part
     const faqQuestions = document.querySelectorAll('.faq-question');
@@ -499,5 +499,6 @@
       });
     });
   </script>
+  
 </body>
 </html>

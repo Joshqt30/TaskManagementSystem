@@ -6,7 +6,7 @@ $email = trim($_POST['email'] ?? $_GET['email'] ?? '');
 $error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $otp = isset($_POST['otp']) ? implode("", $_POST['otp']) : '';
+    $otp = isset($_POST['otp']) ? implode("", array_map('intval', $_POST['otp'])) : '';
 
     if (empty($email) || empty($otp)) {
         $error_message = "Email or OTP is missing!";
@@ -74,6 +74,6 @@ $emailValue = htmlspecialchars($email);
       </div>
   </div>
 
-  <script src="new.js"></script>
+  <script src="js/new.js"></script>
 </body>
 </html>

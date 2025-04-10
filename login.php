@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging (remove these in production)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 include 'config.php';
 
 $error_message = '';
@@ -6,12 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username_or_email = trim($_POST['username_or_email']);
     $password = $_POST['password'];
 
-    // Check if username_or_email is an email or username
+    // Determine if the input is an email or username
     if (filter_var($username_or_email, FILTER_VALIDATE_EMAIL)) {
-        // It's an email
         $stmt = $pdo->prepare("SELECT id, username, password, is_verified FROM users WHERE email = ?");
     } else {
-        // It's a username
         $stmt = $pdo->prepare("SELECT id, username, password, is_verified FROM users WHERE username = ?");
     }
 
@@ -21,8 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user) {
         if (password_verify($password, $user['password'])) {
             if ($user['is_verified'] == 1) {
-                // Login successful
-                // Redirect to the main page or user dashboard
+                // Login successful, redirect to main.php
                 header("Location: main.php");
                 exit;
             } else {
@@ -43,30 +44,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="designs/login.css">
+    <title>Login</title>
 </head>
 <body>
 
     <header>
-        <img src="ORGanizepics/layers.png" class="ic">
+        <img src="ORGanizepics/layers.png" class="ic" alt="Logo">
         <h2>ORGanize+</h2>
     </header>
 
     <div class="container">
         <h1>Login</h1>
         
-        <!-- Login form -->
         <form method="POST">
             <div class="log-con"> 
                 <input type="text" name="username_or_email" class="log" placeholder="Username or Email" required>
-                <img src="ORGanizepics/user.png" class="ics">
+                <img src="ORGanizepics/user.png" class="ics" alt="User Icon">
             </div>
                  
             <div class="log-con"> 
                 <input type="password" name="password" class="log" placeholder="Password" required>
-                <img src="ORGanizepics/padlock.png" class="ics">
+                <img src="ORGanizepics/padlock.png" class="ics" alt="Padlock Icon">
             </div>
-
-            <!-- Forgot password positioned on the right side -->
+            
+            <!-- Forgot password positioned under the password field, right aligned -->
             <div class="forgot-container">
                 <a href="#" class="forgot">Forgot password?</a> 
             </div>
@@ -80,6 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <p>Don't have an account? <a href="register.php">Sign up</a></p>
     </div>
-
+    <script src="js/new.js"></script>
 </body>
 </html>

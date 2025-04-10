@@ -3,30 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORGanizePLUS | Task Management</title>
-
-    <link rel="stylesheet" href="designs/aboutus.css">
+    <title>ORGanize+ | Task Management</title>
 </head>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Ariel', sans-serif;
+    line-height: 1.5;
+    background: #E3F2F1;
+}
+</style>
+
+
 <body>
-    <!-- Navigation -->
     <nav>
         <div class="nav-container">
             <div class="logo">
-                <i class="fas fa-tasks"></i>
-                <img src="ORGanizepics/logo.png">
-                <span>ORGanizePLUS</span>
-            </div>
+                <img src="ORGanizepics\layers.png" alt="Logo">
+                <span>ORGanize+</span>
+            </div>  
             <div class="nav-links">
                 <a href="#">About Us</a>
                 <a href="#">Get in Touch</a>
-              
-                <img src="icons8-message-50.png" buttom class="btn-icon" width="30" height="30">
-                <img src="icons8-notification-48.png" buttom class="btn-icon" width="30" height="30">
-                <img src="icons8-female-profile-50.png" buttom class="btn-icon" width="30" height="30">
-              
             </div>
+                <style>
+                    .user-btn {
+                      background: none;
+                      border: none;
+                      cursor: pointer;
+                    }
+                
+                    .user-btn i {
+                      font-size: 20px;
+                      color: #333;
+                    }
+
+
+                
+                    .dropdown-menu {
+                      display: none;
+                      position: absolute;
+                      top: 55px;
+                      right: 0;
+                      background-color: white;
+                      border: 1px solid #ccc;
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                      list-style: none;
+                      padding: 0;
+                      margin: 0;
+                      min-width: 160px;
+                      z-index: 1;
+                    }
+                
+                    .dropdown-menu li a {
+                      display: block;
+                      padding: 10px 15px;
+                      text-decoration: none;
+                      color: #333;
+                    }
+                
+                    .dropdown-menu li a:hover {
+                      background-color: #f0f0f0;
+                    }
+                
+                    .dropdown-menu.show {
+                      display: block;
+                    }
+                
+                    .dropdown-divider {
+                      margin: 0;
+                      border-top: 1px solid #ccc;
+                    }
+                  </style>
+                
+                  <!-- Ensure you are loading Font Awesome correctly -->
+                  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+                
+                </head>
+                <body>
+                
+                  <button class="btn rounded-circle user-btn text-dark" onclick="toggleDropdown()"> 
+                    <!-- Font Awesome User Icon -->
+                    <i class="fa-solid fa-user"></i>
+                  </button>
+                
+                  <ul id="userDropdown" class="dropdown-menu">
+                    <li><a href="settings.html">Account Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a href="login.php">Logout</a></li>
+                  </ul>
+                
+                  <script>
+                    function toggleDropdown() {
+                      document.getElementById("userDropdown").classList.toggle("show");
+                    }
+                
+                    // Close the dropdown if clicked outside
+                    window.onclick = function(event) {
+                      if (!event.target.closest('.user-btn')) {
+                        document.getElementById("userDropdown").classList.remove("show");
+                      }
+                    }
+                  </script>
+    
         </div>
     </nav>
+<style>
+
+
+
+nav {
+    background: #E3F2F1;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #2F4F4F;
+}
+
+.logo i {
+    margin-right: 0.5rem;
+}
+.logo img { 
+    height: 30px;
+    width: auto;
+    margin-top: 4px;
+    margin-left: 1px;
+    margin-right: 6px;
+    }
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: #3D5654 ;
+    text-decoration: none;
+    padding: 5px 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-links a:hover {
+    background-color: #e0f0ff
+}
+
+
+</style>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -34,7 +176,7 @@
             <div class="hero-image"></div>
             <div class="hero-content">
                 <h1 style ="color: #F59E0B">About Us</h1>
-                <p>ORGanizePLUS is your go-to task management solution, designed to help you stay on top of your work effortlessly. With a user-friendly interface and powerful features, we make productivity simple and effective. Whether you're managing personal tasks or collaborating with a team, ORGanizePLUS streamlines your workflow so you can focus on what truly matters.</p>
+                <p>ORGanize+ is your go-to task management solution, designed to help you stay on top of your work effortlessly. With a user-friendly interface and powerful features, we make productivity simple and effective. Whether you're managing personal tasks or collaborating with a team, ORGanize+ streamlines your workflow so you can focus on what truly matters.</p>
                 <p style="color: #F59E0B;"><i>Stay Organized. Achieve More.</i></p>
                 <div class="hero-buttons">
                     <button class="btn btn-primary">Explore Features</button>
@@ -44,32 +186,97 @@
         </div>
     </section>
 
+<style>
+
+    
+.hero {
+    background: #3D5654;
+    padding: 50px;
+    color: white;
+}
+
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.hero-image {
+    background: #e2e2e2;
+    height: 250px;
+    border-radius: 0.5rem;
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+}
+
+.btn-primary {
+    background: #F59E0B;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #D97706;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+}
+
+.btn-outline:hover {
+    background: rgb(255, 255, 255);
+    color: #040501;
+}
+</style>
+
     <!-- Features Section -->
     <section class="features">
         <div class="features-container">
             <div class="section-header">
                 <h2>What We Offer</h2>
-                <p>Discover the benefits of using <b>ORGanizePLUS</b> for all your tasks.</p>
+                <p>Discover the benefits of using <b>ORGanize+</b> for all your tasks.</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
                     </div>
-                    <img src="icons8-task-management-50.png" width="80px" height="80px">
+                    <img src="ORGanizepics\Features-MultiTask.png" alt="Features-MultiTask" width="80px" height="80px">
                     <h3>Efficient Task Management</h3>
                     <p>Easily create, edit, and organize tasks with clear priorities and deadlines.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                     </div>
-                    <img src="icons8-people-50.png" width="80px" height="80px">
+                    <img src="ORGanizepics\Features-Collaboration.png" alt="Features-Collaboration" width="80px" height="80px">
                     <h3>Seamless Collaboration</h3>
                     <p>Work together with teammates, assign tasks, and track progress.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                     </div>
-                    <img src="icons8-notification-128.png" width="80px" height="80px">
+                    <img src="ORGanizepics\Features-Notification.png" alt="Features-Notification" width="80px" height="80px">
                     <h3>Smart Reminders & Notifications</h3>
                     <p>Stay on top of your schedule with automated alerts.</p>
                 </div>
@@ -77,14 +284,144 @@
         </div>
     </section>
 
+<style>
+  .features {
+    background: #E3F2F1;
+    padding: 5rem 2rem;
+}
+
+.features-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.section-header {
+    margin-bottom: 40px;
+}
+
+.section-header h2 {
+    font-size: 40px;
+    color: #2F4F4F;
+    margin-bottom: 5px;
+}
+
+.section-header p {
+    color: #666;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    transition: transform 0.5s ease;
+}
+
+.feature-card {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 20px 30px rgba(8, 7, 7, 0.1);
+}
+.feature-card:hover{
+  transform: scale(1.05);
+}
+
+.feature-icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-icon i {
+    font-size: 20px;
+    color: #030505;
+}
+
+.feature-card h3 {
+    margin-bottom: 5px;
+    color: #2F4F4F;
+}
+
+.feature-card p {
+    color: #070303;
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
     <!-- Get Started Section -->
     <section class="get-started">
         <div class="get-started-container">
             <h2>Get Started Today!</h2>
-            <p>Stay organized, stay productive, and achieve more with ORGanizePLUS. Let's turn your to-do lists into done lists!</p>
+            <p>Stay organized, stay productive, and achieve more with ORGanize+. Let's turn your to-do lists into done lists!</p>
             <button class="btn btn-white">Get Started</button>
         </div>
     </section>
+
+<style>
+  .get-started {
+    background: #3D5654;
+    padding: 4em 2rem;
+    text-align: center;
+    color: white;
+    text-align: left;
+    margin: 20px;
+    
+}
+
+.get-started-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.get-started h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.get-started p {
+    margin-bottom: 40px;
+    color: #e2e2e2;
+}
+
+.btn-white {
+    background: white;
+    color: #2F4F4F;
+    transition: transform 0.3s ease;
+}
+
+.btn-white:hover {
+    background: #ffffff;
+    color: rgb(0, 0, 0);
+    transform: scale(1.2);
+}
+</style>    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <!-- Footer -->
     <footer>
@@ -92,9 +429,8 @@
             <div class="footer-grid">
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <i class="fas fa-tasks"></i>
-                        <img src="Logo.png" class="logo-footer">
-                        <span>ORGanizePLUS</span>
+                        <img src="ORGanizepics\Footer-Logo.png" alt="Footer-Logo" class="logo-footer">
+                        <span>ORGanize+</span>
                     </div>
                 </div>
                 <div class="footer-section">
@@ -107,21 +443,102 @@
                 <div class="footer-section">
                     <h4>Contact Us</h4>
                     <p>673 Quezon Highway 1116 Quezon City National Capital Region</p>
-                    <p>organizeplus@gmail.com</p>
+                    <p>organize+@gmail.com</p>
                 </div>
                 <div class="footer-section">
                   <h4 style="margin-left: 90px;">Social Media</h4>
-                 <img src="icons8-facebook-48.png" width="40px" height="40px" alt="Facebook" buttom class="btm-icons">
-                 <img src="icons8-twitter-30.png" width="40px" height="40px" alt="Twitter" buttom class="btm-icons">
-                 <img src="icons8-instagram-24.png" width="40px" height="40px" alt="Instagram" buttom class="btm-icons">
+                 <img src="ORGanizepics\Footer-Facebook.png" alt="Footer-Facebook" width="40px" height="40px" alt="Facebook" buttom class="btm-icons">
+                 <img src="ORGanizepics\Footer-Twitter.png" alt="Footer-Twitter" width="40px" height="40px" alt="Twitter" buttom class="btm-icons">
+                 <img src="ORGanizepics\Footer-Instagram.png" alt="Footer-Instagram" width="40px" height="40px" alt="Instagram" buttom class="btm-icons">
                 </div>
             </div>
             <div class="footer-bottom"> 
                 <p  style="float: centered;">All Rights Reserved.</p>
-                <p style="float: centered;">© ORGanizePLUS, 2025</p>
+                <p style="float: centered;">© ORGanize+, 2025</p>
             </div>
         </div>
     </footer>
+
+<style>
+  footer {
+    background: #3D5654;
+    color: white;
+    padding: 3rem 2rem;
+    margin: 20px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+}
+
+.footer-logo i {
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.footer-logo{
+  margin: 10px;
+}
+
+.footer-logo img {
+    height: 30px;
+    width: auto;
+    margin-top: 4px;
+    margin-left: 1px;
+    margin-right: 6px;
+
+}
+
+.footer-section h4 {
+    margin-bottom: 10px;
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 5px;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #e2e2e2;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.2);
+    margin-top: 20px;
+    padding-top: 20px;
+    text-align: center;
+}
+.btm-icons {
+    margin-left: 40px;
+    background: transparent;
+    transition: transform 0.3s ease;
+}
+
+.btm-icons:hover {
+  transform: scale(1.5);
+}
+</style>
 
 </body>
 </html>
