@@ -42,9 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 alert('Verification email sent to $email');
                 window.location.href = 'verify-forgot.php';
                  </script>";
-
-                header("Location: verify-forgot.php");
                 exit;
+
             } catch (Exception $e) {
                 $error = "Failed to send OTP. Try again.";
             }
