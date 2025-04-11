@@ -52,6 +52,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="container">
       <div class="otp-verification">
           <div class="class-otp">OTP CODE VERIFICATION</div>
+
+          <?php if ($error_message): ?>
+            <div class="alert alert-danger" role="alert">
+                <?= htmlspecialchars($error_message) ?>
+              </div>
+            <?php endif; ?>
+
           <p>We have sent the OTP code to your email. Please enter the code below.</p>
 
           <?php if ($error_message): ?>

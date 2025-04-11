@@ -93,6 +93,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <main class="main-content">
     <div class="forgot-container">
       <h1>Forgot Password</h1>
+
+         <?php if (!empty($error)): ?>
+          <div class="alert alert-danger" role="alert">
+          <?= htmlspecialchars($error) ?>
+          </div>
+          <?php endif; ?>
+          
       <p>Please enter your registered Email account.</p>
 
       <form method="POST">

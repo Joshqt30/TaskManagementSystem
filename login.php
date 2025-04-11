@@ -55,6 +55,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="container">
         <h1>Login</h1>
+
+        <!-- 👇 Add error display -->
+            <?php if (!empty($error_message)): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars($error_message) ?>
+                </div>
+            <?php endif; ?>
         
         <form method="POST">
             <div class="log-con"> 

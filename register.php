@@ -119,6 +119,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <div class="container">
       <h1>Register</h1>
+
+        <?php if (isset($error_message)): ?>
+            <div class="alert alert-danger" role="alert">
+               <?= htmlspecialchars($error_message) ?>
+             </div>
+        <?php endif; ?>
+
       <form method="POST">
           <div class="log-con">
               <input type="email" name="email" class="log" placeholder="Email" 

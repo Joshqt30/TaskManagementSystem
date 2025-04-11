@@ -72,11 +72,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="container">
       <div class="otp-verification">
           <div class="class-otp">OTP CODE VERIFICATION</div>
-          <p>We have sent the OTP code to your email. Please enter the code below.</p>
-
+          
           <?php if ($error_message): ?>
-              <p class="error-message"><?= htmlspecialchars($error_message) ?></p>
-            <?php endif; ?>
+             <div class="alert alert-danger" role="alert">
+            <?= htmlspecialchars($error_message) ?>
+             </div>
+                <?php endif; ?>
+                
+          <p>We have sent the OTP code to your email. Please enter the code below.</p>
 
             <form action="verification.php" method="POST" class="otp-form">
               <!-- Hidden input to pass the email -->

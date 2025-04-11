@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   />
 
   <!-- Your custom CSS -->
-  <link href="designs/forgot.css" rel="stylesheet" />
+  <link href="designs/newpass.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -64,14 +64,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="forgot-container">
       <h1>New Password</h1>
 
+      <?php if (!empty($error)): ?>
+       <div class="alert alert-danger" role="alert">
+         <?= htmlspecialchars($error) ?>
+        </div>
+        <?php endif; ?>
 
       <!-- HTML for entering the new password -->
       <form action="newpass.php" method="POST">
           <div class="input-group mb-4">
               <input type="password" name="new-password" class="form-control" placeholder="Enter new password" required />
+                <span class="input-group-text"> <!-- 👈 Added icon wrapper -->
+                 <i class="fa-solid fa-lock"></i> <!-- Lock icon -->
+               </span>
           </div>
           <div class="input-group mb-4">
               <input type="password" name="confirm-password" class="form-control" placeholder="Confirm new password" required />
+              <span class="input-group-text"> <!-- 👈 Added icon wrapper -->
+              <i class="fa-solid fa-lock"></i> <!-- Lock icon -->
+              </span>
           </div>
           <button type="submit" class="next-button">Save</button>
       </form>
@@ -81,12 +92,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/new.js"></script>
-  <script>
-    function handleSubmit(e) {
-      e.preventDefault();
-      const email = document.getElementById('forgot-form').email.value;
-      alert('Verification email sent to ' + email);
-    }
-  </script>
 </body>
 </html>

@@ -78,7 +78,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="calendar.php" class="nav-link">
+            <a href="calendar.html" class="nav-link">
               <i class="fa-solid fa-calendar me-2"></i> Calendar
             </a>
           </li>
