@@ -81,11 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <button type="submit">Login</button>
         </form>
-        
-        <?php if ($error_message): ?>
-            <p style="color: red; text-align: center;"><?php echo htmlspecialchars($error_message); ?></p>
-        <?php endif; ?>
-        
         <p>Don't have an account? <a href="register.php">Sign up</a></p>
     </div>
     <script src="js/new.js"></script>
