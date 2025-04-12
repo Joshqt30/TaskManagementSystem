@@ -1,5 +1,37 @@
-<!-- main.html -->
+<?php
+session_start();
 
+// Redirect to login if not authenticated
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+include 'config.php';
+
+// Get user data
+    $user_id = $_SESSION['user_id'];
+    $stmt = $pdo->prepare("SELECT username, organization FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch();
+
+// Get task statistics for chart
+    $task_stats = ['todo' => 0, 'in_progress' => 0, 'completed' => 0];
+    $stmt = $pdo->prepare("SELECT status, COUNT(*) as count FROM tasks WHERE user_id = ? GROUP BY status");
+    $stmt->execute([$user_id]);
+    while ($row = $stmt->fetch()) {
+        $task_stats[$row['status']] = $row['count'];
+    }
+
+// Get latest 5 tasks
+    $stmt = $pdo->prepare("SELECT * FROM tasks WHERE user_id = ? ORDER BY due_date ASC LIMIT 5");
+    $stmt->execute([$user_id]);
+    $tasks = $stmt->fetchAll();
+
+?>
+
+
+<!-- main.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,8 +154,31 @@
             <!-- Divider line -->
             <div class="tab-divider"></div>
             <div class="task-body">
-              <p>Tasks will appear here.</p>
-            </div>
+            <?php if (!empty($tasks)): ?>
+              <?php foreach ($tasks as $task): ?>
+                <div class="task-item">
+                  <h6><?= htmlspecialchars($task['title']) ?></h6>
+                  <p><?= htmlspecialchars($task['description']) ?></p>
+                  <div class="task-meta">
+                    <span class="badge <?= $task['status'] ?>">
+                      <?= ucfirst(str_replace('_', ' ', $task['status'])) ?>
+                    </span>
+                    <?php if ($task['due_date']): ?>
+                      <span class="due-date">
+                        <i class="fas fa-calendar-day"></i>
+                        <?= date('M j, Y', strtotime($task['due_date'])) ?>
+                      </span>
+                    <?php endif; ?>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="no-tasks">
+                <i class="fas fa-clipboard-list"></i>
+                <p>No tasks found. Start by creating one!</p>
+              </div>
+            <?php endif; ?>
+          </div>
           </div>
         </div>
       

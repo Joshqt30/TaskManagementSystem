@@ -21,6 +21,7 @@ h2 {
     font-family: 'Inter', sans-serif;
     font-weight: bolder;
     white-space: nowrap; /* Prevents text from wrapping to the next line */
+    color: #3D5654;
 }
 
 .ic {

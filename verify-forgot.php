@@ -60,11 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
           <p>We have sent the OTP code to your email. Please enter the code below.</p>
-
-          <?php if ($error_message): ?>
-                <p class="error-message"><?= htmlspecialchars($error_message) ?></p>
-            <?php endif; ?>
-
+          
             <!-- HTML for OTP verification -->
             <form action="verify-forgot.php" method="POST" class="otp-form">
             <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">

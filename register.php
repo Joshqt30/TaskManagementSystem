@@ -201,11 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           <button type="submit">Register</button>
       </form>
-      
-      <?php if (isset($error_message)): ?>
-          <p style="color: red; text-align: center;"><?= htmlspecialchars($error_message) ?></p>
-      <?php endif; ?>
-      
+            
       <p>Already have an account? <a href="login.php">Login</a></p>
   </div>
   <script src="js/new.js"></script>
