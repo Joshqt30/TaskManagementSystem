@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
+    $organization = $_POST['organization']; // New field
 
     // Validate email format
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -28,6 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/', $password)) {
         $error_message = "Password must be 8-20 chars with uppercase, lowercase, and number!";
     }
+
+    elseif (!in_array($organization, ['org1', 'org2', 'org3'])) {
+        $error_message = "Please select a valid organization";
+    }
+
     else {
         // Check if the email is already in the database
         $stmt = $pdo->prepare("SELECT is_verified FROM users WHERE email = ?");
@@ -42,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($existingUser) {
             // If user exists but is NOT verified, update OTP info and resend OTP email.
             if ($existingUser['is_verified'] == 0) {
-                $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ?, otp = ?, otp_expiry = ? WHERE email = ?");
-                if (!$stmt->execute([$username, $hashed_password, $otp, $otp_expiry, $email])) {
+                $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ?, organization = ?, otp = ?, otp_expiry = ? WHERE email = ?");
+                if (!$stmt->execute([$username, $hashed_password, $organization, $otp, $otp_expiry, $email])) {
                     $error_message = "Failed to update OTP. Please try again.";
                 }
             } else {
@@ -51,8 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } else {
             // Insert a new user record
-            $stmt = $pdo->prepare("INSERT INTO users (email, username, password, otp, otp_expiry, is_verified) VALUES (?, ?, ?, ?, ?, ?)");
-            if (!$stmt->execute([$email, $username, $hashed_password, $otp, $otp_expiry, 0])) {
+            $stmt = $pdo->prepare("INSERT INTO users (email, username, password, organization, otp, otp_expiry, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            if (!$stmt->execute([$email, $username, $hashed_password, $organization, $otp, $otp_expiry, 0])) {
                 $error_message = "Registration failed. Please try again.";
             }
         }
@@ -145,6 +151,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <input type="password" name="confirm_password" class="log" placeholder="Confirm Password" required>
               <img src="ORGanizepics/padlock.png" class="ics" alt="Padlock Icon">
           </div>
+
+        <div class="log-con">
+        <select name="organization" class="log" required>
+        <option value="" disabled selected>Name of Organization</option>
+        <option value="org1">Organization Alpha</option>
+        <option value="org2">Organization Beta</option>
+        <option value="org3">Organization Gamma</option>
+        <option value="org4">Organization Delta</option>
+        <option value="org5">Organization Epsilon</option>
+        <option value="org6">Organization Zeta</option>
+        <option value="org7">Organization Eta</option>
+        <option value="org8">Organization Theta</option>
+        <option value="org9">Organization Iota</option>
+        <option value="org10">Organization Kappa</option>
+        <option value="org11">Organization Lambda</option>
+        <option value="org12">Organization Mu</option>
+        <option value="org13">Organization Nu</option>
+        <option value="org14">Organization Xi</option>
+        <option value="org15">Organization Omicron</option>
+        <option value="org16">Organization Pi</option>
+        <option value="org17">Organization Rho</option>
+        <option value="org18">Organization Sigma</option>
+        <option value="org19">Organization Tau</option>
+        <option value="org20">Organization Upsilon</option>
+            <!-- Add more organizations as needed -->
+        </select>
+        </div>
+
           <button type="submit">Register</button>
       </form>
       
