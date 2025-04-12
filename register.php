@@ -30,7 +30,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Password must be 8-20 chars with uppercase, lowercase, and number!";
     }
 
-    elseif (!in_array($organization, ['org1', 'org2', 'org3'])) {
+    elseif (!in_array($organization, [
+        'Organization Alpha',
+        'Organization Beta',
+        'Organization Gamma',
+        'Organization Delta',
+        'Organization Epsilon',
+        'Organization Zeta',
+        'Organization Eta',
+        'Organization Theta',
+        'Organization Iota',
+        'Organization Kappa',
+        'Organization Lambda',
+        'Organization Mu',
+        'Organization Nu',
+        'Organization Xi',
+        'Organization Omicron',
+        'Organization Pi',
+        'Organization Rho',
+        'Organization Sigma',
+        'Organization Tau',
+        'Organization Upsilon',
+    ])) {
         $error_message = "Please select a valid organization";
     }
 
@@ -154,27 +175,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="log-con">
         <select name="organization" class="log" required>
-        <option value="" disabled selected>Name of Organization</option>
-        <option value="org1">Organization Alpha</option>
-        <option value="org2">Organization Beta</option>
-        <option value="org3">Organization Gamma</option>
-        <option value="org4">Organization Delta</option>
-        <option value="org5">Organization Epsilon</option>
-        <option value="org6">Organization Zeta</option>
-        <option value="org7">Organization Eta</option>
-        <option value="org8">Organization Theta</option>
-        <option value="org9">Organization Iota</option>
-        <option value="org10">Organization Kappa</option>
-        <option value="org11">Organization Lambda</option>
-        <option value="org12">Organization Mu</option>
-        <option value="org13">Organization Nu</option>
-        <option value="org14">Organization Xi</option>
-        <option value="org15">Organization Omicron</option>
-        <option value="org16">Organization Pi</option>
-        <option value="org17">Organization Rho</option>
-        <option value="org18">Organization Sigma</option>
-        <option value="org19">Organization Tau</option>
-        <option value="org20">Organization Upsilon</option>
+        <option value="Organization Alpha">Organization Alpha</option>
+        <option value="Organization Beta">Organization Beta</option>
+        <option value="Organization Gamma">Organization Gamma</option>
+        <option value="Organization Delta">Organization Delta</option>
+        <option value="Organization Epsilon">Organization Epsilon</option>
+        <option value="Organization Zeta">Organization Zeta</option>
+        <option value="Organization Eta">Organization Eta</option>
+        <option value="Organization Theta">Organization Theta</option>
+        <option value="Organization Iota">Organization Iota</option>
+        <option value="Organization Kappa">Organization Kappa</option>
+        <option value="Organization Lambda">Organization Lambda</option>
+        <option value="Organization Mu">Organization Mu</option>
+        <option value="Organization Nu">Organization Nu</option>
+        <option value="Organization Xi">Organization Xi</option>
+        <option value="Organization Omicron">Organization Omicron</option>
+        <option value="Organization Pi">Organization Pi</option>
+        <option value="Organization Rho">Organization Rho</option>
+        <option value="Organization Sigma">Organization Sigma</option>
+        <option value="Organization Tau">Organization Tau</option>
+        <option value="Organization Upsilon">Organization Upsilon</option>
             <!-- Add more organizations as needed -->
         </select>
         </div>
