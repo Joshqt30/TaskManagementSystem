@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ORGanize+ | Calendar</title>
+  <title>ORGanize+ | Inbox</title>
   
   <!-- Google Fonts (Inter & Inter Tight) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -15,10 +15,9 @@
   
   <!-- Custom CSS -->
   <link rel="stylesheet" href="designs/transition.css" />
-  <link rel="stylesheet" href="designs/calendar.css" />
-  <link rel="stylesheet" href="designs/header-sidebar.css" />
-  <link rel="stylesheet" href="designs/mobile.css" />
   <link rel="stylesheet" href="designs/main.css" />
+  <link rel="stylesheet" href="designs/mobile.css" />
+  <link rel="stylesheet" href="designs/header-sidebar.css" />
 
 </head>
 <body>
@@ -33,7 +32,7 @@
     </div>
     <div class="header-center">
       <ul class="nav header-nav">
-        <li class="nav-item"><a class="nav-link" href="aboutus.html">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="aboutus.php">About Us</a></li>
         <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
       </ul>
     </div>
@@ -43,7 +42,7 @@
           <i class="fa-solid fa-user" style="font-size:20px;"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="settings.html">Account Settings</a></li>
+          <li><a class="dropdown-item" href="settings.php">Account Settings</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="login.php">Logout</a></li>
         </ul>
@@ -69,17 +68,17 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="mytasks.html" class="nav-link">
+            <a href="mytasks.php" class="nav-link">
               <i class="fa-solid fa-check-circle me-2"></i> My Tasks
             </a>
           </li>
           <li class="nav-item">
-            <a href="inbox.html" class="nav-link">
+            <a href="inbox.php" class="nav-link active">
               <i class="fa-solid fa-message me-2"></i> Inbox
             </a>
           </li>
           <li class="nav-item">
-            <a href="calendar.html" class="nav-link active">
+            <a href="calendar.php" class="nav-link">
               <i class="fa-solid fa-calendar me-2"></i> Calendar
             </a>
           </li>
@@ -92,37 +91,5 @@
       </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="main-content">
-      <div class="calendar-header mb-3">
-        <h4 class="page-title">Calendar</h4>
-      </div>
-            
-      <div class="row">
-        <!-- Calendar Container -->
-        <div class="col-12">
-          <div class="card calendar-card">
-            <div class="card-header">
-              <div class="d-flex align-items-center">
-                <i class="fa-solid fa-calendar me-2"></i> My Calendar
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="calendar-container">
-                <iframe src="https://calendar.google.com/calendar/embed?height=500&wkst=1&bgcolor=%23ffffff&ctz=Asia%2FManila&showTitle=0&showPrint=0&showCalendars=1" style="border:none;width:100%;height:500px;" frameborder="0"></iframe>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Custom JS -->
-  <script src="js/new.js"></script>
-</body>
-</html>
+    <script src="js/new.js"></script>

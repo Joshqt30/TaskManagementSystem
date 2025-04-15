@@ -8,12 +8,24 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include 'config.php';
+include 'partials/task_modal.php';
 
 // Get user data
-    $user_id = $_SESSION['user_id'];
-    $stmt = $pdo->prepare("SELECT username, organization FROM users WHERE id = ?");
-    $stmt->execute([$user_id]);
-    $user = $stmt->fetch();
+  $user_id = $_SESSION['user_id'];
+      try {
+        $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+        $stmt->execute([$user_id]);
+        $user = $stmt->fetch();
+        if (!$user) {
+          // Handle case where user doesn't exist
+          session_destroy();
+          header("Location: login.php");
+          exit;
+      }
+      } catch (PDOException $e) {
+      // Log error and handle appropriately
+      die("Error fetching user data");
+      }
 
 // Get task statistics for chart
     $task_stats = ['todo' => 0, 'in_progress' => 0, 'completed' => 0];
@@ -23,12 +35,11 @@ include 'config.php';
         $task_stats[$row['status']] = $row['count'];
     }
 
-// Get latest 5 tasks
-    $stmt = $pdo->prepare("SELECT * FROM tasks WHERE user_id = ? ORDER BY due_date ASC LIMIT 5");
+    // Get latest 5 tasks
+    $stmt = $pdo->prepare("SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC, due_date ASC LIMIT 5");
     $stmt->execute([$user_id]);
     $tasks = $stmt->fetchAll();
-
-?>
+    ?>
 
 
 <!-- main.html -->
@@ -48,10 +59,25 @@ include 'config.php';
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="designs/transition.css" />
   <link rel="stylesheet" href="designs/main.css" />
   <link rel="stylesheet" href="designs/mobile.css" />
   <link rel="stylesheet" href="designs/header-sidebar.css" />
+
+  <script>
+    // Pass PHP data to JavaScript
+    window.USER_ID = <?= json_encode($_SESSION['user_id'] ?? 0) ?>;
+    window.chartData = <?= json_encode([
+        'labels' => ["To-Do", "In Progress", "Completed"],
+        'datasets' => [[
+            'data' => [
+                $task_stats['todo'],
+                $task_stats['in_progress'],
+                $task_stats['completed']
+            ],
+            'backgroundColor' => ["#EA2E2E", "#5BA4E5", "#54D376"]
+        ]]
+    ]) ?>;
+  </script>
 
 </head>
 <body>
@@ -66,7 +92,7 @@ include 'config.php';
     </div>
     <div class="header-center">
       <ul class="nav header-nav">
-        <li class="nav-item"><a class="nav-link" href="aboutus.html">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="aboutus.php">About Us</a></li>
         <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
       </ul>
     </div>
@@ -76,7 +102,7 @@ include 'config.php';
           <i class="fa-solid fa-user" style="font-size:20px;"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="settings.html">Account Settings</a></li>
+          <li><a class="dropdown-item" href="settings.php">Account Settings</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="login.php">Logout</a></li>
         </ul>
@@ -90,11 +116,12 @@ include 'config.php';
     <nav class="sidebar sidebar-expanded" id="sidebar">
       <!-- Sidebar Middle: Profile & Navigation Menu -->
       <div class="sidebar-middle">
-        <div class="sidebar-profile">
-          <i class="fa-solid fa-user-circle"></i>
-          <!-- Dynamic username placeholder -->
-          <div class="user-name">nameforbackend@gmail.com</div>
+      <div class="sidebar-profile">
+        <i class="fa-solid fa-user-circle"></i>
+        <div class="user-name">
+          <?= htmlspecialchars($user['username']) ?> <!-- Only username -->
         </div>
+      </div>
         <ul class="nav flex-column sidebar-menu">
           <li class="nav-item">
             <a href="main.php" class="nav-link active">
@@ -102,17 +129,17 @@ include 'config.php';
             </a>
           </li>
           <li class="nav-item">
-            <a href="mytasks.html" class="nav-link">
+            <a href="mytasks.php" class="nav-link">
               <i class="fa-solid fa-check-circle me-2"></i> My Tasks
             </a>
           </li>
           <li class="nav-item">
-            <a href="inbox.html" class="nav-link">
+            <a href="inbox.php" class="nav-link">
               <i class="fa-solid fa-message me-2"></i> Inbox
             </a>
           </li>
           <li class="nav-item">
-            <a href="calendar.html" class="nav-link">
+            <a href="calendar.php" class="nav-link">
               <i class="fa-solid fa-calendar me-2"></i> Calendar
             </a>
           </li>
@@ -128,7 +155,7 @@ include 'config.php';
     <!-- Main Content -->
     <div class="main-content">
       <div class="welcome-wrapper mb-4">
-        <h4 class="welcome-text">Welcome, User!</h4>
+      <h4 class="welcome-text">Welcome, <?= htmlspecialchars($user['username']) ?>!</h4>
       </div>
             
       <div class="row g-3">
@@ -137,7 +164,10 @@ include 'config.php';
           <div class="mytasks-section mb-4">
             <div class="d-flex align-items-center justify-content-between">
               <h5 class="section-title">My Tasks</h5>
-              <button class="btn btn-custom">+ Create Task</button>
+              <!-- In every page -->
+              <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#createTaskModal">
+                + Create Task
+              </button>
             </div>
 
             <ul class="nav nav-tabs task-tabs mb-0">

@@ -1,12 +1,11 @@
-<!-- mytasks.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ORGanize+ | Home</title>
+  <title>ORGanize+ | Calendar</title>
   
-  
+  <!-- Google Fonts (Inter & Inter Tight) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <!-- Bootstrap CSS -->
@@ -16,9 +15,11 @@
   
   <!-- Custom CSS -->
   <link rel="stylesheet" href="designs/transition.css" />
-  <link rel="stylesheet" href="designs/mytasks.css" />
-  <link rel="stylesheet" href="designs/mobile.css" />
+  <link rel="stylesheet" href="designs/calendar.css" />
   <link rel="stylesheet" href="designs/header-sidebar.css" />
+  <link rel="stylesheet" href="designs/mobile.css" />
+  <link rel="stylesheet" href="designs/main.css" />
+
 </head>
 <body>
   <!-- Header -->
@@ -32,7 +33,7 @@
     </div>
     <div class="header-center">
       <ul class="nav header-nav">
-        <li class="nav-item"><a class="nav-link" href="aboutus.html">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="aboutus.php">About Us</a></li>
         <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
       </ul>
     </div>
@@ -42,7 +43,7 @@
           <i class="fa-solid fa-user" style="font-size:20px;"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="settings.html">Account Settings</a></li>
+          <li><a class="dropdown-item" href="settings.php">Account Settings</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="login.php">Logout</a></li>
         </ul>
@@ -68,17 +69,17 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="mytasks.html" class="nav-link active">
+            <a href="mytasks.php" class="nav-link">
               <i class="fa-solid fa-check-circle me-2"></i> My Tasks
             </a>
           </li>
           <li class="nav-item">
-            <a href="inbox.html" class="nav-link">
+            <a href="inbox.php" class="nav-link">
               <i class="fa-solid fa-message me-2"></i> Inbox
             </a>
           </li>
           <li class="nav-item">
-            <a href="calendar.html" class="nav-link">
+            <a href="calendar.php" class="nav-link active">
               <i class="fa-solid fa-calendar me-2"></i> Calendar
             </a>
           </li>
@@ -92,66 +93,36 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="main-content flex-grow-1 p-4">
-      <div class="container-fluid">
-      
-        <!-- Title & Subheading -->
-        <div class="mb-3">
-          <h1 class="page-heading mb-0">My Tasks</h1>
-        </div>      
-
-        <div class="tab-divider"></div>
-      
-        <!-- Buttons: New Task (left), Date View (right) -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <button class="btn btn-primary new-task-btn">
-            <i class="fa-solid fa-plus me-1"></i> New Task
-          </button>
-          <button class="btn btn-secondary date-view-btn">
-            <i class="fa-solid fa-calendar-days me-1"></i> Date View
-          </button>
-        </div>
-  
-        <!-- Tasks Table -->
-        <div class="table-responsive">
-          <table class="minimal-table">
-            <thead>
-              <tr>
-                <th style="width: 40%;">Name</th>
-                <th style="width: 30%;">Date <i class="fa-solid fa-sort ms-1"></i></th>
-                <th style="width: 30%;">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- "Past Dates" Subheader Row with chevron -->
-              <tr class="table-light">
-                <td colspan="3">
-                  <i class="fa-solid fa-chevron-down me-2"></i>Past Dates (1 item)
-                </td>
-              </tr>
-  
-              <!-- Example Task Row / Replace once backend logic is ready -->
-              <tr>
-                <td>Example Task</td>
-                <td>
-                  <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>
-                  <span class="text-danger">April 1, 2025</span>
-                </td>
-                <td>
-                  <span class="badge in-progress">In progress</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      
+    <div class="main-content">
+      <div class="calendar-header mb-3">
+        <h4 class="page-title">Calendar</h4>
       </div>
-    </main>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script src="js/new.js"></script>
+            
+      <div class="row">
+        <!-- Calendar Container -->
+        <div class="col-12">
+          <div class="card calendar-card">
+            <div class="card-header">
+              <div class="d-flex align-items-center">
+                <i class="fa-solid fa-calendar me-2"></i> My Calendar
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="calendar-container">
+                <iframe src="https://calendar.google.com/calendar/embed?height=500&wkst=1&bgcolor=%23ffffff&ctz=Asia%2FManila&showTitle=0&showPrint=0&showCalendars=1" style="border:none;width:100%;height:500px;" frameborder="0"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom JS -->
+  <script src="js/new.js"></script>
 </body>
 </html>

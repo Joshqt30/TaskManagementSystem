@@ -84,6 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        function sendEmail($to, $subject, $body) {
+            
+        }
+
         // If no error, send the OTP email
         if (!isset($error_message)) {
             $mail = new PHPMailer(true);
@@ -175,26 +179,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="log-con">
         <select name="organization" class="log" required>
-        <option value="Organization Alpha">Organization Alpha</option>
-        <option value="Organization Beta">Organization Beta</option>
-        <option value="Organization Gamma">Organization Gamma</option>
-        <option value="Organization Delta">Organization Delta</option>
-        <option value="Organization Epsilon">Organization Epsilon</option>
-        <option value="Organization Zeta">Organization Zeta</option>
-        <option value="Organization Eta">Organization Eta</option>
-        <option value="Organization Theta">Organization Theta</option>
-        <option value="Organization Iota">Organization Iota</option>
-        <option value="Organization Kappa">Organization Kappa</option>
-        <option value="Organization Lambda">Organization Lambda</option>
-        <option value="Organization Mu">Organization Mu</option>
-        <option value="Organization Nu">Organization Nu</option>
-        <option value="Organization Xi">Organization Xi</option>
-        <option value="Organization Omicron">Organization Omicron</option>
-        <option value="Organization Pi">Organization Pi</option>
-        <option value="Organization Rho">Organization Rho</option>
-        <option value="Organization Sigma">Organization Sigma</option>
-        <option value="Organization Tau">Organization Tau</option>
-        <option value="Organization Upsilon">Organization Upsilon</option>
+        <option value="QCU Creative Student Society">QCU Creative Student Society</option>
+        <option value="LIKHA Production">LIKHA Production</option>
+        <option value="The QCU Times Publication">The QCU Times Publication</option>
+        <option value="Tanghalang Quezon City University">Tanghalang Quezon City University</option>
+        <option value="QCU Peer Counselors Organization">QCU Peer Counselors Organization</option>
+        <option value="QCU Gen. Z Learners">QCU Gen. Z Learners</option>
+        <option value="Youth on the Rock">Youth on the Rock</option>
+        <option value="QCU Iskolar Council">QCU Iskolar Council</option>
+        <option value="QCU College of Education_Official - BECED">QCU College of Education_Official - BECED</option>
+        <option value="Junior Philippine Institute of Accountants - QCU Chapter - BSA">Junior Philippine Institute of Accountants - QCU Chapter - BSA</option>
+        <option value="Electronics Engineers of the Philippines - QCU Chapter - BSECE">Electronics Engineers of the Philippines - QCU Chapter - BSECE</option>
+        <option value="PIIE ORSP QCU Student Chapter - BSIE">PIIE ORSP QCU Student Chapter - BSIE</option>
+        <option value="QCU - League of Excellent Students in Information Technology - BSIT">QCU - League of Excellent Students in Information Technology - BSIT</option>
+        <option value="Qcu Syvsis - BSIS">Qcu Syvsis - BSIS</option>
+        <option value="QCU Young Entrepreneurs Society - BSEntrep">QCU Young Entrepreneurs Society - BSEntrep</option>
+        <option value="Junior Management Accountant Executives - QCU - BSMA">Junior Management Accountant Executives - QCU - BSMA</option>
+        <option value="BSCS">BSCS</option>
+        <option value="BSCE">BSCE</option>
             <!-- Add more organizations as needed -->
         </select>
         </div>

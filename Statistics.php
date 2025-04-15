@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ORGanize+ | Home</title>
+  <title>ORGanize+ | Statistics</title>
   
   <!-- Google Fonts (Inter & Inter Tight) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -42,7 +42,7 @@
           <i class="fa-solid fa-user" style="font-size:20px;"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="settings.html">Account Settings</a></li>
+          <li><a class="dropdown-item" href="settings.php">Account Settings</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="login.php">Logout</a></li>
         </ul>
@@ -68,17 +68,17 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="mytasks.html" class="nav-link">
+            <a href="mytasks.php" class="nav-link">
               <i class="fa-solid fa-check-circle me-2"></i> My Tasks
             </a>
           </li>
           <li class="nav-item">
-            <a href="inbox.html" class="nav-link">
+            <a href="inbox.php" class="nav-link">
               <i class="fa-solid fa-message me-2"></i> Inbox
             </a>
           </li>
           <li class="nav-item">
-            <a href="calendar.html" class="nav-link">
+            <a href="calendar.php" class="nav-link">
               <i class="fa-solid fa-calendar me-2"></i> Calendar
             </a>
           </li>

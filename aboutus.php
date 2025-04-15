@@ -291,7 +291,7 @@ body {
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="settings.html">Account Settings</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="login.php">Logout</a></li>
+            <li><a class="dropdown-item" href="login.html">Logout</a></li>
           </ul>
         </div>
       </div>
@@ -330,8 +330,8 @@ body {
                 <p>ORGanize+ is your go-to task management solution, designed to help you stay on top of your work effortlessly. With a user-friendly interface and powerful features, we make productivity simple and effective. Whether you're managing personal tasks or collaborating with a team, ORGanize+ streamlines your workflow so you can focus on what truly matters.</p>
                 <p style="color: #F59E0B;"><i>Stay Organized. Achieve More.</i></p>
                 <div class="hero-buttons">
-                    <button class="btn btn-primary">Explore Features</button>
-                    <button class="btn btn-outline">Get in Touch</button>
+                    <button class="btn btn-primary"><a class="nav-link" href="main.php">Explore Features</a></button>
+                    <button class="btn btn-outline"><a class="nav-link" href="contact.php">Get in Touch</a></button>
                 </div>
             </div>
         </div>
@@ -680,7 +680,7 @@ body {
     
     .footer-links {
       display: flex;
-      gap: 40px;
+      gap: 320px;
     }
     
     .footer-column {
@@ -759,6 +759,10 @@ body {
       }
     }
 </style>
+
+
+
+
 
 </body>
 </html>

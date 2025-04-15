@@ -158,7 +158,7 @@ body {
   <!-- Header -->
   <header class="header">
     <div class="header-left d-flex align-items-center">
-      <img src="ORGanizepics/layers.png" class="orglogo" alt="Logo" />
+      <img src="ORGanizepics/Logo.png" class="orglogo" alt="Logo" />
       <span class="header-title">ORGanize+</span>
     </div>
     <div class="header-center">
@@ -174,6 +174,22 @@ body {
       </div>
     </div>
   </header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-container">
@@ -185,7 +201,7 @@ body {
                 <p>ORGanize+ is your go-to task management solution, designed to help you stay on top of your work effortlessly. With a user-friendly interface and powerful features, we make productivity simple and effective. Whether you're managing personal tasks or collaborating with a team, ORGanize+ streamlines your workflow so you can focus on what truly matters.</p>
                 <p style="color: #F59E0B;"><i>Stay Organized. Achieve More.</i></p>
                 <div class="hero-buttons">
-                    <button class="btn btn-primary">Explore Features</button>
+                    <button class="btn btn-primary"><a class="nav-link" href="login.php">Explore Features</a></button>
                     <button class="btn btn-outline"><a class="nav-link" href="guestcontact.php">Get in Touch</a></button>
                 </div>
             </div>
@@ -261,6 +277,26 @@ body {
     color: #040501;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <!-- Features Section -->
     <section class="features">
@@ -370,7 +406,7 @@ body {
  <footer>
     <div class="footer-container">
       <div class="footer-logo">
-        <img src="ORGanizepics/white-layer-50 (1).png" alt="ORGanize+ Logo">
+        <img src="ORGanizepics/Footer-Logo.png" alt="ORGanize+ Logo">
         <span>ORGanize+</span>
       </div>
       
@@ -445,7 +481,7 @@ body {
     
     .footer-links {
       display: flex;
-      gap: 40px;
+      gap: 320px;
     }
     
     .footer-column {
