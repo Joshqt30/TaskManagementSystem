@@ -26,4 +26,20 @@
     min-height: 350px;
   }
 
+  .task-item {
+    padding: 1rem;
+  }
+  
+  .status-dropdown {
+    width: 120px;
+    font-size: 0.8rem;
+    right: 0.5rem;
+    top: 0.5rem;
+  }
+  
+  .task-title {
+    font-size: 1rem;
+    max-width: calc(100% - 130px);
+  }
+
 }

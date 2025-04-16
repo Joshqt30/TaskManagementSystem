@@ -33,18 +33,21 @@
               Enter email addresses of collaborators
             </div>
             
-            <div id="collaboratorContainer">
-              <div class="input-group mb-2 collaborator-field">
-                <input type="email" name="collaborators[]" 
-                      class="form-control" 
-                      placeholder="collaborator@example.com"
-                      pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
-                <button type="button" class="btn btn-outline-success add-collaborator" 
-                        onclick="addCollaboratorField(this)">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
+          <!-- Sa task_modal.php -->
+          <div id="collaboratorContainer">
+            <div class="input-group mb-2">
+              <input type="email" name="collaborators[]" class="form-control" 
+                    placeholder="collaborator@example.com" required>
+              <button type="button" class="btn btn-outline-danger" 
+                      onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+              </button>
             </div>
+          </div>
+          <button type="button" class="btn btn-sm btn-success mt-2" 
+                  onclick="addCollaboratorField()">
+            <i class="fas fa-plus"></i> Add Collaborator
+          </button>
           </div>
 
           <div class="modal-footer border-top-0">
@@ -58,6 +61,33 @@
     </div>
   </div>
 </div>
+
+    <!-- Add Task Detail Modal here -->
+    <div class="modal fade" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="taskDetailModalLabel">Task Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="task-meta-row mb-3">
+          <div><strong>Status:</strong> <span id="detail-status"></span></div>
+          <div><strong>Due Date:</strong> <span id="detail-due-date"></span></div>
+        </div>
+        <h4 id="detail-title" class="mb-3"></h4>
+        <p id="detail-description" class="mb-4"></p>
+        
+        <!-- Add Collaborators Section Here -->
+        <div class="collaborators-section">
+          <h6>Collaborators:</h6>
+          <div id="detail-collaborators" class="collaborators-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script>
 // Dynamic collaborator fields

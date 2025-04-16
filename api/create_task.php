@@ -1,31 +1,28 @@
 <?php
-
-// At the top
+// Error reporting and headers
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/error.log');
 error_reporting(E_ALL);
-
-// Start output buffering to prevent accidental output
 ob_start();
-
 session_start();
 header('Content-Type: application/json');
 
+// Authentication check
 if (!isset($_SESSION['user_id'])) {
     die(json_encode(['success' => false, 'message' => 'Unauthorized']));
 }
 
-require __DIR__ . '/../vendor/autoload.php'; // Go up one directory
+// Dependencies
+require __DIR__ . '/../vendor/autoload.php';
 include __DIR__ . '/../config.php';
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 try {
     // Validate required fields
     if (empty($_POST['title']) || empty($_POST['due_date'])) {
-        throw new Exception('Title and Due Date are required fields');
+        throw new Exception('Title and Due Date are required');
     }
 
     // Create Task
@@ -41,28 +38,34 @@ try {
     $task_id = $pdo->lastInsertId();
 
     // Process Collaborators
+    $validCollaborators = [];
     if (!empty($_POST['collaborators'])) {
         foreach ($_POST['collaborators'] as $email) {
             $email = filter_var(trim($email), FILTER_SANITIZE_EMAIL);
             
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                continue;
-            }
-
+            // Validate email format
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) continue;
+            
+            // Check if user exists
             $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
             $stmt->execute([$email]);
+            $user = $stmt->fetch();
             
-            if ($user = $stmt->fetch()) {
-                // Add collaborator
+            if ($user) {
+                // Add to valid collaborators
+                $validCollaborators[] = $user['id'];
+                
+                // Insert into collaborators table
                 $stmt = $pdo->prepare("INSERT INTO collaborators 
                                       (task_id, user_id, status)
-                                      VALUES (?, ?, 'pending')");
+                                      VALUES (?, ?, 'pending')
+                                      ON DUPLICATE KEY UPDATE status='pending'");
                 $stmt->execute([$task_id, $user['id']]);
 
-                // Send invitation email using Gmail SMTP
+                // Send email invitation
                 $mail = new PHPMailer(true);
                 try {
-                    // Server settings
+                    // SMTP Configuration
                     $mail->isSMTP();
                     $mail->Host       = 'smtp.gmail.com';
                     $mail->SMTPAuth   = true;
@@ -71,11 +74,9 @@ try {
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     $mail->Port       = 587;
 
-                    // Recipients
+                    // Email Content
                     $mail->setFrom($_ENV['EMAIL_USER'], 'Task Management System');
                     $mail->addAddress($email);
-
-                    // Content
                     $mail->isHTML(true);
                     $mail->Subject = 'Collaboration Invitation';
                     $mail->Body    = sprintf(
@@ -91,16 +92,20 @@ try {
                     $mail->send();
                 } catch (Exception $e) {
                     error_log('Mailer Error: ' . $e->getMessage());
-                    // Continue processing even if email fails
                 }
             }
         }
     }
-    ob_end_clean(); 
-    echo json_encode(['success' => true, 'task_id' => $task_id]);
+
+    ob_end_clean();
+    echo json_encode([
+        'success' => true,
+        'task_id' => $task_id,
+        'collaborators_added' => count($validCollaborators)
+    ]);
     
 } catch (Exception $e) {
-    ob_end_clean(); 
+    ob_end_clean();
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage()

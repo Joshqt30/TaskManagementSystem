@@ -170,9 +170,18 @@ body.page-transition {
   border-radius: 5px;
   margin-right: 20px;
 }
+
+
 .todo { background-color: #EA2E2E; }
 .in-progress { background-color: #5BA4E5; }
 .completed { background-color: #54D376; }
+.expired { background-color: #999999; }
+
+/* Strike-through text para sa expired */
+.task-item.expired .task-title {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
 
 /* Task Interactions */
 .task-item {
@@ -197,22 +206,224 @@ body.page-transition {
   gap: 8px;
 }
 
+/* Status Dropdown */
 .status-dropdown {
   position: absolute;
-  right: 15px;
-  bottom: 15px;
-  width: 120px;
+  right: 1rem;
+  top: 1rem;
+  width: 140px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.9rem;
+  background: white;
+  z-index: 2;
 }
+
+.status-dropdown:focus {
+  box-shadow: 0 0 0 3px rgba(94,114,228,0.1);
+}
+
 
 /* Details Modal */
 .task-detail-modal .modal-body {
   padding: 20px;
 }
 
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.task-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+/* Task Content */
+.task-content {
+  flex-grow: 1;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.task-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+/* Task Metadata */
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.5rem;
+}
+
+.task-category {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: #E0F7FA;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #00796B;
+}
+
+.task-due-date {
+  font-size: 0.85rem;
+  color: #e17055;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.task-due-date i {
+  font-size: 0.9rem;
+  color: #e17055;
+}
+
+.task-category, .task-due-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #636e72;
+}
+
+.task-date {
+  font-size: 0.85rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Task Groups */
+.task-group {
+  display: none;
+}
+
+/* Ensure only active group is visible initially */
+.task-group:not(.show) {
+  display: none;
+}
+
+
+.task-group.show {
+  display: block;
+}
+
+
+.task-date i {
+  color: #D4AF37;
+}
+
+/* Status Dropdown */
+.task-status {
+  width: 140px;
+  margin-left: 1rem;
+}
+
+.status-dropdown {
+  width: 100%;
+  border-color: #ced4da;
+}
+
+/* Task List Styles */
+.status-header {
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--gold-color);
+}
+/* Add these styles */
+.task-bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.task-bullet.todo { background-color: #EA2E2E; }
+.task-bullet.in_progress { background-color: #5BA4E5; }
+.task-bullet.completed { background-color: #54D376; }
+.task-bullet.expired { background-color: #999999; }
+
+/* Expired bullet */
+.task-bullet.expired {
+  background-color: #999999 !important;
+}
+
+/* Expired date text */
+.text-danger {
+  color: #dc3545 !important;
+}
+
+/* Actions */
+.task-actions {
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.task-item:hover .task-actions {
+  opacity: 1;
+}
+
+
 .task-meta-row {
   display: flex;
   gap: 15px;
   margin-bottom: 10px;
+}
+
+/* Checkbox Style */
+.task-checkbox {
+  margin-top: 0.25rem;
+}
+
+.task-checkbox input {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  appearance: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.task-checkbox input:checked {
+  background-color: #54D376;
+  border-color: #54D376;
+}
+
+.task-checkbox input:checked::after {
+  content: "✓";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.9rem;
 }
 
 @media screen and (max-width: 768px) {

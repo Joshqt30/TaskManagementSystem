@@ -27,16 +27,38 @@ include 'partials/task_modal.php';
       die("Error fetching user data");
       }
 
-// Get task statistics for chart
-    $task_stats = ['todo' => 0, 'in_progress' => 0, 'completed' => 0];
+  // Get task statistics for chart
+    $task_stats = ['todo' => 0, 'in_progress' => 0, 'completed' => 0, 'expired' => 0];
     $stmt = $pdo->prepare("SELECT status, COUNT(*) as count FROM tasks WHERE user_id = ? GROUP BY status");
     $stmt->execute([$user_id]);
     while ($row = $stmt->fetch()) {
         $task_stats[$row['status']] = $row['count'];
     }
 
-    // Get latest 5 tasks
-    $stmt = $pdo->prepare("SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC, due_date ASC LIMIT 5");
+        // I-update ang status ng overdue tasks
+      $updateStmt = $pdo->prepare("UPDATE tasks 
+      SET status = 'expired' 
+      WHERE 
+          user_id = ? 
+          AND status IN ('todo', 'in_progress') 
+          AND due_date < CURDATE()
+      ");
+      $updateStmt->execute([$user_id]);
+
+    $stmt = $pdo->prepare("SELECT * 
+    FROM tasks 
+    WHERE 
+        user_id = ? 
+        AND status IN ('todo', 'in_progress', 'completed', 'expired') 
+    ORDER BY 
+        CASE status
+            WHEN 'todo' THEN 1
+            WHEN 'in_progress' THEN 2
+            WHEN 'completed' THEN 3
+            WHEN 'expired' THEN 4
+        END, 
+    due_date ASC");
+
     $stmt->execute([$user_id]);
     $tasks = $stmt->fetchAll();
     ?>
@@ -67,14 +89,15 @@ include 'partials/task_modal.php';
     // Pass PHP data to JavaScript
     window.USER_ID = <?= json_encode($_SESSION['user_id'] ?? 0) ?>;
     window.chartData = <?= json_encode([
-        'labels' => ["To-Do", "In Progress", "Completed"],
+        'labels' => ["To-Do", "In Progress", "Completed", "Expired"],
         'datasets' => [[
             'data' => [
                 $task_stats['todo'],
                 $task_stats['in_progress'],
-                $task_stats['completed']
+                $task_stats['completed'],
+                $task_stats['expired'] // Idagdag
             ],
-            'backgroundColor' => ["#EA2E2E", "#5BA4E5", "#54D376"]
+            'backgroundColor' => ["#EA2E2E", "#5BA4E5", "#54D376", "#999999"]
         ]]
     ]) ?>;
   </script>
@@ -161,54 +184,115 @@ include 'partials/task_modal.php';
       <div class="row g-3">
         <!-- Left Column: My Tasks -->
         <div class="col-lg-7">
+           <!-- In the My Tasks section -->
           <div class="mytasks-section mb-4">
-            <div class="d-flex align-items-center justify-content-between">
-              <h5 class="section-title">My Tasks</h5>
-              <!-- In every page -->
-              <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#createTaskModal">
-                + Create Task
-              </button>
-            </div>
-
-            <ul class="nav nav-tabs task-tabs mb-0">
-              <li class="nav-item">
-                <a class="nav-link active" href="#">To-Do</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">In Progress</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Completed</a>
-              </li>
-            </ul>
-            <!-- Divider line -->
-            <div class="tab-divider"></div>
-            <div class="task-body">
-            <?php if (!empty($tasks)): ?>
-              <?php foreach ($tasks as $task): ?>
-                <div class="task-item">
-                  <h6><?= htmlspecialchars($task['title']) ?></h6>
-                  <p><?= htmlspecialchars($task['description']) ?></p>
-                  <div class="task-meta">
-                    <span class="badge <?= $task['status'] ?>">
-                      <?= ucfirst(str_replace('_', ' ', $task['status'])) ?>
-                    </span>
-                    <?php if ($task['due_date']): ?>
-                      <span class="due-date">
-                        <i class="fas fa-calendar-day"></i>
-                        <?= date('M j, Y', strtotime($task['due_date'])) ?>
-                      </span>
-                    <?php endif; ?>
-                  </div>
-                </div>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <div class="no-tasks">
-                <i class="fas fa-clipboard-list"></i>
-                <p>No tasks found. Start by creating one!</p>
+              <div class="d-flex align-items-center justify-content-between mb-4">
+                  <h5 class="section-title">My Tasks</h5>
+                  <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#createTaskModal">
+                      + Create Task
+                  </button>
               </div>
-            <?php endif; ?>
-          </div>
+
+              <!-- Tabs -->
+              <ul class="nav nav-tabs task-tabs mb-4">
+                  <li class="nav-item">
+                      <a class="nav-link active" href="#" data-status="todo">To-Do</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="#" data-status="in_progress">In Progress</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="#" data-status="completed">Completed</a>
+                  </li>
+                  
+                  <li class="nav-item">
+                      <a class="nav-link" href="#" data-status="expired">Expired</a>
+                 </li>
+              </ul>
+
+              <!-- Task Lists -->
+              <div class="task-lists">
+                  <!-- To-Do Tasks -->
+                  <div class="task-group todo-group show">
+                      <?php foreach ($tasks as $task): ?>
+                          <?php if ($task['status'] === 'todo'): ?>
+                        <div class="task-item" data-task-id="<?= $task['id'] ?>">
+                        <div class="task-bullet todo"></div>
+                        <div class="task-content">
+                          <div class="task-title"><?= htmlspecialchars($task['title']) ?></div>
+                          <div class="task-meta">
+                            <span class="task-date">
+                              <i class="fas fa-calendar-day"></i>
+                              <?= date('M j, Y', strtotime($task['due_date'])) ?>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                          <?php endif; ?>
+                      <?php endforeach; ?>
+                  </div>
+
+                <!-- In Progress Tasks -->
+                <div class="task-group in_progress-group">
+                    <?php foreach ($tasks as $task): ?>
+                        <?php if ($task['status'] === 'in_progress'): ?>
+                            <div class="task-item" data-task-id="<?= $task['id'] ?>">
+                                <div class="task-bullet in_progress"></div>
+                                <div class="task-content">
+                                    <div class="task-title"><?= htmlspecialchars($task['title']) ?></div>
+                                    <div class="task-meta">
+                                        <span class="task-date">
+                                            <i class="fas fa-calendar-day"></i>
+                                            <?= date('M j, Y', strtotime($task['due_date'])) ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+
+              <!-- Completed Tasks -->
+              <div class="task-group completed-group">
+                  <?php foreach ($tasks as $task): ?>
+                      <?php if ($task['status'] === 'completed'): ?>
+                          <div class="task-item" data-task-id="<?= $task['id'] ?>">
+                              <div class="task-bullet completed"></div>
+                              <div class="task-content">
+                                  <div class="task-title"><?= htmlspecialchars($task['title']) ?></div>
+                                  <div class="task-meta">
+                                      <span class="task-date">
+                                          <i class="fas fa-calendar-day"></i>
+                                          <?= date('M j, Y', strtotime($task['due_date'])) ?>
+                                      </span>
+                                  </div>
+                              </div>
+                          </div>
+                      <?php endif; ?>
+                  <?php endforeach; ?>
+              </div>
+
+              <div class="task-group expired-group">
+            <?php foreach ($tasks as $task): ?>
+                <?php if ($task['status'] === 'expired'): ?>
+                    <div class="task-item" data-task-id="<?= $task['id'] ?>">
+                        <div class="task-bullet expired"></div>
+                        <div class="task-content">
+                            <div class="task-title"><?= htmlspecialchars($task['title']) ?></div>
+                            <div class="task-meta">
+                                <span class="task-date text-danger">
+                                    <i class="fas fa-calendar-day"></i>
+                                    <?= date('M j, Y', strtotime($task['due_date'])) ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+
+
+              </div>
           </div>
         </div>
       
@@ -226,6 +310,7 @@ include 'partials/task_modal.php';
                 <div class="legend-item"><span class="legend-color todo"></span> To-Do</div>
                 <div class="legend-item"><span class="legend-color in-progress"></span> In Progress</div>
                 <div class="legend-item"><span class="legend-color completed"></span> Completed</div>
+                <div class="legend-item"><span class="legend-color expired"></span> Expired</div>
               </div>
             </div>
           </div>
