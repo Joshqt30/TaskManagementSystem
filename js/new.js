@@ -3,13 +3,25 @@
 // Initialize Task Interactions
 function initTaskInteractions() {
   // Click handler for task details
-      document.querySelectorAll('.task-item').forEach(task => {
+    document.querySelectorAll('.task-item').forEach(task => {
     task.addEventListener('click', function(e) {
       const taskId = this.dataset.taskId;
       fetchTaskDetails(taskId);
     });
   });
+  
+    // Add event listeners to all edit buttons inside tasks
+    document.querySelectorAll('.edit-task-btn').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevent it from triggering task detail view
+        const taskId = this.dataset.taskId;
+        openEditTaskModal(taskId);
+      });
+    });
+    
 }
+
+
 
 async function fetchTaskDetails(taskId) {
   try {

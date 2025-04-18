@@ -1,20 +1,61 @@
-<!-- mytasks.html -->
 <?php
 session_start();
-
-// Redirect to login if not authenticated
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
-}
-
 include 'config.php';
 include 'partials/task_modal.php';
-  
+
+if (!isset($_SESSION['user_id'])) {
+  header("Location: login.php");
+  exit();
+}
+$user_id = $_SESSION['user_id'];
+
+
+// fetch username for sidebar
+$stmtUser = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+$stmtUser->execute([$user_id]);
+$user = $stmtUser->fetch();
+
+$status  = $_GET['status'] ?? '';
+
+$sql = "
+  SELECT 
+    t.id,
+    t.title,
+    t.status,
+    t.due_date,
+    GROUP_CONCAT(u2.email SEPARATOR ', ') AS collaborator_emails
+  FROM tasks t
+  LEFT JOIN collaborators c ON t.id = c.task_id
+  LEFT JOIN users u2       ON c.user_id = u2.id
+  WHERE t.user_id = ?
+";
+
+if ($status) {
+  $sql .= " AND t.status = ?";
+}
+$sql .= "
+  GROUP BY t.id
+  ORDER BY 
+    FIELD(t.status,'To Do','In Progress','Completed','Expired'),
+    t.due_date ASC
+";
+
+$stmt = $pdo->prepare($sql);
+if ($status) {
+  $stmt->execute([$user_id, $status]);
+} else {
+  $stmt->execute([$user_id]);
+}
+
+$tasks = $stmt->fetchAll();  // ← note: $tasks, not $result
+
 ?>
 
 
-<!DOCTYPE html>
+
+<!-- mytasks.php -->
+
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -30,8 +71,8 @@ include 'partials/task_modal.php';
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="designs/transition.css" />
   <link rel="stylesheet" href="designs/mytasks.css" />
+  <link rel="stylesheet" href="designs/main.css" />
   <link rel="stylesheet" href="designs/mobile.css" />
   <link rel="stylesheet" href="designs/header-sidebar.css" />
 </head>
@@ -79,12 +120,12 @@ include 'partials/task_modal.php';
       </div>
         <ul class="nav flex-column sidebar-menu">
           <li class="nav-item">
-            <a href="main.php" class="nav-link active">
+            <a href="main.php" class="nav-link">
               <i class="fa-solid fa-house me-2"></i> Home
             </a>
           </li>
           <li class="nav-item">
-            <a href="mytasks.php" class="nav-link">
+            <a href="mytasks.php" class="nav-link active">
               <i class="fa-solid fa-check-circle me-2"></i> My Tasks
             </a>
           </li>
@@ -120,49 +161,99 @@ include 'partials/task_modal.php';
       
         <!-- Buttons: New Task (left), Date View (right) -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <button class="btn btn-primary new-task-btn">
-            <i class="fa-solid fa-plus me-1"></i> New Task
-          </button>
-          <button class="btn btn-secondary date-view-btn">
-            <i class="fa-solid fa-calendar-days me-1"></i> Date View
-          </button>
+        <button class="btn btn-primary new-task-btn" data-bs-toggle="modal" data-bs-target="#createTaskModal">
+          <i class="fa-solid fa-plus me-1"></i> New Task
+        </button>
+        <div class="mb-3">
+        <label for="statusFilter" class="form-label">Filter Status</label>
+        <select class="form-select" id="statusFilter" onchange="filterStatus()">
+          <option value="">All</option>
+          <option value="To Do">To Do</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+          <option value="Expired">Expired</option>
+        </select>
+      </div>
         </div>
   
         <!-- Tasks Table -->
         <div class="table-responsive">
-          <table class="minimal-table">
-            <thead>
-              <tr>
-                <th style="width: 40%;">Name</th>
-                <th style="width: 30%;">Date <i class="fa-solid fa-sort ms-1"></i></th>
-                <th style="width: 30%;">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- "Past Dates" Subheader Row with chevron -->
-              <tr class="table-light">
-                <td colspan="3">
-                  <i class="fa-solid fa-chevron-down me-2"></i>Past Dates (1 item)
-                </td>
-              </tr>
-  
-              <!-- Example Task Row / Replace once backend logic is ready -->
-              <tr>
-                <td>Example Task</td>
-                <td>
-                  <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>
-                  <span class="text-danger">April 1, 2025</span>
-                </td>
-                <td>
-                  <span class="badge in-progress">In progress</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <table class="minimal-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Collaborators</th>
+              <th>Status</th>
+              <th>Due Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          <?php foreach ($tasks as $task): ?>
+            <tr>
+              <td><?= htmlspecialchars($task['title']) ?></td>
+              <td>
+                <?php if ($task['collaborator_emails']): ?>
+                  <?= nl2br(htmlspecialchars($task['collaborator_emails'])) ?>
+                <?php else: ?>
+                  <span class="text-muted">—</span>
+                <?php endif; ?>
+              </td>
+              <td>
+                <?php $c = strtolower(str_replace(' ', '-', $task['status'])); ?>
+                <span class="badge <?= $c ?>"><?= htmlspecialchars($task['status']) ?></span>
+              </td>
+              <td><?= htmlspecialchars($task['due_date']) ?></td>
+              <td>
+                <button class="btn btn-sm btn-warning edit-btn" data-id="<?= $task['id'] ?>">Edit</button>
+                <button class="btn btn-sm btn-danger delete-btn" data-id="<?= $task['id'] ?>">Delete</button>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+          </tbody>
+
+        </table>
+
         </div>
       
       </div>
     </main>
+    <!-- Edit Task Modal -->
+<div class="modal fade" id="editTaskModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form action="api/update_task.php" method="POST">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Task</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="task_id" id="editTaskId" />
+          <div class="mb-3">
+            <label for="editTaskName">Task Name</label>
+            <input type="text" class="form-control" id="editTaskName" name="task_name" required>
+          </div>
+          <div class="mb-3">
+            <label for="editDueDate">Due Date</label>
+            <input type="date" class="form-control" id="editDueDate" name="due_date" required>
+          </div>
+          <div class="mb-3">
+            <label for="editStatus">Status</label>
+            <select class="form-select" id="editStatus" name="status" required>
+              <option value="To Do">To Do</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Expired">Expired</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
           <!-- Logout Confirmation Modal -->
           <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">

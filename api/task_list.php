@@ -49,6 +49,12 @@ $tasks = $stmt->fetchAll();
           </span>
         <?php endif; ?>
       </div>
+
+      <!-- Add Edit button -->
+      <button class="btn btn-sm btn-outline-primary edit-task-btn" data-task-id="<?= htmlspecialchars($task['id']) ?>">
+        <i class="fas fa-edit"></i> Edit
+      </button>
+
     </div>
   <?php endforeach; ?>
 <?php else: ?>
