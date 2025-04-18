@@ -11,20 +11,29 @@ function initTaskInteractions() {
   });
 
 
-// Edit Task Handler (NEW)
+// Edit Task Handler - Populate All Fields
 document.querySelectorAll('.edit-btn').forEach(button => {
   button.addEventListener('click', async (e) => {
-    e.stopPropagation(); // Add this to prevent task detail opening
     const taskId = e.target.dataset.id;
     
     try {
       const response = await fetch(`/TaskManagementSystem/api/get_task.php?id=${taskId}`);
       const task = await response.json();
 
-      // Populate edit modal
+      // Populate basic fields
       document.getElementById('editTaskId').value = task.id;
       document.getElementById('editTitle').value = task.title;
+      document.getElementById('editDescription').value = task.description;
+      document.getElementById('editDueDate').value = task.due_date.split(' ')[0]; // Remove time
       document.getElementById('editStatus').value = task.status;
+
+      // Populate collaborators
+      const container = document.getElementById('editCollaboratorContainer');
+      container.innerHTML = ''; // Clear existing
+      
+      task.collaborators.forEach(collab => {
+        addCollaboratorField('edit', collab.email);
+      });
 
       // Show modal
       new bootstrap.Modal(document.getElementById('editTaskModal')).show();
@@ -371,18 +380,24 @@ document.getElementById('editTaskForm').addEventListener('submit', async (e) => 
   }
 });
 
-// Collaborator Field Management (global function)
-window.addCollaboratorField = function() {
-  const container = document.getElementById('collaboratorContainer');
-  if (container) {
-    const newField = `
+// Modified Collaborator Function (Works for Both Modals)
+window.addCollaboratorField = function(mode = 'create', email = '') {
+  const containerId = `${mode}CollaboratorContainer`;
+  const container = document.getElementById(containerId);
+  
+  const newField = `
     <div class="input-group mb-2">
-      <input type="email" name="collaborators[]" class="form-control" required>
-      <button type="button" class="btn btn-sm btn-outline-danger" 
+      <input type="email" name="collaborators[]" 
+            class="form-control" 
+            placeholder="collaborator@example.com"
+            value="${email}"
+            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
+      <button type="button" class="btn btn-outline-danger" 
               onclick="this.parentElement.remove()">
         <i class="fas fa-times"></i>
       </button>
-    </div>`;
-    container.insertAdjacentHTML('beforeend', newField);
-  }
+    </div>
+  `;
+  
+  container.insertAdjacentHTML('beforeend', newField);
 };

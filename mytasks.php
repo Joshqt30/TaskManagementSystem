@@ -27,8 +27,8 @@ $sql = "
     GROUP_CONCAT(u2.email SEPARATOR ', ') AS collaborator_emails
   FROM tasks t
   LEFT JOIN collaborators c ON t.id = c.task_id
-  LEFT JOIN users u2       ON c.user_id = u2.id
-  WHERE t.user_id = ?
+  LEFT JOIN users u2 ON c.user_id = u2.id
+  WHERE t.user_id = ? OR c.user_id = ?  
 ";
 
 if ($status) {
@@ -42,10 +42,11 @@ $sql .= "
 ";
 
 $stmt = $pdo->prepare($sql);
+// Execute with user_id twice for both WHERE conditions
 if ($status) {
-  $stmt->execute([$user_id, $status]);
+  $stmt->execute([$user_id, $user_id, $status]);  // Added extra user_id
 } else {
-  $stmt->execute([$user_id]);
+  $stmt->execute([$user_id, $user_id]);  // Added extra user_id
 }
 
 $tasks = $stmt->fetchAll();  // ← note: $tasks, not $result

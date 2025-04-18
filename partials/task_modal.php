@@ -99,7 +99,7 @@
   </div>
 </div>
 
-<!-- Edit Task Modal (ADD THIS NEW MODAL HERE) -->
+<!-- Edit Task Modal -->
 <div class="modal fade" id="editTaskModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -110,11 +110,25 @@
       <form id="editTaskForm">
         <div class="modal-body">
           <input type="hidden" name="task_id" id="editTaskId">
+          
           <!-- Task Name -->
           <div class="mb-4">
             <label class="form-label fw-bold">Task Name</label>
             <input type="text" name="title" id="editTitle" class="form-control" required>
           </div>
+
+          <!-- Description -->
+          <div class="mb-4">
+            <label class="form-label fw-bold">Description</label>
+            <textarea name="description" id="editDescription" class="form-control" rows="3"></textarea>
+          </div>
+
+          <!-- Due Date -->
+          <div class="mb-4">
+            <label class="form-label fw-bold">Due Date</label>
+            <input type="date" name="due_date" id="editDueDate" class="form-control" required>
+          </div>
+
           <!-- Status -->
           <div class="mb-4">
             <label class="form-label fw-bold">Status</label>
@@ -124,6 +138,16 @@
               <option value="completed">Completed</option>
             </select>
           </div>
+
+          <!-- Collaborators (New Section) -->
+          <div class="mb-4">
+            <label class="form-label fw-bold">Collaborators</label>
+            <div id="editCollaboratorContainer"></div>
+            <button type="button" class="btn btn-sm btn-success mt-2" onclick="addCollaboratorField('edit')">
+              <i class="fas fa-plus"></i> Add Collaborator
+            </button>
+          </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
