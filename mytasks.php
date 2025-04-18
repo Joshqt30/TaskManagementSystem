@@ -20,6 +20,7 @@ $status  = $_GET['status'] ?? '';
 $sql = "
   SELECT 
     t.id,
+    t.user_id, 
     t.title,
     t.status,
     t.due_date,
@@ -207,9 +208,14 @@ $tasks = $stmt->fetchAll();  // ← note: $tasks, not $result
               </td>
               <td><?= htmlspecialchars($task['due_date']) ?></td>
               <td>
+              <?php if ($task['status'] !== 'expired') : ?>
                 <button class="btn btn-sm btn-warning edit-btn" data-id="<?= $task['id'] ?>">Edit</button>
+              <?php endif; ?>
+              
+              <?php if ($task['user_id'] == $_SESSION['user_id']) : ?>
                 <button class="btn btn-sm btn-danger delete-btn" data-id="<?= $task['id'] ?>">Delete</button>
-              </td>
+              <?php endif; ?>
+            </td>
             </tr>
           <?php endforeach; ?>
           </tbody>

@@ -18,6 +18,16 @@ try {
         throw new Exception('You dont own this task');
     }
 
+        // 𝗔𝗗𝗗𝗘𝗗 𝗘𝗫𝗣𝗜𝗥𝗬 𝗖𝗛𝗘𝗖𝗞
+        $stmt = $pdo->prepare("SELECT status FROM tasks WHERE id = ?");
+        $stmt->execute([$taskId]);
+        $currentTask = $stmt->fetch();
+    
+        if ($currentTask['status'] === 'expired') {
+            throw new Exception('Expired tasks cannot be edited');
+        }
+    
+
     // Update task
     $stmt = $pdo->prepare("UPDATE tasks SET 
         title = ?, 
