@@ -66,14 +66,14 @@
   border-bottom: 1px solid #3D5654;
 }
 
-/* Badge for "In progress" */
-.badge.in-progress {
-  background-color: var(--primary-blue);
-  color: #fff;
-  font-size: 16px;
-  padding: 0.5em 1em;
-  border-radius: 8px;
-  display: inline-block;
+/* Task Status Badges */
+/* Status Badges - Standardize Size */
+.badge {
+  font-size: 0.85em !important; /* Smaller text */
+  padding: 0.5em 0.75em !important; /* Consistent padding */
+  border-radius: 0.25rem !important;
+  text-transform: uppercase; /* Optional: for consistency */
+  letter-spacing: 0.05em;
 }
 
 /* Buttons Custom Styling */

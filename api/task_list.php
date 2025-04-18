@@ -39,9 +39,27 @@ $tasks = $stmt->fetchAll();
       <h6><?= htmlspecialchars($task['title']) ?></h6>
       <p><?= htmlspecialchars($task['description']) ?></p>
       <div class="task-meta">
-        <span class="badge <?= htmlspecialchars($task['status']) ?>">
-          <?= ucfirst(str_replace('_', ' ', $task['status'])) ?>
+      <?php
+        $status = $task['status'];
+        switch ($status) {
+            case 'todo':
+                $statusColor = 'bg-danger';       // red
+                break;
+            case 'inprogress':
+            case 'in_progress': // handles snake_case too
+                $statusColor = 'bg-warning';      // yellow
+                break;
+            case 'completed':
+                $statusColor = 'bg-success';      // green
+                break;
+            default:
+                $statusColor = 'bg-secondary';    // gray fallback
+        }
+        ?>
+        <span class="badge <?= $statusColor ?>">
+          <?= ucfirst(str_replace('_', ' ', $status)) ?>
         </span>
+
         <?php if ($task['due_date']): ?>
           <span class="due-date">
             <i class="fas fa-calendar-day"></i>

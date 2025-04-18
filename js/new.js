@@ -18,7 +18,7 @@ function initTaskInteractions() {
         openEditTaskModal(taskId);
       });
     });
-    
+
 }
 
 
@@ -107,7 +107,7 @@ async function openEditTaskModal(taskId) {
 
 
 // === OTHER INTERACTIONS AND INITIALIZATIONS ===
-    document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', function () {
       // Sidebar Toggle Functionality
       const toggleBtn = document.getElementById('toggleBtn');
       const sidebar = document.getElementById('sidebar');
@@ -123,6 +123,29 @@ async function openEditTaskModal(taskId) {
 
         });
       }
+
+
+      // Edit Form Submission
+document.getElementById('editTaskForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const formData = new FormData(e.target);
+  
+  try {
+    const response = await fetch('/TaskManagementSystem/api/update_task.php', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (response.ok) {
+      location.reload(); // Refresh the task list
+    } else {
+      throw new Error('Update failed');
+    }
+  } catch (error) {
+    alert('Error updating task');
+  }
+});
 
       
 
@@ -265,6 +288,9 @@ async function openEditTaskModal(taskId) {
       const collaborators = [...document.querySelectorAll('input[name="collaborators[]"]')]
                           .map(input => input.value);
 
+  for (let [key, val] of formData.entries()) {
+  console.log(key, val);
+  }
 
           // I-validate ang emails bago ipadala
     const validCollaborators = [];
@@ -288,8 +314,14 @@ async function openEditTaskModal(taskId) {
         
         if (result.success) {
           // Refresh both tasks and chart
-          await fetchAndUpdateTasks();
-
+          if (location.pathname.endsWith('mytasks.php')) {
+            // If we're on mytasks.php, just reload the page
+            location.reload();
+          } else {
+            // Otherwise, update the task list dynamically
+            await fetchAndUpdateTasks();
+          }
+          
           // Hide modal using vanilla JS
           const modal = bootstrap.Modal.getInstance(document.getElementById('createTaskModal'));
           if (modal) modal.hide();

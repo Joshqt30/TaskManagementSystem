@@ -36,7 +36,7 @@ if ($status) {
 $sql .= "
   GROUP BY t.id
   ORDER BY 
-    FIELD(t.status,'To Do','In Progress','Completed','Expired'),
+    FIELD(t.status,'todo','in_progress','completed','expired'),
     t.due_date ASC
 ";
 
@@ -168,10 +168,10 @@ $tasks = $stmt->fetchAll();  // ← note: $tasks, not $result
         <label for="statusFilter" class="form-label">Filter Status</label>
         <select class="form-select" id="statusFilter" onchange="filterStatus()">
           <option value="">All</option>
-          <option value="To Do">To Do</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-          <option value="Expired">Expired</option>
+          <option value="todo">To Do</option>
+          <option value="in_progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="expired">Expired</option>
         </select>
       </div>
         </div>
@@ -200,8 +200,10 @@ $tasks = $stmt->fetchAll();  // ← note: $tasks, not $result
                 <?php endif; ?>
               </td>
               <td>
-                <?php $c = strtolower(str_replace(' ', '-', $task['status'])); ?>
-                <span class="badge <?= $c ?>"><?= htmlspecialchars($task['status']) ?></span>
+              <?php 
+                $statusClass = str_replace('_', '-', $task['status']); // Fix: "_" → "-"
+                ?>
+              <span class="badge <?= $statusClass ?>"><?= ucfirst(str_replace('_', ' ', $task['status'])) ?></span>
               </td>
               <td><?= htmlspecialchars($task['due_date']) ?></td>
               <td>
@@ -240,10 +242,10 @@ $tasks = $stmt->fetchAll();  // ← note: $tasks, not $result
           <div class="mb-3">
             <label for="editStatus">Status</label>
             <select class="form-select" id="editStatus" name="status" required>
-              <option value="To Do">To Do</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Expired">Expired</option>
+              <option value="todo">To Do</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="expired">Expired</option>
             </select>
           </div>
         </div>

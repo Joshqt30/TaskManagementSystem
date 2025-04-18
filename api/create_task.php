@@ -21,16 +21,22 @@ try {
     if (empty($_POST['title']) || empty($_POST['due_date'])) {
         throw new Exception('Title and Due Date are required');
     }
+    
+    error_log("[DEBUG] Title: " . ($_POST['title'] ?? 'NOT_PROVIDED'));
+    error_log("[DEBUG] Due Date: " . ($_POST['due_date'] ?? 'NOT_PROVIDED'));
+    error_log("[DEBUG] Received status: " . ($_POST['status'] ?? 'STATUS_NOT_FOUND'));
 
     // Insert task
     $stmt = $pdo->prepare("INSERT INTO tasks 
                           (user_id, title, description, due_date, status)
-                          VALUES (?, ?, ?, ?, 'todo')");
+                          VALUES (?, ?, ?, ?, ?)
+                          ");
     $stmt->execute([
         $_SESSION['user_id'],
         $_POST['title'],
         $_POST['description'] ?? '',
-        $_POST['due_date']
+        $_POST['due_date'],
+        $_POST['status']   // ← grab it from the form!
     ]);
     $task_id = $pdo->lastInsertId();
 
