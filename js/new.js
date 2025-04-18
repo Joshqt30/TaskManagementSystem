@@ -9,15 +9,54 @@ function initTaskInteractions() {
       fetchTaskDetails(taskId);
     });
   });
-  
-    // Add event listeners to all edit buttons inside tasks
-    document.querySelectorAll('.edit-task-btn').forEach(button => {
-      button.addEventListener('click', function(e) {
-        e.stopPropagation(); // Prevent it from triggering task detail view
-        const taskId = this.dataset.taskId;
-        openEditTaskModal(taskId);
+
+
+// Edit Task Handler (NEW)
+document.querySelectorAll('.edit-btn').forEach(button => {
+  button.addEventListener('click', async (e) => {
+    e.stopPropagation(); // Add this to prevent task detail opening
+    const taskId = e.target.dataset.id;
+    
+    try {
+      const response = await fetch(`/TaskManagementSystem/api/get_task.php?id=${taskId}`);
+      const task = await response.json();
+
+      // Populate edit modal
+      document.getElementById('editTaskId').value = task.id;
+      document.getElementById('editTitle').value = task.title;
+      document.getElementById('editStatus').value = task.status;
+
+      // Show modal
+      new bootstrap.Modal(document.getElementById('editTaskModal')).show();
+    } catch (error) {
+      alert('Error loading task');
+    }
+  });
+});
+
+// Delete Handler
+document.querySelectorAll('.delete-btn').forEach(button => {
+  button.addEventListener('click', async (e) => {
+    if (!confirm('Are you sure you want to delete this task?')) return;
+    
+    const taskId = e.target.dataset.id;
+    
+    try {
+      const response = await fetch(`/TaskManagementSystem/api/delete_task.php?id=${taskId}`, {
+        method: 'DELETE'
       });
-    });
+
+      if (response.ok) {
+        e.target.closest('tr').remove(); // Remove from UI
+      } else {
+        throw new Error('Delete failed');
+      }
+    } catch (error) {
+      alert('Error deleting task');
+    }
+  });
+});
+
 
 }
 
@@ -63,28 +102,6 @@ async function fetchTaskDetails(taskId) {
   }
 }
 
-// Open the Edit Task Modal and populate with task data
-async function openEditTaskModal(taskId) {
-  try {
-    const response = await fetch(`/TaskManagementSystem/api/get_task.php?id=${taskId}`);
-    const task = await response.json();
-
-    // Populate the edit form fields in your edit modal
-    // (Assuming you have input elements with these IDs in your editTaskModal)
-    document.getElementById('editTaskId').value = task.id;
-    document.getElementById('editTaskTitle').value = task.title;
-    document.getElementById('editTaskDescription').value = task.description;
-    document.getElementById('editTaskDueDate').value = task.due_date;
-
-    // Optionally, set the status if you plan to allow editing it
-    // document.getElementById('editTaskStatus').value = task.status;
-
-    // Open the edit modal
-    new bootstrap.Modal(document.getElementById('editTaskModal')).show();
-  } catch (error) {
-    alert('Failed to load task for editing');
-  }
-}
 
 
 // === GLOBAL FUNCTION: FETCH AND UPDATE TASKS ===
