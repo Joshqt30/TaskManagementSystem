@@ -75,54 +75,6 @@ async function openEditTaskModal(taskId) {
 }
 
 
-
-// Update task status via API
-async function updateTaskStatus(taskId, newStatus) {
-  try {
-    const response = await fetch('/TaskManagementSystem/api/update_task.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        taskId,
-        newStatus
-      })
-    });
-
-    if (!response.ok) throw new Error('Status update failed');
-
-    // Refresh task list
-    await fetchAndUpdateTasks();
-  } catch (error) {
-    alert('Failed to update status');
-  }
-}
-
-
-
-// Delete task via API
-async function deleteTask(taskId) {
-  if (confirm('Are you sure you want to delete this task?')) {
-    try {
-      const response = await fetch('/TaskManagementSystem/api/delete_task.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ taskId })
-      });
-
-      if (!response.ok) throw new Error('Deletion failed');
-
-      // Refresh task list
-      await fetchAndUpdateTasks();
-    } catch (error) {
-      alert('Failed to delete task');
-    }
-  }
-}
-
 // === GLOBAL FUNCTION: FETCH AND UPDATE TASKS ===
   const fetchAndUpdateTasks = async () => {
     try {
@@ -305,7 +257,7 @@ async function deleteTask(taskId) {
           // I-validate ang emails bago ipadala
     const validCollaborators = [];
     for (const email of collaborators) {
-      const response = await fetch(`/api/check_user.php?email=${encodeURIComponent(email)}`);
+      const response = await fetch(`/TaskManagementSystem/api/check_user.php?email=${encodeURIComponent(email)}`);
       const { exists } = await response.json();
       if (exists) validCollaborators.push(email);
     }

@@ -1,4 +1,19 @@
 <!-- mytasks.html -->
+<?php
+session_start();
+
+// Redirect to login if not authenticated
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+include 'config.php';
+include 'partials/task_modal.php';
+  
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,7 +59,7 @@
         <ul class="dropdown-menu dropdown-menu-end">
           <li><a class="dropdown-item" href="settings.php">Account Settings</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="login.php">Logout</a></li>
+          <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -52,23 +67,24 @@
 
   <!-- Wrapper: Sidebar + Main Content -->
   <div class="content-wrapper">
-    <!-- Sidebar -->
-    <nav class="sidebar sidebar-expanded" id="sidebar">
+     <!-- Sidebar -->
+     <nav class="sidebar sidebar-expanded" id="sidebar">
       <!-- Sidebar Middle: Profile & Navigation Menu -->
       <div class="sidebar-middle">
-        <div class="sidebar-profile">
-          <i class="fa-solid fa-user-circle"></i>
-          <!-- Dynamic username placeholder -->
-          <div class="user-name">nameforbackend@gmail.com</div>
+      <div class="sidebar-profile">
+        <i class="fa-solid fa-user-circle"></i>
+        <div class="user-name">
+          <?= htmlspecialchars($user['username']) ?> <!-- Only username -->
         </div>
+      </div>
         <ul class="nav flex-column sidebar-menu">
           <li class="nav-item">
-            <a href="main.php" class="nav-link">
+            <a href="main.php" class="nav-link active">
               <i class="fa-solid fa-house me-2"></i> Home
             </a>
           </li>
           <li class="nav-item">
-            <a href="mytasks.php" class="nav-link active">
+            <a href="mytasks.php" class="nav-link">
               <i class="fa-solid fa-check-circle me-2"></i> My Tasks
             </a>
           </li>
@@ -147,6 +163,27 @@
       
       </div>
     </main>
+
+          <!-- Logout Confirmation Modal -->
+          <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to logout?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            <form action="logout.php" method="POST">
+              <button type="submit" class="btn btn-danger">Yes, Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
