@@ -12,9 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Convert email to lowercase if it's an email
     if (filter_var($username_or_email, FILTER_VALIDATE_EMAIL)) {
         $username_or_email = strtolower($username_or_email);
-        $stmt = $pdo->prepare("SELECT id, username, password, is_verified FROM users WHERE email = ?");
+        $stmt = $pdo->prepare("SELECT id, username, password, is_verified, email FROM users WHERE email = ?");
     } else {
-        $stmt = $pdo->prepare("SELECT id, username, password, is_verified FROM users WHERE username = ?");
+        $stmt = $pdo->prepare("SELECT id, username, password, is_verified, email FROM users WHERE username = ?");
     }
 
     $stmt->execute([$username_or_email]);
@@ -25,6 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($user['is_verified'] == 1) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
+                $_SESSION['email'] = $user['email']; // 👈 ADD THIS LINE (to store email in session)
+
+                    // 👇 Add this block to update ALL pending collaborators for this user
+                        $updateStmt = $pdo->prepare("
+                        UPDATE collaborators 
+                        SET 
+                            status = 'accepted',
+                            user_id = ?  
+                            WHERE (email = ? OR user_id = ?)
+                            AND status = 'pending'
+                    ");
+                    $updateStmt->execute([$_SESSION['user_id'], $_SESSION['email'], $_SESSION['user_id']]);
+                    // ======== END COLLABORATOR UPDATE ========
 
                 // ======== COLLABORATOR STATUS UPDATE ========
                 if (isset($_GET['task_id'])) {
@@ -56,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 // Default redirect for regular login
-                header("Location: mytasks.php");
+                header("Location: main.php");
                 exit();
 
             } else {

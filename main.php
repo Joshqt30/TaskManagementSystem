@@ -1,5 +1,6 @@
 <?php
 session_start();
+include 'config.php';
 
 // Redirect to login if not authenticated
 if (!isset($_SESSION['user_id'])) {
@@ -7,7 +8,16 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-include 'config.php';
+// Ensure email is set in the session
+if (!isset($_SESSION['email'])) {
+  // Fetch email from the database if missing
+  $stmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+  $stmt->execute([$_SESSION['user_id']]);
+  $user = $stmt->fetch();
+  $_SESSION['email'] = $user['email']; // 👈 Set it here
+}
+
+
 include 'partials/task_modal.php';
 
 // Get user data
@@ -35,32 +45,39 @@ include 'partials/task_modal.php';
         $task_stats[$row['status']] = $row['count'];
     }
 
-        // I-update ang status ng overdue tasks
-      $updateStmt = $pdo->prepare("UPDATE tasks 
-      SET status = 'expired' 
-      WHERE 
-          user_id = ? 
-          AND status IN ('todo', 'in_progress') 
-          AND due_date < CURDATE()
-      ");
-      $updateStmt->execute([$user_id]);
-
-    $stmt = $pdo->prepare("SELECT * 
-    FROM tasks 
+// I-update ang status ng overdue tasks
+$updateStmt = $pdo->prepare("UPDATE tasks 
+    SET status = 'expired' 
     WHERE 
         user_id = ? 
-        AND status IN ('todo', 'in_progress', 'completed', 'expired') 
+        AND status IN ('todo', 'in_progress') 
+        AND due_date < CURDATE()
+");
+$updateStmt->execute([$user_id]);
+
+// ====== NEW CODE STARTS HERE ======
+// Fetch tasks (owned by user OR where user is collaborator)
+$sql = "
+    SELECT DISTINCT t.* 
+    FROM tasks t
+    LEFT JOIN collaborators c ON t.id = c.task_id
+    WHERE 
+        (t.user_id = ? OR c.user_id = ? OR c.email = ?)
+        AND t.status IN ('todo', 'in_progress', 'completed', 'expired') 
     ORDER BY 
-        CASE status
+        CASE t.status
             WHEN 'todo' THEN 1
             WHEN 'in_progress' THEN 2
             WHEN 'completed' THEN 3
             WHEN 'expired' THEN 4
         END, 
-    due_date ASC");
+        t.due_date ASC
+";
 
-    $stmt->execute([$user_id]);
-    $tasks = $stmt->fetchAll();
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id, $user_id, $_SESSION['email']]);
+$tasks = $stmt->fetchAll();
+// ====== NEW CODE ENDS HERE ======
     ?>
 
 
