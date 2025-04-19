@@ -80,14 +80,14 @@ try {
                 $mail->addAddress($email, $collabName);
                 $mail->isHTML(true);
                 $mail->Subject = 'Collaboration Invitation';
-                $mail->Body    = sprintf(
+                $mail->Body = sprintf(
                     'You have been invited to collaborate on:<br>
                     <strong>%s</strong><br>
                     Due: %s<br><br>
-                    <a href="http://localhost/TaskManagementSystem/mytasks.php?id=%d">View Task</a>',
+                    <a href="http://localhost/TaskManagementSystem/login.php?task_id=%d">Accept & View Task</a>',
                     htmlspecialchars($_POST['title']),
                     htmlspecialchars($_POST['due_date']),
-                    $task_id
+                    $taskId // Pass task_id in the URL
                 );
                 $mail->send();
             } catch (Exception $e) {

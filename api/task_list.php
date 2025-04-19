@@ -2,8 +2,8 @@
 // Start output buffering to prevent accidental output
 error_reporting(0); // Temporarily disable PHP warnings
 ob_start();
-
 session_start();
+
 if (!isset($_SESSION['user_id'])) {
     die("Unauthorized access");
 }
@@ -11,21 +11,32 @@ if (!isset($_SESSION['user_id'])) {
 include __DIR__ . '/../config.php';
 
 $user_id = $_SESSION['user_id'];
+$user_email = $_SESSION['user_email'];
 
 // Get status filter (if provided via GET) and validate
 $status = $_GET['status'] ?? null;
 $validStatuses = ['todo', 'in_progress', 'completed'];
 
 // Build query with filter if a valid status is provided
-$query = "SELECT * FROM tasks WHERE user_id = ?";
-$params = [$user_id];
+$query = "
+  SELECT DISTINCT t.*
+  FROM tasks t
+  LEFT JOIN collaborators c ON t.id = c.task_id
+  WHERE t.user_id = :user_id OR c.email = :user_email
+";
+
+$params = [
+  ':user_id' => $user_id,
+  ':user_email' => $user_email
+];
+
 
 if ($status && in_array($status, $validStatuses)) {
-    $query .= " AND status = ?";
-    $params[] = $status;
+    $query .= " AND t.status = :status";
+    $params[':status'] = $status;
 }
 
-$query .= " ORDER BY created_at DESC, due_date ASC LIMIT 5";
+$query .= " ORDER BY t.created_at DESC, t.due_date ASC LIMIT 5";  
 
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);

@@ -8,6 +8,7 @@ include 'config.php';
 $error_message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username_or_email = trim($_POST['username_or_email']);
+    
     // Convert email to lowercase if it's an email
     if (filter_var($username_or_email, FILTER_VALIDATE_EMAIL)) {
         $username_or_email = strtolower($username_or_email);
@@ -24,8 +25,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($user['is_verified'] == 1) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
-                header("Location: main.php");
-                exit;
+
+                // ======== COLLABORATOR STATUS UPDATE ========
+                if (isset($_GET['task_id'])) {
+                    $taskId = filter_input(INPUT_GET, 'task_id', FILTER_VALIDATE_INT);
+                    
+                    if ($taskId) {
+                        // Verify collaborator relationship
+                        $stmtCheck = $pdo->prepare("
+                            SELECT 1 
+                            FROM collaborators 
+                            WHERE user_id = ? AND task_id = ?
+                        ");
+                        $stmtCheck->execute([$_SESSION['user_id'], $taskId]);
+                        
+                        if ($stmtCheck->fetch()) {
+                            // Update status to 'accepted'
+                            $stmtUpdate = $pdo->prepare("
+                                UPDATE collaborators 
+                                SET status = 'accepted' 
+                                WHERE user_id = ? AND task_id = ?
+                            ");
+                            $stmtUpdate->execute([$_SESSION['user_id'], $taskId]);
+                            
+                            // Redirect to task details
+                            header("Location: task_details.php?id=$taskId");
+                            exit();
+                        }
+                    }
+                }
+
+                // Default redirect for regular login
+                header("Location: mytasks.php");
+                exit();
+
             } else {
                 $error_message = "Account not verified. Verify your email first.";
             }

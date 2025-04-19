@@ -20,6 +20,21 @@ document.querySelectorAll('.edit-btn').forEach(button => {
       const response = await fetch(`/TaskManagementSystem/api/get_task.php?id=${taskId}`);
       const task = await response.json();
 
+        // Add these 2 lines - START
+        const statusDropdown = document.getElementById('editStatus');
+        statusDropdown.dataset.originalValue = task.status; // Store original value
+        // Add these 2 lines - END
+
+      // Add this block - START
+      // Show/hide collaborator section based on ownership
+      const collaboratorSection = document.getElementById('collaboratorSection');
+      if (task.is_owner) {
+        collaboratorSection.style.display = 'block';
+      } else {
+        collaboratorSection.style.display = 'none';
+      }
+      // Add this block - END
+
       // Populate basic fields
       document.getElementById('editTaskId').value = task.id;
       document.getElementById('editTitle').value = task.title;
@@ -29,12 +44,14 @@ document.querySelectorAll('.edit-btn').forEach(button => {
 
       // Populate collaborators
       const container = document.getElementById('editCollaboratorContainer');
-      container.innerHTML = ''; // Clear existing
+      container.innerHTML = ''; 
       
-      task.collaborators.forEach(collab => {
-        addCollaboratorField('edit', collab.email);
-      });
-
+      if (task.is_owner) {
+        // *** only owners get those input fields! ***
+        task.collaborators.forEach(collab => {
+          addCollaboratorField('edit', collab.email);
+        });
+      }
       // Show modal
       new bootstrap.Modal(document.getElementById('editTaskModal')).show();
     } catch (error) {
@@ -44,24 +61,25 @@ document.querySelectorAll('.edit-btn').forEach(button => {
 });
 
 // Delete Handler
+// Replace your delete handler with:
 document.querySelectorAll('.delete-btn').forEach(button => {
   button.addEventListener('click', async (e) => {
-    if (!confirm('Are you sure you want to delete this task?')) return;
-    
-    const taskId = e.target.dataset.id;
-    
-    try {
-      const response = await fetch(`/TaskManagementSystem/api/delete_task.php?id=${taskId}`, {
-        method: 'DELETE'
-      });
+    if (!confirm('Are you sure you want to delete this task?')) 
+      return;
 
-      if (response.ok) {
-        e.target.closest('tr').remove(); // Remove from UI
-      } else {
-        throw new Error('Delete failed');
-      }
-    } catch (error) {
-      alert('Error deleting task');
+    const taskId = button.dataset.id;
+    try {
+      const res = await fetch('/TaskManagementSystem/api/delete_task.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskId })
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || 'Delete failed');
+      // On success, remove the row from the table:
+      button.closest('tr').remove();
+    } catch (err) {
+      alert('Error deleting task: ' + err.message);
     }
   });
 });
@@ -151,28 +169,34 @@ async function fetchTaskDetails(taskId) {
       }
 
 
-      // Edit Form Submission
-document.getElementById('editTaskForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  const formData = new FormData(e.target);
-  
-  try {
-    const response = await fetch('/TaskManagementSystem/api/update_task.php', {
-      method: 'POST',
-      body: formData
-    });
-
-    if (response.ok) {
-      location.reload(); // Refresh the task list
-    } else {
-      throw new Error('Update failed');
-    }
-  } catch (error) {
-    alert('Error updating task');
-  }
-});
-
+      document.getElementById('editTaskForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const statusDropdown = document.getElementById('editStatus');
+        const originalStatus = statusDropdown.dataset.originalValue;
+      
+        try {
+          const response = await fetch('/TaskManagementSystem/api/update_task.php', {
+            method: 'POST',
+            body: formData
+          });
+      
+          if (!response.ok) {
+            // Restore original status on error
+            statusDropdown.value = originalStatus;
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Update failed');
+          }
+      
+          // Force full refresh after successful update
+          location.reload();
+      
+        } catch (error) {
+          alert('Error updating task: ' + error.message);
+          console.error('Update error:', error);
+        }
+      });
       
 
    // Chart Initialization
@@ -382,8 +406,8 @@ document.getElementById('editTaskForm').addEventListener('submit', async (e) => 
 
 // Modified Collaborator Function (Works for Both Modals)
 window.addCollaboratorField = function(mode = 'create', email = '') {
-  const containerId = `${mode}CollaboratorContainer`;
-  const container = document.getElementById(containerId);
+  const containerId = mode === 'edit' ? 'editCollaboratorContainer' : 'collaboratorContainer';
+  const container = document.getElementById(containerId); 
   
   const newField = `
     <div class="input-group mb-2">
@@ -391,7 +415,8 @@ window.addCollaboratorField = function(mode = 'create', email = '') {
             class="form-control" 
             placeholder="collaborator@example.com"
             value="${email}"
-            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
+            pattern="[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
+  >
       <button type="button" class="btn btn-outline-danger" 
               onclick="this.parentElement.remove()">
         <i class="fas fa-times"></i>

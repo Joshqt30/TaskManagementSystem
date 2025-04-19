@@ -59,8 +59,6 @@ try {
         }
     }
 
-    $response['collaborators'] = $collaborators;
-
     // Structure final response
     $response = [
         'id' => $task['id'],
@@ -68,6 +66,7 @@ try {
         'description' => $task['description'],
         'due_date' => $task['due_date'],
         'status' => $task['status'],
+        'is_owner' => ($task['user_id'] == $_SESSION['user_id']),
         'owner' => [
             'id' => $task['user_id'],
             'name' => $task['owner_name']

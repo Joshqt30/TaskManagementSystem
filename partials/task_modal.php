@@ -140,14 +140,14 @@
           </div>
 
           <!-- Collaborators (New Section) -->
-          <div class="mb-4">
-            <label class="form-label fw-bold">Collaborators</label>
-            <div id="editCollaboratorContainer"></div>
-            <button type="button" class="btn btn-sm btn-success mt-2" onclick="addCollaboratorField('edit')">
-              <i class="fas fa-plus"></i> Add Collaborator
-            </button>
-          </div>
-
+        <!-- With this -->
+        <div class="mb-4" id="collaboratorSection" style="display: none;">
+          <label class="form-label fw-bold">Collaborators</label>
+          <div id="editCollaboratorContainer"></div>
+          <button type="button" class="btn btn-sm btn-success mt-2" onclick="addCollaboratorField('edit')">
+            <i class="fas fa-plus"></i> Add Collaborator
+          </button>
+        </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -160,31 +160,28 @@
 
 
 <script>
-// Dynamic collaborator fields
-function addCollaboratorField(btn) {
-  const container = document.getElementById('collaboratorContainer');
+function addCollaboratorField(mode = 'create') {
+  const container = (mode === 'edit') 
+    ? document.getElementById('editCollaboratorContainer') 
+    : document.getElementById('collaboratorContainer');
+
   const newField = document.createElement('div');
   newField.className = 'input-group mb-2 collaborator-field';
   newField.innerHTML = `
     <input type="email" name="collaborators[]" 
           class="form-control" 
           placeholder="collaborator@example.com"
-          pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
-    <div class="btn-group">
-      <button type="button" class="btn btn-outline-danger remove-collaborator" 
-              onclick="this.parentElement.parentElement.remove()">
-        <i class="fas fa-times"></i>
-      </button>
-      <button type="button" class="btn btn-outline-success add-collaborator" 
-              onclick="addCollaboratorField(this)">
-        <i class="fas fa-plus"></i>
-      </button>
-    </div>
+          pattern="[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
+          required
+    >
+    <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+      <i class="fas fa-times"></i>
+    </button>
   `;
-  
   container.appendChild(newField);
 }
 </script>
+  
 
 <style>
 .collaborator-field .btn-group {

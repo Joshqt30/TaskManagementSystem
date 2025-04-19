@@ -227,40 +227,55 @@ $tasks = $stmt->fetchAll();  // ← note: $tasks, not $result
       
       </div>
     </main>
+
+
     <!-- Edit Task Modal -->
 <div class="modal fade" id="editTaskModal" tabindex="-1">
   <div class="modal-dialog">
-    <form action="api/update_task.php" method="POST">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Edit Task</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" name="task_id" id="editTaskId" />
-          <div class="mb-3">
-            <label for="editTaskName">Task Name</label>
-            <input type="text" class="form-control" id="editTaskName" name="task_name" required>
-          </div>
-          <div class="mb-3">
-            <label for="editDueDate">Due Date</label>
-            <input type="date" class="form-control" id="editDueDate" name="due_date" required>
-          </div>
-          <div class="mb-3">
-            <label for="editStatus">Status</label>
-            <select class="form-select" id="editStatus" name="status" required>
-              <option value="todo">To Do</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="expired">Expired</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Update</button>
-        </div>
+      <form id="editTaskForm" action="api/update_task.php" method="POST">
+      <input type="hidden" name="task_id" id="editTaskId" />
+
+      <div class="mb-3">
+        <label for="editTitle">Task Name</label>
+        <!-- name must match what your PHP expects: “title” -->
+        <input type="text" class="form-control" id="editTitle" name="title" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="editDescription">Description</label>
+        <!-- you need a description field too -->
+        <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label for="editDueDate">Due Date</label>
+        <input type="date" class="form-control" id="editDueDate" name="due_date" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="editStatus">Status</label>
+        <select class="form-select" id="editStatus" name="status" required>
+          <option value="todo">To Do</option>
+          <option value="in_progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="expired">Expired</option>
+        </select>
+      </div>
+
+      <!-- wrap collaborators in its own section -->
+      <div id="collaboratorSection" class="mb-3" style="display:none">
+        <label class="form-label">Collaborators</label>
+        <div id="editCollaboratorContainer"></div>
+        <button type="button" class="btn btn-sm btn-success" onclick="addCollaboratorField('edit')">
+          <i class="fas fa-plus"></i> + Add Collaborator
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Update</button>
       </div>
     </form>
+
   </div>
 </div>
 

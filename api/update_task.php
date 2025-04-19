@@ -1,7 +1,10 @@
 <?php
+error_log("Update Task Request: " . print_r($_POST, true));
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 include __DIR__ . '/../config.php';
-require __DIR__ . '/../vendor/autoload.php'; // Add PHPMailer autoload
+require __DIR__ . '/../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -11,15 +14,29 @@ if (!isset($_SESSION['user_id'])) {
 
 $taskId = $_POST['task_id'] ?? null;
 
+file_put_contents('debug.txt', print_r($_POST, true));
+
 try {
     // Verify ownership
-    $stmt = $pdo->prepare("SELECT user_id FROM tasks WHERE id = ?");
-    $stmt->execute([$taskId]);
-    $task = $stmt->fetch();
+    $stmt = $pdo->prepare("
+    SELECT 
+        t.user_id,
+        EXISTS(
+            SELECT 1 FROM collaborators 
+            WHERE task_id = t.id 
+            AND user_id = ?
+        ) AS is_collaborator
+    FROM tasks t
+    WHERE t.id = ?
+    ");
+    $stmt->execute([$_SESSION['user_id'], $taskId]);
+    $permission = $stmt->fetch();
 
-    if (!$task || $task['user_id'] != $_SESSION['user_id']) {
-        throw new Exception('You dont own this task');
+    if (!$permission || ($permission['user_id'] != $_SESSION['user_id'] && !$permission['is_collaborator'])) {
+        throw new Exception('You do not have permission to edit this task');
     }
+
+    $isOwner = ($permission['user_id'] == $_SESSION['user_id']);
 
     // Expired check
     $stmt = $pdo->prepare("SELECT status FROM tasks WHERE id = ?");
@@ -30,7 +47,7 @@ try {
         throw new Exception('Expired tasks cannot be edited');
     }
 
-    // Update task (modified to include description and due_date)
+    // Update task
     $stmt = $pdo->prepare("UPDATE tasks SET 
         title = ?, 
         description = ?,
@@ -41,31 +58,50 @@ try {
     
     $stmt->execute([
         $_POST['title'],
-        $_POST['description'] ?? '', // Handle empty description
+        $_POST['description'] ?? '',
         $_POST['due_date'],
         $_POST['status'],
         $taskId
     ]);
 
-    // Handle Collaborators (added section)
+
+    // ======== COLLABORATOR HANDLING ========
     if (!empty($_POST['collaborators'])) {
-        foreach ($_POST['collaborators'] as $email) {
-            $email = filter_var(trim($email), FILTER_SANITIZE_EMAIL);
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) continue;
+        if (!$isOwner) {
+            throw new Exception('Only task owners can manage collaborators');
+        }
 
-            // Check if user exists
-            $stmtUser = $pdo->prepare("SELECT id FROM users WHERE email = ?");
-            $stmtUser->execute([$email]);
-            $user = $stmtUser->fetch();
-            if (!$user) continue;
+        // Get existing collaborators
+        $stmtExisting = $pdo->prepare("
+            SELECT u.email 
+            FROM collaborators c
+            JOIN users u ON c.user_id = u.id
+            WHERE c.task_id = ?
+        ");
+        $stmtExisting->execute([$taskId]);
+        $existingCollaborators = $stmtExisting->fetchAll(PDO::FETCH_COLUMN, 0);
 
-            // Add collaborator if not exists
-            $stmtCollab = $pdo->prepare("INSERT IGNORE INTO collaborators (task_id, user_id) 
-                                        VALUES (?, ?)");
-            $stmtCollab->execute([$taskId, $user['id']]);
+        // Check for new collaborators
+        $newCollaborators = array_diff($_POST['collaborators'], $existingCollaborators);
+        
+        if (!empty($newCollaborators)) {
+            foreach ($newCollaborators as $email) {
+                $email = filter_var(trim($email), FILTER_SANITIZE_EMAIL);
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) continue;
 
-                       // Only send email if collaborator was newly added
-                       if ($stmtCollab->rowCount() > 0) { 
+                // Check if user exists
+                $stmtUser = $pdo->prepare("SELECT id, username FROM users WHERE email = ?");
+                $stmtUser->execute([$email]);
+                $user = $stmtUser->fetch();
+
+                if ($user) {
+                    // Add collaborator
+                    $stmtCollab = $pdo->prepare("INSERT IGNORE INTO collaborators (task_id, user_id) 
+                                                VALUES (?, ?)");
+                    $stmtCollab->execute([$taskId, $user['id']]);
+
+                    // Send email only for new additions
+                    if ($stmtCollab->rowCount() > 0) {
                         $mail = new PHPMailer(true);
                         try {
                             $mail->isSMTP();
@@ -75,7 +111,7 @@ try {
                             $mail->Password   = $_ENV['EMAIL_PASS'];
                             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                             $mail->Port       = 587;
-        
+            
                             $mail->setFrom($_ENV['EMAIL_USER'], 'Task Management System');
                             $mail->addAddress($email, $user['username']);
                             $mail->isHTML(true);
@@ -94,6 +130,8 @@ try {
                             error_log('Mailer Error: ' . $e->getMessage());
                         }
                     }
+                }
+            }
         }
     }
 
@@ -102,4 +140,5 @@ try {
 } catch (Exception $e) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    error_log("Update Task Error: " . $e->getMessage());
 }

@@ -31,26 +31,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     elseif (!in_array($organization, [
-        'Organization Alpha',
-        'Organization Beta',
-        'Organization Gamma',
-        'Organization Delta',
-        'Organization Epsilon',
-        'Organization Zeta',
-        'Organization Eta',
-        'Organization Theta',
-        'Organization Iota',
-        'Organization Kappa',
-        'Organization Lambda',
-        'Organization Mu',
-        'Organization Nu',
-        'Organization Xi',
-        'Organization Omicron',
-        'Organization Pi',
-        'Organization Rho',
-        'Organization Sigma',
-        'Organization Tau',
-        'Organization Upsilon',
+        'QCU Creative Student Society',
+        'LIKHA Production',
+        'The QCU Times Publication',
+        'Tanghalang Quezon City University',
+        'QCU Peer Counselors Organization',
+        'QCU Gen. Z Learners',
+        'Youth on the Rock',
+        'QCU Iskolar Council',
+        'QCU College of Education_Official - BECED',
+        'Junior Philippine Institute of Accountants - QCU Chapter - BSA',
+        'Electronics Engineers of the Philippines - QCU Chapter - BSECE',
+        'PIIE ORSP QCU Student Chapter - BSIE',
+        'QCU - League of Excellent Students in Information Technology - BSIT',
+        'Qcu Syvsis - BSIS',
+        'QCU Young Entrepreneurs Society - BSEntrep',
+        'Junior Management Accountant Executives - QCU - BSMA',
+        'BSCS',
+        'BSCE',
     ])) {
         $error_message = "Please select a valid organization";
     }
@@ -100,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port = 587;
 
-                $mail->setFrom($_ENV['EMAIL_USER'], 'Task Management System', false);
+                $mail->setFrom($_ENV['EMAIL_USER'], 'ORGanizePLUS', false);
                 $mail->addReplyTo($_ENV['EMAIL_USER'], 'Task Management Support');
                 $mail->addAddress($email);
                 $mail->addCustomHeader('X-Mailer', 'PHP/' . phpversion());
@@ -118,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p>If you did not request this, please ignore this email.</p>
                         <p>For any issues, contact our support team at <a href='mailto:organizeplusmail@gmail.com'>organizeplusmail@gmail.com</a>.</p>
                         <hr>
-                        <p>Best regards,<br><strong>ORGanize+ Team</strong></p>
+                        <p>Best regards,<br><strong>ORGanizePLUS Team</strong></p>
                     </div>
                 ";
                 $mail->AltBody = "Welcome, $username!\n\nYour OTP code is: $otp\nThis OTP is valid for 3 hours.\n\nIf you didn't request this, ignore this email.\n\nBest regards,\nORGanize+ Team";
