@@ -171,8 +171,63 @@ async function fetchTaskDetails(taskId) {
 
       document.getElementById('editTaskForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        const dueDateInput = document.getElementById('editDueDate');
+        const dueDate = new Date(dueDateInput.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (dueDate < today) {
+          const proceed = confirm('⚠️ The deadline is in the past.\nAre you sure you want to update this task?');
+          if (!proceed) return;
+        }
         
         const formData = new FormData(e.target);
+        const collaboratorInputs = [...document.querySelectorAll('#editCollaboratorContainer input[name="collaborators[]"]')];
+        const collaborators = collaboratorInputs.map(input => input.value.trim());
+      
+        const validCollaborators = [];
+        const invalidCollaborators = [];
+      
+        // Clear previous feedback
+        collaboratorInputs.forEach(input => {
+          input.classList.remove('is-invalid');
+          const existingFeedback = input.nextElementSibling;
+          if (existingFeedback && existingFeedback.classList.contains('invalid-feedback')) {
+            existingFeedback.remove();
+          }
+        });
+      
+        // Validate collaborators
+        for (let i = 0; i < collaborators.length; i++) {
+          const email = collaborators[i];
+          const input = collaboratorInputs[i];
+      
+          if (!email) continue;
+      
+          const res = await fetch(`/TaskManagementSystem/api/check_user.php?email=${encodeURIComponent(email)}`);
+          const data = await res.json();
+      
+          if (data.exists) {
+            validCollaborators.push(email);
+          } else {
+            invalidCollaborators.push(email);
+            input.classList.add('is-invalid');
+      
+            const feedback = document.createElement('div');
+            feedback.className = 'invalid-feedback';
+            feedback.textContent = 'User not found';
+            input.parentNode.appendChild(feedback);
+          }
+        }
+      
+        if (invalidCollaborators.length > 0) {
+          alert('Please fix invalid emails before submitting.');
+          return;
+        }
+      
+        formData.append('validCollaborators', JSON.stringify(validCollaborators));
+      
         const statusDropdown = document.getElementById('editStatus');
         const originalStatus = statusDropdown.dataset.originalValue;
       
@@ -183,20 +238,17 @@ async function fetchTaskDetails(taskId) {
           });
       
           if (!response.ok) {
-            // Restore original status on error
             statusDropdown.value = originalStatus;
             const errorData = await response.json();
             throw new Error(errorData.message || 'Update failed');
           }
       
-          // Force full refresh after successful update
           location.reload();
-      
         } catch (error) {
           alert('Error updating task: ' + error.message);
           console.error('Update error:', error);
         }
-      });
+      });      
       
 
    // Chart Initialization
@@ -329,55 +381,91 @@ async function fetchTaskDetails(taskId) {
   initTaskInteractions();
 
   // Task Form Handling (MODIFIED)
+  // Task Form Handling (MODIFIED)
   const taskForm = document.getElementById('taskForm');
   if (taskForm) {
     taskForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      const dueDateInput = document.getElementById('dueDate');
+      const dueDate = new Date(dueDateInput.value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Strip time
+      
+      if (dueDate < today) {
+        const proceed = confirm('⚠️ The deadline is in the past.\nAre you sure you want to create this task?');
+        if (!proceed) return; // Cancel submission
+      }      
       
       const formData = new FormData(taskForm);
-      const collaborators = [...document.querySelectorAll('input[name="collaborators[]"]')]
-                          .map(input => input.value);
+      const collaboratorInputs = [...document.querySelectorAll('input[name="collaborators[]"]')];
+      const collaborators = collaboratorInputs.map(input => input.value.trim());
 
-  for (let [key, val] of formData.entries()) {
-  console.log(key, val);
-  }
+      const validCollaborators = [];
+      const invalidCollaborators = [];
 
-          // I-validate ang emails bago ipadala
-    const validCollaborators = [];
-    for (const email of collaborators) {
-      const response = await fetch(`/TaskManagementSystem/api/check_user.php?email=${encodeURIComponent(email)}`);
-      const { exists } = await response.json();
-      if (exists) validCollaborators.push(email);
-    }
+      // Clear previous feedback
+      collaboratorInputs.forEach(input => {
+        input.classList.remove('is-invalid');
+        const existingFeedback = input.nextElementSibling;
+        if (existingFeedback && existingFeedback.classList.contains('invalid-feedback')) {
+          existingFeedback.remove();
+        }
+      });
 
-    formData.append('validCollaborators', JSON.stringify(validCollaborators));
+      // Check each collaborator email
+      for (let i = 0; i < collaborators.length; i++) {
+        const email = collaborators[i];
+        const input = collaboratorInputs[i];
 
+        if (!email) continue;
+
+        const res = await fetch(`/TaskManagementSystem/api/check_user.php?email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+
+        if (data.exists) {
+          validCollaborators.push(email);
+        } else {
+          invalidCollaborators.push(email);
+          input.classList.add('is-invalid');
+
+          const feedback = document.createElement('div');
+          feedback.className = 'invalid-feedback';
+          feedback.textContent = 'User not found';
+          input.parentNode.appendChild(feedback);
+        }
+      }
+
+      // ⛔ Stop if any invalid
+      if (invalidCollaborators.length > 0) {
+        alert('Please fix invalid emails before submitting.');
+        return;
+      }
+
+      formData.append('validCollaborators', JSON.stringify(validCollaborators));
+
+      // Continue with form submission (fetch to create_task.php)
       try {
         const response = await fetch('/TaskManagementSystem/api/create_task.php', {
           method: 'POST',
           body: formData
         });
-        
+
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
-          // Refresh both tasks and chart
+          // Success actions
           if (location.pathname.endsWith('mytasks.php')) {
-            // If we're on mytasks.php, just reload the page
             location.reload();
           } else {
-            // Otherwise, update the task list dynamically
             await fetchAndUpdateTasks();
           }
-          
-          // Hide modal using vanilla JS
+
           const modal = bootstrap.Modal.getInstance(document.getElementById('createTaskModal'));
           if (modal) modal.hide();
-          
-          
-          // Reset form after successful submission
+
           taskForm.reset();
           document.getElementById('collaboratorContainer').innerHTML = `
             <div class="input-group mb-2 collaborator-field">
@@ -391,8 +479,7 @@ async function fetchTaskDetails(taskId) {
               </button>
             </div>`;
 
-            location.reload();
-
+          location.reload();
         } else {
           throw new Error(result.message || 'Unknown error occurred');
         }
@@ -402,6 +489,7 @@ async function fetchTaskDetails(taskId) {
       }
     });
   }
+
 });
 
 // Modified Collaborator Function (Works for Both Modals)

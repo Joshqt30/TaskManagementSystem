@@ -1,14 +1,14 @@
 Array
 (
-    [task_id] => 135
-    [title] => first
-    [description] => first test
-    [due_date] => 2025-04-22
-    [status] => in_progress
+    [task_id] => 152
+    [title] => try sa mytasks section
+    [description] => hello
+    [due_date] => 2025-04-17
+    [status] => todo
     [collaborators] => Array
         (
-            [0] => randomparaokay@gmail.com
-            [1] => domingojoshua405@gmail.com
+            [0] => secretonlybro@gmail.com
         )
 
+    [validCollaborators] => ["secretonlybro@gmail.com"]
 )

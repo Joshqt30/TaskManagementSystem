@@ -204,32 +204,41 @@ $tasks = $stmt->fetchAll();
           </thead>
           <tbody>
           <?php foreach ($tasks as $task): ?>
-            <tr>
-              <td><?= htmlspecialchars($task['title']) ?></td>
-              <td>
-                <?php if ($task['collaborator_emails']): ?>
-                  <?= nl2br(htmlspecialchars($task['collaborator_emails'])) ?>
-                <?php else: ?>
-                  <span class="text-muted">—</span>
-                <?php endif; ?>
-              </td>
-              <td>
-              <?php 
-                $statusClass = str_replace('_', '-', $task['status']); // Fix: "_" → "-"
-                ?>
+          <?php 
+            // Convert due_date to DateTime for comparison
+            $today = new DateTime();
+            $dueDate = new DateTime($task['due_date']);
+
+            // Force "expired" status for display only if it's TODO and past due
+            if ($task['status'] === 'todo' && $dueDate < $today) {
+              $task['status'] = 'expired';
+            }
+
+            $statusClass = str_replace('_', '-', $task['status']);
+          ?>
+          <tr>
+            <td><?= htmlspecialchars($task['title']) ?></td>
+            <td>
+              <?php if ($task['collaborator_emails']): ?>
+                <?= nl2br(htmlspecialchars($task['collaborator_emails'])) ?>
+              <?php else: ?>
+                <span class="text-muted">—</span>
+              <?php endif; ?>
+            </td>
+            <td>
               <span class="badge <?= $statusClass ?>"><?= ucfirst(str_replace('_', ' ', $task['status'])) ?></span>
-              </td>
-              <td><?= htmlspecialchars($task['due_date']) ?></td>
-              <td>
+            </td>
+            <td><?= htmlspecialchars($task['due_date']) ?></td>
+            <td>
               <?php if ($task['status'] !== 'expired') : ?>
                 <button class="btn btn-sm btn-warning edit-btn" data-id="<?= $task['id'] ?>">Edit</button>
               <?php endif; ?>
-              
+
               <?php if ($task['user_id'] == $_SESSION['user_id']) : ?>
                 <button class="btn btn-sm btn-danger delete-btn" data-id="<?= $task['id'] ?>">Delete</button>
               <?php endif; ?>
             </td>
-            </tr>
+          </tr>
           <?php endforeach; ?>
           </tbody>
 

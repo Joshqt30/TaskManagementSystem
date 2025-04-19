@@ -1,3 +1,63 @@
+<?php
+session_start();
+include 'config.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+if (!isset($_SESSION['email'])) {
+  $stmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+  $stmt->execute([$_SESSION['user_id']]);
+  $user = $stmt->fetch();
+  $_SESSION['email'] = $user['email'];
+}
+
+$user_id = $_SESSION['user_id'];
+
+try {
+    $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch();
+    if (!$user) {
+        session_destroy();
+        header("Location: login.php");
+        exit;
+    }
+} catch (PDOException $e) {
+    die("Error fetching user data");
+}
+
+
+$user_id = $_SESSION['user_id'];
+$email   = $_SESSION['email'];
+
+// Default values (all 0)
+$task_stats = [
+  'todo'        => 0,
+  'in_progress' => 0,
+  'completed'   => 0,
+  'expired'     => 0
+];
+
+// Query task counts per status
+$stmt = $pdo->prepare("
+  SELECT t.status, COUNT(DISTINCT t.id) AS cnt
+  FROM tasks t
+  LEFT JOIN collaborators c ON t.id = c.task_id
+  WHERE (t.user_id = ? OR c.user_id = ? OR c.email = ?)
+  GROUP BY t.status
+");
+$stmt->execute([$user_id, $user_id, $email]);
+
+while ($row = $stmt->fetch()) {
+  $task_stats[$row['status']] = (int)$row['cnt'];
+}
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -154,6 +214,12 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Inject PHP Task Stats into JS -->
+  <script>
+    const taskStats = <?= json_encode($task_stats) ?>;
+  </script>
+
   <!-- Custom JS -->
   <script src="js/new.js"></script>
 </body>

@@ -22,7 +22,7 @@
           <!-- Due Date -->
           <div class="mb-4">
             <label class="form-label fw-bold">Due Date</label>
-            <input type="date" name="due_date" class="form-control" required>
+            <input type="date" id="dueDate" name="due_date" class="form-control" required>
           </div>
 
             <!-- ← Insert the Status dropdown right here ↓ -->
@@ -181,7 +181,6 @@ function addCollaboratorField(mode = 'create') {
   container.appendChild(newField);
 }
 </script>
-  
 
 <style>
 .collaborator-field .btn-group {

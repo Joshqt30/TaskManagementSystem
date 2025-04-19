@@ -14,13 +14,20 @@ if (!isset($_SESSION['user_id'])) {
 
 $taskId = $_POST['task_id'] ?? null;
 
+// Sanitize and trim user inputs
+$_POST['title'] = trim($_POST['title']);
+$_POST['description'] = trim($_POST['description'] ?? '');
+$_POST['due_date'] = trim($_POST['due_date']);
+$_POST['status'] = trim($_POST['status']);
+
 file_put_contents('debug.txt', print_r($_POST, true));
 
 try {
-    // Verify ownership
-    $stmt = $pdo->prepare("
+// Permission + Status check in one go
+$stmt = $pdo->prepare("
     SELECT 
         t.user_id,
+        t.status,
         EXISTS(
             SELECT 1 FROM collaborators 
             WHERE task_id = t.id 
@@ -28,24 +35,23 @@ try {
         ) AS is_collaborator
     FROM tasks t
     WHERE t.id = ?
-    ");
-    $stmt->execute([$_SESSION['user_id'], $taskId]);
-    $permission = $stmt->fetch();
+");
+$stmt->execute([$_SESSION['user_id'], $taskId]);
+$task = $stmt->fetch();
 
-    if (!$permission || ($permission['user_id'] != $_SESSION['user_id'] && !$permission['is_collaborator'])) {
-        throw new Exception('You do not have permission to edit this task');
-    }
+if (
+    !$task || 
+    ($task['user_id'] != $_SESSION['user_id'] && !$task['is_collaborator'])
+) {
+    throw new Exception('You do not have permission to edit this task');
+}
 
-    $isOwner = ($permission['user_id'] == $_SESSION['user_id']);
+if ($task['status'] === 'expired') {
+    throw new Exception('Expired tasks cannot be edited');
+}
 
-    // Expired check
-    $stmt = $pdo->prepare("SELECT status FROM tasks WHERE id = ?");
-    $stmt->execute([$taskId]);
-    $currentTask = $stmt->fetch();
+$isOwner = ($task['user_id'] == $_SESSION['user_id']);
 
-    if ($currentTask['status'] === 'expired') {
-        throw new Exception('Expired tasks cannot be edited');
-    }
 
     // Update task
     $stmt = $pdo->prepare("UPDATE tasks SET 
@@ -82,7 +88,7 @@ try {
         $existingCollaborators = $stmtExisting->fetchAll(PDO::FETCH_COLUMN, 0);
 
         // Submitted emails from form
-        $submitted = $_POST['collaborators'];
+        $submitted = json_decode($_POST['validCollaborators'] ?? '[]', true);
 
 
         // Determine removed and new emails

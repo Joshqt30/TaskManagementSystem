@@ -22,7 +22,13 @@ try {
     if (empty($_POST['title']) || empty($_POST['due_date'])) {
         throw new Exception('Title and Due Date are required');
     }
-    
+
+    // Sanitize user input
+    $_POST['title'] = trim($_POST['title']);
+    $_POST['description'] = trim($_POST['description'] ?? '');
+    $_POST['due_date'] = trim($_POST['due_date']);
+    $_POST['status'] = trim($_POST['status']);
+        
     error_log("[DEBUG] Title: " . ($_POST['title'] ?? 'NOT_PROVIDED'));
     error_log("[DEBUG] Due Date: " . ($_POST['due_date'] ?? 'NOT_PROVIDED'));
     error_log("[DEBUG] Received status: " . ($_POST['status'] ?? 'STATUS_NOT_FOUND'));
