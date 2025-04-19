@@ -11,12 +11,16 @@ $user_id = $_SESSION['user_id'];
 
 
 // fetch username for sidebar
-$stmtUser = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+// now fetching both username and email
+$stmtUser = $pdo->prepare("SELECT username, email
+                           FROM users
+                           WHERE id = ?");
 $stmtUser->execute([$user_id]);
 $user = $stmtUser->fetch();
 
 $status  = $_GET['status'] ?? '';
 
+// 1) Base SELECT with only WHERE
 $sql = "
   SELECT 
     t.id,
@@ -24,15 +28,27 @@ $sql = "
     t.title,
     t.status,
     t.due_date,
-    GROUP_CONCAT(u2.email SEPARATOR ', ') AS collaborator_emails
+    GROUP_CONCAT(DISTINCT COALESCE(u2.email, c.email) SEPARATOR ', ') AS collaborator_emails
   FROM tasks t
   LEFT JOIN collaborators c ON t.id = c.task_id
   LEFT JOIN users u2 ON c.user_id = u2.id
-  WHERE t.user_id = ? OR c.user_id = ?  
+  WHERE t.id IN (
+    SELECT id   FROM tasks         WHERE user_id = ?
+    UNION
+    SELECT task_id FROM collaborators WHERE user_id = ? OR email = ?
+  )
 ";
+
+// 2) Collect params for those three placeholders
+$params = [
+  $user_id,      // for tasks.user_id
+  $user_id,      // for collaborators.user_id
+  $user['email'] // for collaborators.email
+];
 
 if ($status) {
   $sql .= " AND t.status = ?";
+  $params[] = $status;
 }
 $sql .= "
   GROUP BY t.id
@@ -41,15 +57,11 @@ $sql .= "
     t.due_date ASC
 ";
 
+// 5) Prepare & execute with the correct number of params
 $stmt = $pdo->prepare($sql);
-// Execute with user_id twice for both WHERE conditions
-if ($status) {
-  $stmt->execute([$user_id, $user_id, $status]);  // Added extra user_id
-} else {
-  $stmt->execute([$user_id, $user_id]);  // Added extra user_id
-}
+$stmt->execute($params);
 
-$tasks = $stmt->fetchAll();  // ← note: $tasks, not $result
+$tasks = $stmt->fetchAll();
 
 ?>
 

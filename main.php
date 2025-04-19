@@ -38,12 +38,20 @@ include 'partials/task_modal.php';
       }
 
   // Get task statistics for chart
-    $task_stats = ['todo' => 0, 'in_progress' => 0, 'completed' => 0, 'expired' => 0];
-    $stmt = $pdo->prepare("SELECT status, COUNT(*) as count FROM tasks WHERE user_id = ? GROUP BY status");
-    $stmt->execute([$user_id]);
-    while ($row = $stmt->fetch()) {
-        $task_stats[$row['status']] = $row['count'];
-    }
+  // New task statistics query (add this)
+  $task_stats = ['todo' => 0, 'in_progress' => 0, 'completed' => 0, 'expired' => 0];
+  $stmt = $pdo->prepare("
+      SELECT t.status, COUNT(DISTINCT t.id) as count 
+      FROM tasks t
+      LEFT JOIN collaborators c ON t.id = c.task_id
+      WHERE 
+          (t.user_id = ? OR c.user_id = ? OR c.email = ?)
+      GROUP BY t.status
+  ");
+  $stmt->execute([$user_id, $user_id, $_SESSION['email']]);
+  while ($row = $stmt->fetch()) {
+      $task_stats[$row['status']] = $row['count'];
+  }
 
 // I-update ang status ng overdue tasks
 $updateStmt = $pdo->prepare("UPDATE tasks 

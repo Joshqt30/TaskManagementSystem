@@ -17,25 +17,24 @@ if (!$taskId) {
 }
 
 try {
-    // Get task details with collaborators
+    // Get task details and collaborators emails
     $stmt = $pdo->prepare("
-    SELECT 
-        t.*,
-        u.username as owner_name,
-        GROUP_CONCAT(c.user_id) AS collaborator_ids,
-        GROUP_CONCAT(c.status) AS collaborator_statuses,
-        GROUP_CONCAT(u2.email) AS collaborator_emails
-    FROM tasks t
-    LEFT JOIN collaborators c ON t.id = c.task_id
-    LEFT JOIN users u ON t.user_id = u.id
-    LEFT JOIN users u2 ON c.user_id = u2.id
-    WHERE t.id = ? 
-      AND (t.user_id = ? OR c.user_id = ?)
-    GROUP BY t.id
-");
+        SELECT 
+            t.*,
+            u.username as owner_name,
+            GROUP_CONCAT(c.user_id) AS collaborator_ids,
+            GROUP_CONCAT(c.status) AS collaborator_statuses,
+            GROUP_CONCAT(u2.email) AS collaborator_emails
+        FROM tasks t
+        LEFT JOIN collaborators c ON t.id = c.task_id
+        LEFT JOIN users u ON t.user_id = u.id
+        LEFT JOIN users u2 ON c.user_id = u2.id
+        WHERE t.id = ? 
+    ");
     
     $userId = $_SESSION['user_id'];
-    $stmt->execute([$taskId, $userId, $userId]);
+    $stmt->execute([$taskId]);
+
     $task = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$task) {
@@ -50,7 +49,10 @@ try {
         $statuses = explode(',', $task['collaborator_statuses']);
         $emails = explode(',', $task['collaborator_emails']);
         
+        $currentUserEmail = $_SESSION['email'];
+
         for ($i = 0; $i < count($ids); $i++) {
+            // All collaborators will be shown their emails
             $collaborators[] = [
                 'user_id' => $ids[$i],
                 'email' => $emails[$i],
@@ -85,4 +87,5 @@ try {
     http_response_code(500);
     die(json_encode(['error' => $e->getMessage()]));
 }
+
 ?>
