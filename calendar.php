@@ -1,3 +1,41 @@
+<?php
+session_start();
+include 'config.php';
+
+// Redirect to login if not authenticated
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Ensure email is set in the session
+if (!isset($_SESSION['email'])) {
+  // Fetch email from the database if missing
+  $stmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+  $stmt->execute([$_SESSION['user_id']]);
+  $user = $stmt->fetch();
+  $_SESSION['email'] = $user['email']; 
+}
+
+// Get user data
+$user_id = $_SESSION['user_id'];
+try {
+  $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+  $stmt->execute([$user_id]);
+  $user = $stmt->fetch();
+  if (!$user) {
+    // Handle case where user doesn't exist
+    session_destroy();
+    header("Location: login.php");
+    exit;
+}
+} catch (PDOException $e) {
+// Log error and handle appropriately
+die("Error fetching user data");
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,7 +98,9 @@
         <div class="sidebar-profile">
           <i class="fa-solid fa-user-circle"></i>
           <!-- Dynamic username placeholder -->
-          <div class="user-name">nameforbackend@gmail.com</div>
+          <div class="user-name">
+          <?= htmlspecialchars($user['username']) ?> <!-- Only username -->
+        </div>
         </div>
         <ul class="nav flex-column sidebar-menu">
           <li class="nav-item">

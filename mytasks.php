@@ -7,6 +7,24 @@ if (!isset($_SESSION['user_id'])) {
   header("Location: login.php");
   exit();
 }
+
+// Get user data
+$user_id = $_SESSION['user_id'];
+try {
+  $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+  $stmt->execute([$user_id]);
+  $user = $stmt->fetch();
+  if (!$user) {
+    // Handle case where user doesn't exist
+    session_destroy();
+    header("Location: login.php");
+    exit;
+}
+} catch (PDOException $e) {
+// Log error and handle appropriately
+die("Error fetching user data");
+}
+
 $user_id = $_SESSION['user_id'];
 
 

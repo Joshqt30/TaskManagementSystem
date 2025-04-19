@@ -14,7 +14,7 @@ if (!isset($_SESSION['email'])) {
   $stmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");
   $stmt->execute([$_SESSION['user_id']]);
   $user = $stmt->fetch();
-  $_SESSION['email'] = $user['email']; // 👈 Set it here
+  $_SESSION['email'] = $user['email']; 
 }
 
 

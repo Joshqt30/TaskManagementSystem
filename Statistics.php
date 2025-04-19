@@ -7,14 +7,36 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Get email early
 if (!isset($_SESSION['email'])) {
   $stmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");
   $stmt->execute([$_SESSION['user_id']]);
   $user = $stmt->fetch();
   $_SESSION['email'] = $user['email'];
 }
-
+$email = $_SESSION['email'];
 $user_id = $_SESSION['user_id'];
+
+
+// Total assigned tasks (as owner or collaborator)
+$stmt = $pdo->prepare("
+  SELECT COUNT(DISTINCT t.id) AS total
+  FROM tasks t
+  LEFT JOIN collaborators c ON t.id = c.task_id
+  WHERE (
+    t.user_id = ?
+    OR c.user_id = ?
+    OR c.email   = ?
+  )
+");
+$stmt->execute([
+  $user_id,
+  $user_id,
+  $email
+]);
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+$totalTaskCount = $row['total'] ?? 0;
+
 
 try {
     $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
@@ -30,8 +52,6 @@ try {
 }
 
 
-$user_id = $_SESSION['user_id'];
-$email   = $_SESSION['email'];
 
 // Default values (all 0)
 $task_stats = [
@@ -74,11 +94,29 @@ while ($row = $stmt->fetch()) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="designs/transition.css" />
   <link rel="stylesheet" href="designs/Statistics.css" />
   <link rel="stylesheet" href="designs/mobile.css" />
   <link rel="stylesheet" href="designs/header-sidebar.css" />
   
+
+  <script>
+    // Pass PHP data to JavaScript
+    window.USER_ID = <?= json_encode($_SESSION['user_id'] ?? 0) ?>;
+    window.chartData = <?= json_encode([
+        'labels' => ["To-Do", "In Progress", "Completed", "Expired"],
+        'datasets' => [[
+            'data' => [
+                $task_stats['todo'],
+                $task_stats['in_progress'],
+                $task_stats['completed'],
+                $task_stats['expired'] // Idagdag
+            ],
+            'backgroundColor' => ["#EA2E2E", "#5BA4E5", "#54D376", "#999999"]
+        ]]
+    ]) ?>;
+  </script>
+
+
 </head>
 <body>
   <!-- Header -->
@@ -119,7 +157,9 @@ while ($row = $stmt->fetch()) {
         <div class="sidebar-profile">
           <i class="fa-solid fa-user-circle"></i>
           <!-- Dynamic username placeholder -->
-          <div class="user-name">nameforbackend@gmail.com</div>
+          <div class="user-name">
+          <?= htmlspecialchars($user['username']) ?> <!-- Only username -->
+        </div>
         </div>
         <ul class="nav flex-column sidebar-menu">
           <li class="nav-item">
@@ -159,34 +199,48 @@ while ($row = $stmt->fetch()) {
       </div>
 
       <div class="Tasks">
+      <div class="Tasks">
         <div class="comp">
-          <p>Completed Task</p>
-      
+          <p>To Do</p>
+          <h4 id="todoCount"><?= $task_stats['todo'] ?></h4>
         </div>
 
         <div class="comp">
           <p>In Progress</p>
-           
+          <h4 id="inProgressCount"><?= $task_stats['in_progress'] ?></h4>
         </div>
 
         <div class="comp">
-          <p>Overdue Task</p>
-           
+          <p>Completed Task</p>
+          <h4 id="completedCount"><?= $task_stats['completed'] ?></h4>
         </div>
 
         <div class="comp">
-          <p>Total Task</p>
-           
+          <p>Missed Task</p>
+          <h4 id="expiredCount"><?= $task_stats['expired'] ?></h4>
         </div>
+      </div>
 
       </div>
 
    <div class="stats">  
 
-    <div class="assign">
-      <p>Total task assigned</p>
-      <hr  />
+    <div class="custom-container mx-auto">
+    <h2 class="custom-title">Total task assigned</h2>
+    <div class="card-body-custom">
+      <!-- dynamic count -->
+      <div class="task-count"><?= $totalTaskCount ?></div>
+      <!-- dynamic message -->
+      <p class="task-message">
+        You have <?= $totalTaskCount ?> tasks assigned. Keep up the momentum or start creating new tasks to stay organized and productive!
+      </p>
+      <!-- button -->
+      <a href="mytasks.php" class="btn btn-custom">
+        View your tasks <i class="fas fa-arrow-right"></i>
+      </a>
     </div>
+  </div>
+
 
     <div class="status">
       <p>Tasks Statistics</p>
@@ -196,10 +250,24 @@ while ($row = $stmt->fetch()) {
           <canvas id="taskGraph"></canvas>
         </div>
         <div class="chart-legend">
-          <div class="legend-item"><span class="legend-color todo"></span> To-Do</div>
-          <div class="legend-item"><span class="legend-color in-progress"></span> In Progress</div>
-          <div class="legend-item"><span class="legend-color completed"></span> Completed</div>
+        <div class="legend-item">
+          <div class="legend-color todo"></div>
+          <span>To-Do: <strong><?= $task_stats['todo'] ?></strong></span>
         </div>
+        <div class="legend-item">
+          <div class="legend-color in-progress"></div>
+          <span>In Progress: <strong><?= $task_stats['in_progress'] ?></strong></span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color completed"></div>
+          <span>Completed: <strong><?= $task_stats['completed'] ?></strong></span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color missed"></div>
+          <span>Missed: <strong><?= $task_stats['expired'] ?></strong></span>
+        </div>
+      </div>
+
       </div>
     </div>
 
@@ -217,10 +285,12 @@ while ($row = $stmt->fetch()) {
 
   <!-- Inject PHP Task Stats into JS -->
   <script>
-    const taskStats = <?= json_encode($task_stats) ?>;
+    window.taskStats = <?= json_encode($task_stats) ?>;
   </script>
+
 
   <!-- Custom JS -->
   <script src="js/new.js"></script>
+  <script src="js/statistics.js"></script>
 </body>
 </html>
