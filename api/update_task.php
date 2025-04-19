@@ -81,8 +81,28 @@ try {
         $stmtExisting->execute([$taskId]);
         $existingCollaborators = $stmtExisting->fetchAll(PDO::FETCH_COLUMN, 0);
 
-        // Check for new collaborators
-        $newCollaborators = array_diff($_POST['collaborators'], $existingCollaborators);
+        // Submitted emails from form
+        $submitted = $_POST['collaborators'];
+
+
+        // Determine removed and new emails
+        $removedCollaborators = array_diff($existingCollaborators, $submitted);
+        $newCollaborators = array_diff($submitted, $existingCollaborators);
+
+        // 1️⃣ Delete removed collaborators
+        if (!empty($removedCollaborators)) {
+            $delStmt = $pdo->prepare("
+                DELETE c
+                FROM collaborators c
+                JOIN users u ON c.user_id = u.id
+                WHERE c.task_id = ?
+                AND u.email = ?
+            ");
+            foreach ($removedCollaborators as $emailToRemove) {
+                $delStmt->execute([$taskId, $emailToRemove]);
+            }
+        }
+
         
         if (!empty($newCollaborators)) {
             foreach ($newCollaborators as $email) {
