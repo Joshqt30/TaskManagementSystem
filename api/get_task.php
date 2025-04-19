@@ -19,18 +19,19 @@ if (!$taskId) {
 try {
     // Get task details and collaborators emails
     $stmt = $pdo->prepare("
-        SELECT 
-            t.*,
-            u.username as owner_name,
-            GROUP_CONCAT(c.user_id) AS collaborator_ids,
-            GROUP_CONCAT(c.status) AS collaborator_statuses,
-            GROUP_CONCAT(u2.email) AS collaborator_emails
-        FROM tasks t
-        LEFT JOIN collaborators c ON t.id = c.task_id
-        LEFT JOIN users u ON t.user_id = u.id
-        LEFT JOIN users u2 ON c.user_id = u2.id
-        WHERE t.id = ? 
-    ");
+    SELECT 
+        t.*,
+        u.username as owner_name,
+        u.email as owner_email,
+        GROUP_CONCAT(c.user_id) AS collaborator_ids,
+        GROUP_CONCAT(c.status) AS collaborator_statuses,
+        GROUP_CONCAT(u2.email) AS collaborator_emails
+    FROM tasks t
+    LEFT JOIN collaborators c ON t.id = c.task_id
+    LEFT JOIN users u ON t.user_id = u.id
+    LEFT JOIN users u2 ON c.user_id = u2.id
+    WHERE t.id = ? 
+");
     
     $userId = $_SESSION['user_id'];
     $stmt->execute([$taskId]);
@@ -71,7 +72,8 @@ try {
         'is_owner' => ($task['user_id'] == $_SESSION['user_id']),
         'owner' => [
             'id' => $task['user_id'],
-            'name' => $task['owner_name']
+            'name' => $task['owner_name'],
+            'email' => $task['owner_email'] 
         ],
         'collaborators' => $collaborators,
         'created_at' => $task['created_at']
