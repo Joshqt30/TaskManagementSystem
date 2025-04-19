@@ -1,8 +1,14 @@
 Array
 (
-    [task_id] => 104
-    [title] => Owner si Secret
-    [description] => test
-    [due_date] => 2025-04-20
-    [status] => completed
+    [task_id] => 135
+    [title] => first
+    [description] => first test
+    [due_date] => 2025-04-22
+    [status] => in_progress
+    [collaborators] => Array
+        (
+            [0] => randomparaokay@gmail.com
+            [1] => domingojoshua405@gmail.com
+        )
+
 )

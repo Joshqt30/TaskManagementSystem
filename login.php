@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $stmtUpdate->execute([$_SESSION['user_id'], $taskId]);
                             
                             // Redirect to task details
-                            header("Location: task_details.php?id=$taskId");
+                            header("Location: main.php?id=$taskId");
                             exit();
                         }
                     }
