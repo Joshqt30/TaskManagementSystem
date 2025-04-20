@@ -138,9 +138,6 @@ if (task.collaborators.length) {
     </li>`;
 }
 
-// — Finally show the modal —
-new bootstrap.Modal(document.getElementById('taskDetailModal')).show();
-
     new bootstrap.Modal(document.getElementById('taskDetailModal')).show();
     
   } catch (error) {
