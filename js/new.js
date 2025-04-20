@@ -253,7 +253,7 @@ async function fetchTaskDetails(taskId) {
 
 
       function refreshChart(chart) {
-        fetch("get_task_counts.php")
+        fetch("api/get-task-counts.php")
           .then(res => res.json())
           .then(data => {
             if (data.error) return console.error(data.error);
@@ -302,30 +302,39 @@ async function fetchTaskDetails(taskId) {
     const chartCanvas = document.getElementById('taskGraph');
     if (chartCanvas && typeof Chart !== 'undefined') {
       const ctx = chartCanvas.getContext('2d');
-      new Chart(ctx, {
-        type: 'doughnut',
-        data: window.chartData || {
-          labels: ["To-Do", "In Progress", "Completed", "Expired"],
-          datasets: [{
-            data: [0, 0, 0, 0],
-            backgroundColor: ["#EA2E2E", "#5BA4E5", "#54D376", "#999999"]
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: '#000000',
-                boxWidth: 12,
-                padding: 10
-              }
-            }
-          }
+    // create the chart, hiding the default legend
+    const chart = new Chart(ctx, {
+      type: 'doughnut',
+      data: window.chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }    // ← hide Chart.js’s built‑in legend
         }
-      });
+      }
+    });
+
+    // now build our custom legend exactly like statistics.js
+    const legendEl = document.querySelector('.chart-legend');
+    legendEl.innerHTML = '';           // clear any placeholder
+
+    chart.data.labels.forEach((label, i) => {
+      const value = chart.data.datasets[0].data[i];
+      const color = chart.data.datasets[0].backgroundColor[i];
+
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = `
+        <span class="legend-left">
+          <span class="legend-color" style="background:${color}"></span>
+          <span class="legend-label">${label}</span>
+        </span>
+        <span class="legend-value">${value}</span>
+      `;
+      legendEl.appendChild(item);
+    });
+
     }
   };
   initializeChart();

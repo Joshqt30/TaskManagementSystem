@@ -396,20 +396,60 @@ body.page-transition {
   margin-bottom: 10px;
 }
 
-/* Checkbox Style */
-.task-checkbox {
-  margin-top: 0.25rem;
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 20px;
+  padding: 0 28px;
+  gap: 4px;
 }
 
-.task-checkbox input {
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  appearance: none;
-  cursor: pointer;
-  position: relative;
+.legend-item {
+  display: flex;
+  justify-content: space-between; /* left group vs. number */
+  align-items: center;
+  width: 100%;                     /* span the full 300px */
+  padding: 0 28px 0 8px;   /* ← 28px left/right padding */
+  gap: 8px;
 }
+
+.legend-left {
+  display: flex;
+  align-items: center;
+}
+
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  margin-right: 12px;
+}
+
+.legend-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #3D5654;
+  white-space: nowrap;        /* prevent wrapping or overflow */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.legend-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #3D5654;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.todo { background-color: #EA2E2E; }
+.in-progress { background-color: #5BA4E5; }
+.completed { background-color: #54D376; }
+.missed { background-color: #9E9E9E; } 
 
 
 @media screen and (max-width: 768px) {

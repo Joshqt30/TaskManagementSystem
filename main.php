@@ -115,7 +115,7 @@ $tasks = $stmt->fetchAll();
     // Pass PHP data to JavaScript
     window.USER_ID = <?= json_encode($_SESSION['user_id'] ?? 0) ?>;
     window.chartData = <?= json_encode([
-        'labels' => ["To-Do", "In Progress", "Completed", "Expired"],
+        'labels' => ["To-Do", "In Progress", "Completed", "Missed"],
         'datasets' => [[
             'data' => [
                 $task_stats['todo'],
@@ -333,12 +333,7 @@ $tasks = $stmt->fetchAll();
               <div class="chart-container">
                 <canvas id="taskGraph"></canvas>
               </div>
-              <div class="chart-legend">
-                <div class="legend-item"><span class="legend-color todo"></span> To-Do</div>
-                <div class="legend-item"><span class="legend-color in-progress"></span> In Progress</div>
-                <div class="legend-item"><span class="legend-color completed"></span> Completed</div>
-                <div class="legend-item"><span class="legend-color expired"></span> Missing</div>
-              </div>
+              <div class="chart-legend"></div>
             </div>
           </div>
         </div>
