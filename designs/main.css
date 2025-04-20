@@ -411,20 +411,6 @@ body.page-transition {
   position: relative;
 }
 
-.task-checkbox input:checked {
-  background-color: #54D376;
-  border-color: #54D376;
-}
-
-.task-checkbox input:checked::after {
-  content: "✓";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 0.9rem;
-}
 
 @media screen and (max-width: 768px) {
   .main-content { padding: 15px; }

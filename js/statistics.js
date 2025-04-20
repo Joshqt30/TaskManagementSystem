@@ -1,4 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+  function refreshChart(chart) {
+    fetch("get_task_counts.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) return console.error(data.error);
+  
+        chart.data.datasets[0].data = [
+          data.todo,
+          data.in_progress,
+          data.completed,
+          data.expired
+        ];
+        chart.update();
+  
+        // Update legend
+        const legendEl = document.querySelector(".chart-legend");
+        if (legendEl) {
+          legendEl.innerHTML = "";
+          chart.data.labels.forEach((label, i) => {
+            const value = chart.data.datasets[0].data[i];
+            const color = chart.data.datasets[0].backgroundColor[i];
+            const item = document.createElement("div");
+            item.className = "legend-item";
+            item.innerHTML = `
+              <span class="legend-left">
+                <span class="legend-color" style="background:${color}"></span>
+                <span class="legend-label">${label}</span>
+              </span>
+              <span class="legend-value">${value}</span>
+            `;
+            legendEl.appendChild(item);
+          });
+        }
+  
+        // Update count cards
+        document.getElementById("todoCount").textContent = data.todo;
+        document.getElementById("inProgressCount").textContent = data.in_progress;
+        document.getElementById("completedCount").textContent = data.completed;
+        document.getElementById("expiredCount").textContent = data.expired;
+      });
+  }
     const canvas = document.getElementById("taskGraph");
     if (!canvas || typeof Chart === "undefined") return;
   
@@ -60,5 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("inProgressCount").textContent = stats.in_progress;
     document.getElementById("completedCount").textContent = stats.completed;
     document.getElementById("expiredCount").textContent = stats.expired;
+
+    refreshChart(chart);
+
   });
   

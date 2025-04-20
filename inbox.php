@@ -716,7 +716,6 @@ if ($selected_contact_id) {
         </div>
       </div>
     </div>
-    
     </main>
   </div>
 

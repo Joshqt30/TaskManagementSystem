@@ -224,10 +224,9 @@ $tasks = $stmt->fetchAll();
           <?php foreach ($tasks as $task): ?>
           <?php 
             // Convert due_date to DateTime for comparison
-            $today = new DateTime();
-            $dueDate = new DateTime($task['due_date']);
-
-            // Force "expired" status for display only if it's TODO and past due
+            $today = (new DateTime())->setTime(0, 0); // current date at 00:00
+            $dueDate = (new DateTime($task['due_date']))->setTime(0, 0); // due date at 00:00
+            
             if ($task['status'] === 'todo' && $dueDate < $today) {
               $task['status'] = 'expired';
             }

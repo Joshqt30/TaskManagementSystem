@@ -54,14 +54,15 @@ include 'partials/task_modal.php';
   }
 
 // I-update ang status ng overdue tasks
-$updateStmt = $pdo->prepare("UPDATE tasks 
+$update = $pdo->prepare("
+    UPDATE tasks 
     SET status = 'expired' 
-    WHERE 
-        user_id = ? 
-        AND status IN ('todo', 'in_progress') 
-        AND due_date < CURDATE()
+    WHERE user_id = :uid 
+    AND (status = 'todo' OR status = 'in_progress') 
+    AND DATE(due_date) < CURDATE()
 ");
-$updateStmt->execute([$user_id]);
+$update->execute(['uid' => $_SESSION['user_id']]);
+
 
 // ====== NEW CODE STARTS HERE ======
 // Fetch tasks (owned by user OR where user is collaborator)
@@ -320,6 +321,7 @@ $tasks = $stmt->fetchAll();
               </div>
           </div>
         </div>
+
       
         <!-- Right Column: Tasks Statistics (Chart) -->
         <div class="col-lg-5">
@@ -335,7 +337,7 @@ $tasks = $stmt->fetchAll();
                 <div class="legend-item"><span class="legend-color todo"></span> To-Do</div>
                 <div class="legend-item"><span class="legend-color in-progress"></span> In Progress</div>
                 <div class="legend-item"><span class="legend-color completed"></span> Completed</div>
-                <div class="legend-item"><span class="legend-color expired"></span> Expired</div>
+                <div class="legend-item"><span class="legend-color expired"></span> Missing</div>
               </div>
             </div>
           </div>
