@@ -84,6 +84,23 @@ body {
     margin: 20px auto;  
     position: relative;
     margin-top: 30px;
+    overflow: visible;
+}
+
+select.log {
+  width: 100%;
+  padding-right: 15px; /* Create space for the arrow */
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: visible;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+
+/* For other browsers */
+select.log::-ms-expand {
+  display: block; /* For IE */
 }
 
  

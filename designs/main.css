@@ -489,6 +489,52 @@ body.page-transition {
   border-bottom: none;
 }
 
+/* Wraps the filter + table in a white card */
+.task-card {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  margin-bottom: 2rem;
+}
+
+/* Tables inside that card */
+.task-card .table {
+  margin-bottom: 0;                  /* no extra bottom gap */
+}
+
+.task-card .table thead th {
+  border-bottom: 2px solid #E3F2F1;
+  font-weight: 600;
+  color: #3D5654;
+}
+
+.task-card .table-hover tbody tr:hover {
+  background-color: #F1F8F7;
+}
+
+.task-card .table-striped tbody tr:nth-of-type(odd) {
+  background-color: #FCFEFE;
+}
+
+.task-card .table td, 
+.task-card .table th {
+  vertical-align: middle;            /* center‑align cells */
+  padding: 0.75rem 1rem;
+}
+
+/* Status badges are uniform width */
+.task-card .badge {
+  min-width: 5rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Make the select a bit narrower */
+.task-card #statusFilter {
+  max-width: 180px;
+}
+
+
 
 @media screen and (max-width: 768px) {
   .main-content { padding: 15px; }

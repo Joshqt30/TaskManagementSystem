@@ -12,9 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Convert email to lowercase if it's an email
     if (filter_var($username_or_email, FILTER_VALIDATE_EMAIL)) {
         $username_or_email = strtolower($username_or_email);
-        $stmt = $pdo->prepare("SELECT id, username, password, is_verified, email FROM users WHERE email = ?");
+        $stmt = $pdo->prepare("SELECT id, username, password, is_verified, email, role FROM users WHERE email = ?");
     } else {
-        $stmt = $pdo->prepare("SELECT id, username, password, is_verified, email FROM users WHERE username = ?");
+        $stmt = $pdo->prepare("SELECT id, username, password, is_verified, email, role FROM users WHERE username = ?");
     }
 
     $stmt->execute([$username_or_email]);
@@ -25,21 +25,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($user['is_verified'] == 1) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
-                $_SESSION['email'] = $user['email']; // 👈 ADD THIS LINE (to store email in session)
+                $_SESSION['email'] = $user['email'];
+                $_SESSION['role'] = $user['role']; // Store the role in session
 
-                    // 👇 Add this block to update ALL pending collaborators for this user
-                        $updateStmt = $pdo->prepare("
-                        UPDATE collaborators 
-                        SET 
-                            status = 'accepted',
-                            user_id = ?  
-                            WHERE (email = ? OR user_id = ?)
-                            AND status = 'pending'
-                    ");
-                    $updateStmt->execute([$_SESSION['user_id'], $_SESSION['email'], $_SESSION['user_id']]);
-                    // ======== END COLLABORATOR UPDATE ========
+                // Update pending collaborators
+                $updateStmt = $pdo->prepare("
+                    UPDATE collaborators 
+                    SET 
+                    status = 'accepted',
+                    user_id = ?  
+                    WHERE (email = ? OR user_id = ?)
+                    AND status = 'pending'
+                ");
+                $updateStmt->execute([$_SESSION['user_id'], $_SESSION['email'], $_SESSION['user_id']]);
 
-                // ======== COLLABORATOR STATUS UPDATE ========
+                // Collaborator status update for specific task
                 if (isset($_GET['task_id'])) {
                     $taskId = filter_input(INPUT_GET, 'task_id', FILTER_VALIDATE_INT);
                     
@@ -68,8 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
-                // Default redirect for regular login
-                header("Location: main.php");
+                // Redirect based on role
+                if ($user['role'] === 'admin') {
+                    header("Location: admin.php");
+                } else {
+                    header("Location: main.php");
+                }
                 exit();
 
             } else {
@@ -93,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login</title>
 </head>
 <body>
-
     <header>
         <img src="ORGanizepics/layers.png" class="ic" alt="Logo">
         <h2>ORGanize+</h2>
@@ -102,29 +105,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container">
         <h1>Login</h1>
 
-        <!-- 👇 Add error display -->
-            <?php if (!empty($error_message)): ?>
-                <div class="alert alert-danger" role="alert">
-                    <?= htmlspecialchars($error_message) ?>
-                </div>
-            <?php endif; ?>
+        <?php if (!empty($error_message)): ?>
+            <div class="alert alert-danger" role="alert">
+                <?= htmlspecialchars($error_message) ?>
+            </div>
+        <?php endif; ?>
         
         <form method="POST">
             <div class="log-con"> 
                 <input type="text" name="username_or_email" class="log" placeholder="Username or Email" required>
                 <img src="ORGanizepics/user.png" class="ics" alt="User Icon">
             </div>
-                 
             <div class="log-con"> 
                 <input type="password" name="password" class="log" placeholder="Password" required>
                 <img src="ORGanizepics/padlock.png" class="ics" alt="Padlock Icon">
             </div>
-            
-            <!-- Forgot password positioned under the password field, right aligned -->
             <div class="forgot-container">
                 <a href="forgot.php" class="forgot">Forgot password?</a> 
             </div>
-            
             <button type="submit">Login</button>
         </form>
         <p>Don't have an account? <a href="register.php">Sign up</a></p>

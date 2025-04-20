@@ -529,90 +529,18 @@ body {
 }
 </style>
 
-
-
-
-
-
-
-
-
-
-
-    <!-- Get Started Section -->
-    <section class="get-started">
-        <div class="get-started-container">
-            <h2>Get Started Today!</h2>
-            <p>Stay organized, stay productive, and achieve more with ORGanize+. Let's turn your to-do lists into done lists!</p>
-            <button class="btn btn-white">Get Started</button>
-        </div>
-    </section>
-
-<style>
-  .get-started {
-    background: #425C5A;
-    padding: 4em 2rem;
-    text-align: center;
-    color: white;
-    text-align: left;
-    margin: 20px;
-    
-}
-
-.get-started-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.get-started h2 {
-    font-size: 20px;
-    margin-bottom: 20px;
-}
-
-.get-started p {
-    margin-bottom: 40px;
-    color: #e2e2e2;
-}
-
-.btn-white {
-    background: white;
-    color: #2F4F4F;
-    transition: transform 0.3s ease;
-}
-
-.btn-white:hover {
-    background: #ffffff;
-    color: rgb(0, 0, 0);
-    transform: scale(1.2);
-}
-</style>    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
  <!-- Footer -->
  <footer>
     <div class="footer-container">
       <div class="footer-logo">
-        <img src="ORGanizepics/Footer-Logo.png" alt="ORGanize+ Logo">
+        <img src="ORGanizepics/white-layer-50 (1).png" alt="ORGanize+ Logo">
         <span>ORGanize+</span>
       </div>
       
       <div class="footer-links">
         <div class="footer-column">
           <h5>Help</h5>
-          <a href="aboutus.html">About Us</a>
+          <a href="aboutus.php">About Us</a>
           <a href="contact.php">Contact</a>
         </div>
         

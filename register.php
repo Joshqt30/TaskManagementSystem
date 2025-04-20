@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
-    $organization = $_POST['organization']; // New field
+    $organization = $_POST['organization'];
 
     // Validate email format
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -29,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/', $password)) {
         $error_message = "Password must be 8-20 chars with uppercase, lowercase, and number!";
     }
-
     elseif (!in_array($organization, [
         'QCU Creative Student Society',
         'LIKHA Production',
@@ -52,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ])) {
         $error_message = "Please select a valid organization";
     }
-
     else {
         // Check if the email is already in the database
         $stmt = $pdo->prepare("SELECT is_verified FROM users WHERE email = ?");
@@ -75,15 +73,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error_message = "This email is already registered and verified!";
             }
         } else {
-            // Insert a new user record
-            $stmt = $pdo->prepare("INSERT INTO users (email, username, password, organization, otp, otp_expiry, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            // Insert a new user record with role 'user'
+            $stmt = $pdo->prepare("
+                INSERT INTO users (email, username, password, organization, otp, otp_expiry, is_verified, role, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 'user', NOW())
+            ");
             if (!$stmt->execute([$email, $username, $hashed_password, $organization, $otp, $otp_expiry, 0])) {
                 $error_message = "Registration failed. Please try again.";
             }
-        }
-
-        function sendEmail($to, $subject, $body) {
-            
         }
 
         // If no error, send the OTP email
@@ -149,11 +146,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="container">
       <h1>Register</h1>
 
-        <?php if (isset($error_message)): ?>
-            <div class="alert alert-danger" role="alert">
-               <?= htmlspecialchars($error_message) ?>
-             </div>
-        <?php endif; ?>
+      <?php if (isset($error_message)): ?>
+          <div class="alert alert-danger" role="alert">
+             <?= htmlspecialchars($error_message) ?>
+          </div>
+      <?php endif; ?>
 
       <form method="POST">
           <div class="log-con">
@@ -174,34 +171,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <input type="password" name="confirm_password" class="log" placeholder="Confirm Password" required>
               <img src="ORGanizepics/padlock.png" class="ics" alt="Padlock Icon">
           </div>
-
-        <div class="log-con">
-        <select name="organization" class="log" required>
-        <option value="QCU Creative Student Society">QCU Creative Student Society</option>
-        <option value="LIKHA Production">LIKHA Production</option>
-        <option value="The QCU Times Publication">The QCU Times Publication</option>
-        <option value="Tanghalang Quezon City University">Tanghalang Quezon City University</option>
-        <option value="QCU Peer Counselors Organization">QCU Peer Counselors Organization</option>
-        <option value="QCU Gen. Z Learners">QCU Gen. Z Learners</option>
-        <option value="Youth on the Rock">Youth on the Rock</option>
-        <option value="QCU Iskolar Council">QCU Iskolar Council</option>
-        <option value="QCU College of Education_Official - BECED">QCU College of Education_Official - BECED</option>
-        <option value="Junior Philippine Institute of Accountants - QCU Chapter - BSA">Junior Philippine Institute of Accountants - QCU Chapter - BSA</option>
-        <option value="Electronics Engineers of the Philippines - QCU Chapter - BSECE">Electronics Engineers of the Philippines - QCU Chapter - BSECE</option>
-        <option value="PIIE ORSP QCU Student Chapter - BSIE">PIIE ORSP QCU Student Chapter - BSIE</option>
-        <option value="QCU - League of Excellent Students in Information Technology - BSIT">QCU - League of Excellent Students in Information Technology - BSIT</option>
-        <option value="Qcu Syvsis - BSIS">Qcu Syvsis - BSIS</option>
-        <option value="QCU Young Entrepreneurs Society - BSEntrep">QCU Young Entrepreneurs Society - BSEntrep</option>
-        <option value="Junior Management Accountant Executives - QCU - BSMA">Junior Management Accountant Executives - QCU - BSMA</option>
-        <option value="BSCS">BSCS</option>
-        <option value="BSCE">BSCE</option>
-            <!-- Add more organizations as needed -->
-        </select>
-        </div>
-
+          <div class="log-con">
+              <select name="organization" class="log" required>
+                  <option value="QCU Creative Student Society">QCU Creative Student Society</option>
+                  <option value="LIKHA Production">LIKHA Production</option>
+                  <option value="The QCU Times Publication">The QCU Times Publication</option>
+                  <option value="Tanghalang Quezon City University">Tanghalang Quezon City University</option>
+                  <option value="QCU Peer Counselors Organization">QCU Peer Counselors Organization</option>
+                  <option value="QCU Gen. Z Learners">QCU Gen. Z Learners</option>
+                  <option value="Youth on the Rock">Youth on the Rock</option>
+                  <option value="QCU Iskolar Council">QCU Iskolar Council</option>
+                  <option value="QCU College of Education_Official - BECED">QCU College of Education_Official - BECED</option>
+                  <option value="Junior Philippine Institute of Accountants - QCU Chapter - BSA">Junior Philippine Institute of Accountants - QCU Chapter - BSA</option>
+                  <option value="Electronics Engineers of the Philippines - QCU Chapter - BSECE">Electronics Engineers of the Philippines - QCU Chapter - BSECE</option>
+                  <option value="PIIE ORSP QCU Student Chapter - BSIE">PIIE ORSP QCU Student Chapter - BSIE</option>
+                  <option value="QCU - League of Excellent Students in Information Technology - BSIT">QCU - League of Excellent Students in Information Technology - BSIT</option>
+                  <option value="Qcu Syvsis - BSIS">Qcu Syvsis - BSIS</option>
+                  <option value="QCU Young Entrepreneurs Society - BSEntrep">QCU Young Entrepreneurs Society - BSEntrep</option>
+                  <option value="Junior Management Accountant Executives - QCU - BSMA">Junior Management Accountant Executives - QCU - BSMA</option>
+                  <option value="BSCS">BSCS</option>
+                  <option value="BSCE">BSCE</option>
+              </select>
+          </div>
           <button type="submit">Register</button>
       </form>
-            
       <p>Already have an account? <a href="login.php">Login</a></p>
   </div>
   <script src="js/new.js"></script>

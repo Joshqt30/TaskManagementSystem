@@ -406,14 +406,14 @@ body {
  <footer>
     <div class="footer-container">
       <div class="footer-logo">
-        <img src="ORGanizepics/Footer-Logo.png" alt="ORGanize+ Logo">
+        <img src="ORGanizepics/white-layer-50 (1).png" alt="ORGanize+ Logo">
         <span>ORGanize+</span>
       </div>
       
       <div class="footer-links">
         <div class="footer-column">
           <h5>Help</h5>
-          <a href="guestabtus.html">About Us</a>
+          <a href="guestabtus.php">About Us</a>
           <a href="guestcontact.php">Contact</a>
         </div>
         
