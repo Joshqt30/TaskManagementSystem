@@ -451,6 +451,43 @@ body.page-transition {
 .completed { background-color: #54D376; }
 .missed { background-color: #9E9E9E; } 
 
+/* Task Details Modal Enhancements */
+#taskDetailModal .modal-content {
+  border-radius: .75rem;
+}
+
+#taskDetailModal .card {
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#taskDetailModal .modal-body {
+  padding: 1.75rem;
+}
+
+#taskDetailModal h4 {
+  color: #3D5654;
+}
+
+#taskDetailModal .badge {
+  text-transform: capitalize;
+  font-size: .85rem;
+  padding: .45em .75em;
+}
+
+#taskDetailModal .list-group-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .75rem 1rem;
+  border: none;
+  border-bottom: 1px solid #ececec;
+}
+
+#taskDetailModal .list-group-item:last-child {
+  border-bottom: none;
+}
+
 
 @media screen and (max-width: 768px) {
   .main-content { padding: 15px; }

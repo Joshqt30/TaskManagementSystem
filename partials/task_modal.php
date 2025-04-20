@@ -73,31 +73,63 @@
   </div>
 </div>
 
-    <!-- Add Task Detail Modal here -->
-    <div class="modal fade" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+<!-- Task Detail Modal -->
+<div class="modal fade" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <!-- Header -->
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="taskDetailModalLabel">Task Details</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="taskDetailModalLabel">
+          <i class="fa fa-info-circle me-2"></i>Task Details
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
+
+      <!-- Body -->
       <div class="modal-body">
-        <div class="task-meta-row mb-3">
-          <div><strong>Status:</strong> <span id="detail-status"></span></div>
-          <div><strong>Due Date:</strong> <span id="detail-due-date"></span></div>
+        <div class="row gx-4 gy-3">
+          <!-- Metadata Column -->
+          <div class="col-md-4">
+            <div class="card mb-3">
+              <div class="card-body py-2">
+                <p class="mb-2"><strong>Status:</strong>
+                  <span id="detail-status" class="badge"></span>
+                </p>
+                <p class="mb-0"><strong>Due Date:</strong>
+                  <span id="detail-due-date"></span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content Column -->
+          <div class="col-md-8">
+            <h4 id="detail-title" class="fw-bold mb-2"></h4>
+            <p id="detail-description" class="text-muted"></p>
+          </div>
         </div>
-        <h4 id="detail-title" class="mb-3"></h4>
-        <p id="detail-description" class="mb-4"></p>
-        
-        <!-- Add Collaborators Section Here -->
-        <div class="collaborators-section">
-          <h6>Collaborators:</h6>
-          <div id="detail-collaborators" class="collaborators-list"></div>
-        </div>
+
+        <hr/>
+
+        <!-- Collaborators -->
+        <h6 class="fw-semibold mb-2">
+          <i class="fa fa-users me-1 text-secondary"></i>Collaborators
+        </h6>
+        <ul id="detail-collaborators" class="list-group list-group-flush">
+          <!-- injected via JS -->
+        </ul>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 
 <!-- Edit Task Modal -->
 <div class="modal fade" id="editTaskModal" tabindex="-1">

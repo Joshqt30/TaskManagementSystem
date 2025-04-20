@@ -94,32 +94,52 @@ async function fetchTaskDetails(taskId) {
     const response = await fetch(`/TaskManagementSystem/api/get_task.php?id=${taskId}`);
     const task = await response.json();
 
-    // Populate basic task details
-    document.getElementById('detail-title').textContent = task.title;
-    document.getElementById('detail-description').textContent = task.description;
-    document.getElementById('detail-status').textContent = task.status.replace('_', ' ');
-    document.getElementById('detail-due-date').textContent = task.due_date;
+   // — Populate Title & Description —
+document.getElementById('detail-title').textContent = task.title;
+document.getElementById('detail-description').textContent = task.description;
 
-    // Populate collaborators
-    const collaboratorsContainer = document.getElementById('detail-collaborators');
-    collaboratorsContainer.innerHTML = '';
-    
-    if (task.collaborators && task.collaborators.length > 0) {
-      task.collaborators.forEach(collaborator => {
-        const collaboratorElement = document.createElement('div');
-        collaboratorElement.className = 'collaborator-item d-flex align-items-center mb-2';
-        collaboratorElement.innerHTML = `
-          <i class="fas fa-user me-2"></i>
-          <span class="email">${collaborator.email}</span>
-          <span class="badge ${collaborator.status === 'accepted' ? 'bg-success' : 'bg-warning'} ms-2">
-            ${collaborator.status}
-          </span>
-        `;
-        collaboratorsContainer.appendChild(collaboratorElement);
-      });
-    } else {
-      collaboratorsContainer.innerHTML = '<div class="text-muted">No collaborators</div>';
-    }
+// — Status badge with Bootstrap colors —
+const statusEl = document.getElementById('detail-status');
+statusEl.textContent = task.status.replace('_',' ');
+statusEl.className = 'badge ' + ({
+  todo: 'bg-danger',
+  in_progress: 'bg-warning',
+  completed: 'bg-success',
+  expired: 'bg-secondary'
+})[task.status];
+
+// — Prettified Due Date —
+const date = new Date(task.due_date);
+document.getElementById('detail-due-date').textContent =
+  date.toLocaleDateString(undefined, {
+    year: 'numeric', month: 'short', day: 'numeric'
+  });
+
+// — Collaborators list using Bootstrap list‑group —
+const collabList = document.getElementById('detail-collaborators');
+collabList.innerHTML = '';  // clear existing
+
+if (task.collaborators.length) {
+  task.collaborators.forEach(c => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.innerHTML = `
+      <i class="fa fa-user-circle text-secondary"></i>
+      <span class="flex-grow-1">${c.email}</span>
+      <span class="badge ${c.status==='accepted'?'bg-success':'bg-warning'}">
+        ${c.status}
+      </span>`;
+    collabList.append(li);
+  });
+} else {
+  collabList.innerHTML = `
+    <li class="list-group-item text-muted">
+      <i class="fa fa-user-slash me-2"></i>No collaborators
+    </li>`;
+}
+
+// — Finally show the modal —
+new bootstrap.Modal(document.getElementById('taskDetailModal')).show();
 
     new bootstrap.Modal(document.getElementById('taskDetailModal')).show();
     
