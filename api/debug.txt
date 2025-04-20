@@ -1,9 +1,14 @@
 Array
 (
-    [task_id] => 173
-    [title] => new todo
-    [description] => daawdwawa
-    [due_date] => 2025-04-22
-    [status] => in_progress
-    [validCollaborators] => []
+    [task_id] => 177
+    [title] => sample bro
+    [description] => sample lang huh
+    [due_date] => 2025-04-21
+    [status] => completed
+    [collaborators] => Array
+        (
+            [0] => domingojoshua405@gmail.com
+        )
+
+    [validCollaborators] => ["domingojoshua405@gmail.com"]
 )

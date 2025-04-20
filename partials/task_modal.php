@@ -1,7 +1,7 @@
 <div class="modal fade" id="createTaskModal" tabindex="-1" aria-labelledby="createTaskModalLabel">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
+      <div class="modal-header bg-success text-white">
         <h5 class="modal-title" id="createTaskModalLabel">Create New Task</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -78,7 +78,7 @@
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
       <!-- Header -->
-      <div class="modal-header bg-primary text-white">
+      <div class="modal-header bg-success text-white">
         <h5 class="modal-title" id="taskDetailModalLabel">
           <i class="fa fa-info-circle me-2"></i>Task Details
         </h5>

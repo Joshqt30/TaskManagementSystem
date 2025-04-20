@@ -522,7 +522,7 @@ if ($selected_contact_id) {
         <ul class="dropdown-menu dropdown-menu-end">
           <li><a class="dropdown-item" href="settings.php">Account Settings</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+          <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
         </ul>
       </div>
     </div>
@@ -696,8 +696,8 @@ if ($selected_contact_id) {
       </div>
 
       
-      <!-- Logout Confirmation Modal -->
-      <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
@@ -716,8 +716,6 @@ if ($selected_contact_id) {
         </div>
       </div>
     </div>
-    </main>
-  </div>
 
   <!-- Bootstrap JS and Popper.js -->
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

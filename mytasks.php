@@ -1,7 +1,7 @@
 <?php
 session_start();
 include 'config.php';
-include 'partials/task_modal.php';
+
 
 if (!isset($_SESSION['user_id'])) {
   header("Location: login.php");
@@ -24,6 +24,8 @@ try {
 // Log error and handle appropriately
 die("Error fetching user data");
 }
+
+include 'partials/task_modal.php';
 
 $user_id = $_SESSION['user_id'];
 
@@ -197,7 +199,7 @@ $tasks = $stmt->fetchAll();
           <i class="fa-solid fa-plus me-1"></i> New Task
         </button>
         <div class="mb-3">
-        <label for="statusFilter" class="form-label">Filter Status</label>
+        <label for="statusFilter" class="form-label"> Status</label>
         <select class="form-select" id="statusFilter" onchange="filterStatus()">
           <option value="">All</option>
           <option value="todo">To Do</option>
@@ -205,6 +207,11 @@ $tasks = $stmt->fetchAll();
           <option value="completed">Completed</option>
           <option value="expired">Expired</option>
         </select>
+
+        <script>
+      document.getElementById('statusFilter').value = "<?= htmlspecialchars($status) ?>";
+    </script>
+
       </div>
         </div>
   
@@ -212,7 +219,7 @@ $tasks = $stmt->fetchAll();
         <div class="table-responsive">
         <table class="minimal-table">
           <thead>
-            <tr>
+          <tr>
               <th>Name</th>
               <th>Collaborators</th>
               <th>Status</th>
@@ -233,7 +240,7 @@ $tasks = $stmt->fetchAll();
 
             $statusClass = str_replace('_', '-', $task['status']);
           ?>
-          <tr>
+          <tr class="task-row" data-id="<?= $task['id'] ?>" style="cursor: pointer;">
             <td><?= htmlspecialchars($task['title']) ?></td>
             <td>
               <?php if ($task['collaborator_emails']): ?>
@@ -337,6 +344,121 @@ $tasks = $stmt->fetchAll();
         </div>
       </div>
     </div>
+
+
+
+    <script>
+document.querySelectorAll('.task-row').forEach(row => {
+  row.addEventListener('click', async () => {
+    const taskId = row.dataset.id;
+    
+
+    try {
+      const res = await fetch(`api/get_task.php?id=${taskId}`);
+      const task = await res.json();
+
+      // Fill in modal
+      document.getElementById('detail-title').textContent = task.title;
+      document.getElementById('detail-description').textContent = task.description;
+
+      const statusEl = document.getElementById('detail-status');
+      statusEl.textContent = task.status.replace('_',' ');
+      statusEl.className = 'badge ' + ({
+        todo: 'bg-danger',
+        in_progress: 'bg-warning',
+        completed: 'bg-success',
+        expired: 'bg-secondary'
+      })[task.status];
+
+      const date = new Date(task.due_date);
+      document.getElementById('detail-due-date').textContent =
+        date.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+
+      const collabList = document.getElementById('detail-collaborators');
+      collabList.innerHTML = '';
+      if (task.collaborators.length) {
+        task.collaborators.forEach(c => {
+          const li = document.createElement('li');
+          li.className = 'list-group-item';
+          li.innerHTML = `
+            <i class="fa fa-user-circle text-secondary"></i>
+            <span class="flex-grow-1">${c.email}</span>
+            <span class="badge ${c.status==='accepted'?'bg-success':'bg-warning'}">
+              ${c.status}
+            </span>`;
+          collabList.append(li);
+        });
+      } else {
+        collabList.innerHTML = `<li class="list-group-item text-muted">
+          <i class="fa fa-user-slash me-2"></i>No collaborators
+        </li>`;
+      }
+
+      // Show modal
+      new bootstrap.Modal(document.getElementById('taskDetailModal')).show();
+    } catch (err) {
+      console.error('Error loading task details', err);
+    }
+  });
+});
+
+// Prevent opening task modal if Edit/Delete buttons are clicked
+document.querySelectorAll('.edit-btn, .delete-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation(); // 🔒 stops it from triggering the row click
+  });
+});
+</script>
+
+<!-- Task Details Modal -->
+<div class="modal fade" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="taskDetailModalLabel">
+          <i class="fa fa-info-circle me-2"></i> Task Details
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Task meta -->
+        <div class="task-meta mb-3">
+          <p><strong>Status:</strong> <span id="detail-status" class="badge"></span></p>
+          <p><strong>Due Date:</strong> <span id="detail-due-date"></span></p>
+        </div>
+
+        <!-- Title and description -->
+        <h4 id="detail-title" class="mb-2"></h4>
+        <p id="detail-description" class="text-muted"></p>
+
+        <hr/>
+
+        <!-- Collaborators -->
+        <h6><i class="fa fa-users me-1 text-secondary"></i> Collaborators</h6>
+        <ul id="detail-collaborators" class="list-group list-group-flush mt-2"></ul>
+      </div>
+
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function filterStatus() {
+  const status = document.getElementById('statusFilter').value;
+  const url = new URL(window.location.href);
+  if (status) {
+    url.searchParams.set('status', status);
+  } else {
+    url.searchParams.delete('status');
+  }
+  window.location.href = url.toString();
+}
+</script>
+
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

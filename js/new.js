@@ -138,8 +138,18 @@ if (task.collaborators.length) {
     </li>`;
 }
 
-    new bootstrap.Modal(document.getElementById('taskDetailModal')).show();
-    
+  const modalEl = document.getElementById('taskDetailModal');
+  const modal = new bootstrap.Modal(modalEl);
+
+  // Show the modal first
+  modal.show();
+
+  // ⏳ Then focus inside it after 100ms (let Bootstrap finish animation + aria toggling)
+  setTimeout(() => {
+    modalEl.querySelector('button, [tabindex], input, textarea, select, a')?.focus();
+  }, 100);
+
+      
   } catch (error) {
     console.error('Error:', error);
     alert('Failed to load task details');
