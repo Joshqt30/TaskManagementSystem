@@ -17,6 +17,10 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$pdo
+  ->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
+  ->execute([ $_SESSION['user_id'] ]);
+
 $user_id = $_SESSION['user_id'];
 
 // Test database connection

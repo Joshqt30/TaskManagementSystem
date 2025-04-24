@@ -8,6 +8,10 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+$pdo
+  ->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
+  ->execute([ $_SESSION['user_id'] ]);
+
 // Ensure email is set in the session
 if (!isset($_SESSION['email'])) {
     $stmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");

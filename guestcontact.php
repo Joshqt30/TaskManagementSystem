@@ -14,7 +14,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="designs/transition.css" />
   <link rel="stylesheet" href="designs/main.css" />
   <link rel="stylesheet" href="designs/mobile.css" />
   <link rel="stylesheet" href="designs/header-sidebar.css" />

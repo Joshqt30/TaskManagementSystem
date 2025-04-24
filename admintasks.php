@@ -8,6 +8,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
+// update last_active
+$admin_id = $_SESSION['user_id'];
+$pdo->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
+    ->execute([$admin_id]);
+
 // Fetch admin details
 $admin_id = $_SESSION['user_id'];
 $stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
@@ -226,7 +231,7 @@ unset($task);
           </thead>
           <tbody>
             <?php foreach($tasks as $t): ?>
-            <tr class="task-row" data-id="<?= $t['id'] ?>">
+              <tr class="task-row" data-id="<?= $t['id'] ?>" data-status="<?= $t['status'] ?>">
               <td><?= htmlspecialchars($t['title']) ?></td>
               <td>
                 <div class="collaborator-list">
@@ -294,9 +299,14 @@ unset($task);
     };
 
     // Status filter
-    document.getElementById('statusFilter').onchange = function(){
-      window.location = 'admintasks.php?status='+this.value;
-    };
+    document.getElementById('statusFilter').onchange = function() {
+    const selected = this.value;
+    document.querySelectorAll('.task-row').forEach(row => {
+      const status = row.getAttribute('data-status');
+      row.style.display = (!selected || status === selected) ? '' : 'none';
+    });
+  };
+
 
     document.addEventListener('DOMContentLoaded', function() {
             const dropdownToggle = document.getElementById('dropdownToggle');

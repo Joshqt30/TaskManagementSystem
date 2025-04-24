@@ -17,6 +17,9 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$pdo
+  ->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
+  ->execute([ $_SESSION['user_id'] ]);
 // Fetch user information
 try {
     $stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");

@@ -315,6 +315,30 @@ tr:hover:not(.total-users) {
     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
+.account-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;          /* ensures columns size to content */
+  }
+
+.account-table th,
+.account-table td {
+  padding: .75rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.account-table thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+  .account-table tbody tr.total-users td {
+    background-color: #e9ecef;
+    text-align: center;
+    font-style: italic;
+  }
+
 @media (max-width: 768px) {
     .content {
         width: 95%;

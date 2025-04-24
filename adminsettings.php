@@ -7,6 +7,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
+// update last_active
+$admin_id = $_SESSION['user_id'];
+$pdo->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
+    ->execute([$admin_id]);
+
 $adminId = $_SESSION['user_id'];
 
 try {

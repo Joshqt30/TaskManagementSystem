@@ -11,6 +11,11 @@ if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Unauthorized']);
     exit();
 }
+// update last_active timestamp for this user
+$pdo
+  ->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
+  ->execute([ $_SESSION['user_id'] ]);
+  
 
 $user_id = $_SESSION['user_id'];
 $receiver_id = isset($_POST['receiver_id']) ? (int)$_POST['receiver_id'] : 0;

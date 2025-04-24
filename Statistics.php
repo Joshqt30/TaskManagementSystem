@@ -7,6 +7,11 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// update last_active timestamp for this user
+$pdo
+  ->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
+  ->execute([ $_SESSION['user_id'] ]);
+
 // Get email early
 if (!isset($_SESSION['email'])) {
   $stmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");

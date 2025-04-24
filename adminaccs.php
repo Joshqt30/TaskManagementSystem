@@ -8,6 +8,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
+// update last_active
+$admin_id = $_SESSION['user_id'];
+$pdo->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
+    ->execute([$admin_id]);
+
 // Fetch admin details
 $admin_id = $_SESSION['user_id'];
 $stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
@@ -168,15 +173,16 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   <div class="main-content" id="mainContent">
     <div class="card bg-white p-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Accounts</h2>
-        <label for="sort">Sort By:</label>
-        <select id="sort" onchange="window.location.href='adminaccs.php?sort=' + this.value">
-            <option value="All" <?php echo $sort == 'All' ? 'selected' : ''; ?>>All</option>
-            <option value="admin" <?php echo $sort == 'admin' ? 'selected' : ''; ?>>Admin</option>
-            <option value="user" <?php echo $sort == 'user' ? 'selected' : ''; ?>>User</option>
-        </select>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="mb-0">Accounts</h2>
+      <select id="sort" class="form-select w-auto" 
+              onchange="window.location.href='adminaccs.php?sort='+this.value">
+        <option value="All"   <?= $sort=='All'   ? 'selected':'' ?>>All</option>
+        <option value="admin" <?= $sort=='admin' ? 'selected':'' ?>>Admin</option>
+        <option value="user"  <?= $sort=='user'  ? 'selected':'' ?>>User</option>
+      </select>
+    </div>
+
     
         
       <div class="table-responsive">
@@ -196,7 +202,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </tr>
                 <?php foreach ($users as $user): ?>
                     <tr data-id="<?php echo $user['id']; ?>">
-                        <td class="editable" data-field="name"><?php echo htmlspecialchars($user['username']); ?></td>
+                      <td class="editable" data-field="username"><?php echo htmlspecialchars($user['username']); ?></td>
                         <td class="editable" data-field="role">
                             <?php if (!empty($user['role'])): ?>
                                 <span class="badge-<?php echo $user['role']; ?>">
@@ -226,7 +232,73 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
  <script>
+    let currentRow = null;
+
+
   document.addEventListener('DOMContentLoaded', function(){
+
+// Handle Edit Button Click
+document.querySelectorAll('.edit-btn').forEach(btn => {
+  btn.type = 'button';
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    const row = this.closest('tr');
+    const isEditing = row.classList.contains('editing');
+
+    if (isEditing) {
+      // Save directly if already in edit mode
+      saveChanges(row);
+      row.classList.remove('editing');
+      this.textContent = 'Edit';
+    } else {
+      // Only show modal here, don't edit yet
+      currentRow = row;
+      const editModal = new bootstrap.Modal(document.getElementById('editConfirmModal'));
+      editModal.show();
+    }
+  });
+});
+
+// Confirm Edit Button in Modal
+document.getElementById('confirmEditBtn').addEventListener('click', function () {
+  const editModal = bootstrap.Modal.getInstance(document.getElementById('editConfirmModal'));
+  editModal.hide();
+
+  if (currentRow) {
+    enterEditMode(currentRow);
+    currentRow.classList.add('editing');
+    currentRow.querySelector('.edit-btn').textContent = 'Save';
+  }
+});
+
+document.querySelectorAll('.remove-btn').forEach(btn => {
+  btn.type = 'button';
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    currentRow = this.closest('tr');
+    currentForm = this.closest('form'); // ✅ This is the correct way!
+
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+    deleteModal.show();
+  });
+});
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+  const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+  deleteModal.hide();
+
+  if (currentForm) {
+    currentForm.submit(); // ✅ Form found, now this will work.
+  } else {
+    console.error("No form found for deletion.");
+  }
+});
+
+
+});
+
+
     // Sidebar toggle (unchanged)…
     document.getElementById('toggleBtn').onclick = () => {
       document.getElementById('sidebar').classList.toggle('sidebar-hidden');
@@ -243,84 +315,171 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.addEventListener('click', () => ddMenu.classList.remove('show'));
 
     // ——— Edit/Save functionality ———
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      // ensure it never tries to submit any form:
-      btn.type = 'button';
+    // document.querySelectorAll('.edit-btn').forEach(btn => {
+    //   // ensure it never tries to submit any form:
+    //   btn.type = 'button';
 
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
+    //   btn.addEventListener('click', function(e) {
+    //     e.preventDefault();
 
-        const row = this.closest('tr');
-        const editing = row.classList.contains('editing');
+    //     const row = this.closest('tr');
+    //     const editing = row.classList.contains('editing');
 
-        if (editing) {
-          saveChanges(row);
-          row.classList.remove('editing');
-          this.textContent = 'Edit';
-        } else {
-          enterEditMode(row);
-          row.classList.add('editing');
-          this.textContent = 'Save';
-        }
-      });
-    });
-  });
+    //     if (editing) {
+    //       saveChanges(row);
+    //       row.classList.remove('editing');
+    //       this.textContent = 'Edit';
+    //     } else {
+    //       enterEditMode(row);
+    //       row.classList.add('editing');
+    //       this.textContent = 'Save';
+    //     }
+    //   });
+    // });
 
   function enterEditMode(row) {
-    row.querySelectorAll('.editable').forEach(cell => {
-      const field = cell.dataset.field;
-      const val   = cell.textContent.trim();
-      if (field === 'role') {
-        cell.innerHTML = `
-          <select class="edit-select form-select form-select-sm">
-            <option value="admin" ${val==='admin'?'selected':''}>admin</option>
-            <option value="user"  ${val==='user' ?'selected':''}>user</option>
-          </select>`;
-      } else {
-        cell.innerHTML = `<input class="edit-input form-control form-control-sm" value="${val}">`;
-      }
-    });
-  }
+  row.querySelectorAll('.editable').forEach(cell => {
+    const field = cell.dataset.field;
+    let val;
+    if (field === 'role') {
+      val = cell.querySelector('span').textContent.trim().toLowerCase();
+      cell.innerHTML = `
+        <select class="edit-select form-select form-select-sm">
+          <option value="admin" ${val === 'admin' ? 'selected' : ''}>Admin</option>
+          <option value="user" ${val === 'user' ? 'selected' : ''}>User</option>
+        </select>`;
+    } else {
+      val = cell.textContent.trim();
+      if (field === 'organization') {
+      let options = organizations.map(org => 
+        `<option value="${org}" ${org === val ? 'selected' : ''}>${org}</option>`).join('');
+      cell.innerHTML = `<select class="edit-select form-select form-select-sm">${options}</select>`;
+    } else {
+      cell.innerHTML = `<input class="edit-input form-control form-control-sm" value="${val}">`;
+    }
 
-  function saveChanges(row) {
-    let username, email, role, organization;
-    row.querySelectorAll('.editable').forEach(cell => {
-      const field = cell.dataset.field;
-      if (field === 'role') {
-        role = cell.querySelector('select').value;
-        cell.innerHTML = `<span class="badge-${role}">${role}</span>`;
-      } else {
-        const input = cell.querySelector('input');
-        const v = input.value;
-        cell.textContent = v;
-        if (field==='name')         username    = v;
-        else if (field==='email')   email       = v;
-        else if (field==='organization') organization = v;
-      }
-    });
+    }
+  });
+}
 
-    // build and submit form
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'adminaccs.php';
-    form.style.display = 'none';
 
-    [['user_id', row.dataset.id],
-     ['update_user', '1'],
-     ['username',    username],
-     ['email',       email],
-     ['role',        role],
-     ['organization',organization]
-    ].forEach(([n,v])=>{
-      const i = document.createElement('input');
-      i.type = 'hidden'; i.name = n; i.value = v;
-      form.appendChild(i);
-    });
+function saveChanges(row) {
+  const userId = row.dataset.id;
 
-    document.body.appendChild(form);
-    form.submit();
-  }
+  const getValue = (selector, fallbackSelector) => {
+    const inputEl = row.querySelector(selector);
+    if (inputEl) return inputEl.value.trim();
+
+    const fallbackEl = row.querySelector(fallbackSelector);
+    return fallbackEl ? fallbackEl.textContent.trim() : '';
+  };
+
+  const username = getValue('[data-field="username"] input', '[data-field="username"]');
+  const email = getValue('[data-field="email"] input', '[data-field="email"]');
+  const orgSelect = row.querySelector('[data-field="organization"] select');
+  const org = orgSelect ? orgSelect.value : getValue('[data-field="organization"]', '[data-field="organization"]');
+  const roleSelect = row.querySelector('[data-field="role"] select');
+  const role = roleSelect ? roleSelect.value : getValue('[data-field="role"]', '[data-field="role"]');
+
+  // Revert cells to read mode
+  row.querySelector('[data-field="username"]').innerHTML = `<span>${username}</span>`;
+  row.querySelector('[data-field="email"]').innerHTML = `<span>${email}</span>`;
+  row.querySelector('[data-field="organization"]').innerHTML = `<span>${org}</span>`;
+  row.querySelector('[data-field="role"]').innerHTML = `<span class="badge-${role}">${role.charAt(0).toUpperCase() + role.slice(1)}</span>`;
+
+  const editBtn = row.querySelector('.edit-btn');
+  const saveBtn = row.querySelector('.save-btn');
+  if (editBtn) editBtn.style.display = '';
+  if (saveBtn) saveBtn.style.display = 'none';
+
+  // Submit the hidden form
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'adminaccs.php';
+  form.style.display = 'none';
+
+  [['user_id', userId],
+   ['update_user', '1'],
+   ['username', username],
+   ['email', email],
+   ['organization', org],
+   ['role', role]
+  ].forEach(([name, value]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+}
+
+
 </script>
+
+<script>
+const organizations = [
+  'QCU Creative Student Society',
+  'LIKHA Production',
+  'The QCU Times Publication',
+  'Tanghalang Quezon City University',
+  'QCU Peer Counselors Organization',
+  'QCU Gen. Z Learners',
+  'Youth on the Rock',
+  'QCU Iskolar Council',
+  'QCU College of Education_Official - BECED',
+  'Junior Philippine Institute of Accountants - QCU Chapter - BSA',
+  'Electronics Engineers of the Philippines - QCU Chapter - BSECE',
+  'PIIE ORSP QCU Student Chapter - BSIE',
+  'QCU - League of Excellent Students in Information Technology - BSIT',
+  'Qcu Syvsis - BSIS',
+  'QCU Young Entrepreneurs Society - BSEntrep',
+  'Junior Management Accountant Executives - QCU - BSMA',
+  'BSCS',
+  'BSCE',
+];
+</script>
+
+<!-- Edit Confirmation Modal -->
+<div class="modal fade" id="editConfirmModal" tabindex="-1" aria-labelledby="editConfirmLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title" id="editConfirmLabel">Confirm Edit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to edit this user's info?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="confirmEditBtn" class="btn btn-warning">Yes, Edit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteConfirmLabel">Confirm Removal</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to remove this user? This action cannot be undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Yes, Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 </body>
 </html>
