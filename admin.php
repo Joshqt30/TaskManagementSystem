@@ -118,102 +118,91 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ORGanize+ Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="designs/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-<style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+  :root { --transition-speed: .3s; }
+  body { font-family:'Inter',sans-serif; background:#E3F2F1; }
+  .header { background:#DBE8E7; color:#3D5654; height:55px; position:fixed; top:0; width:100%;
+            display:flex; align-items:center; justify-content:space-between; padding:0 15px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1); z-index:1000; }
+  .header-left { display:flex; align-items:center; gap:12px; }
+  .orglogo { width:30px; height:30px; margin:0; }
+  .header-title { font-size:20px; font-weight:650; margin:0; }
+  #toggleBtn { background:transparent; border:none; font-size:20px; cursor:pointer; padding:0; margin:0; }
+  .sidebar { width:280px; background:#425C5A; position:fixed; top:55px; left:0;
+             height:calc(100vh - 55px); border-top-right-radius:20px; border-bottom-right-radius:20px;
+             transition:left var(--transition-speed); overflow:hidden; }
+  .sidebar.sidebar-hidden { left:-280px; }
 
-:root { --transition-speed: 0.3s; }
-body { font-family:'Inter',sans-serif; background:#E3F2F1; }
-
-/* HEADER */
-.header {
-  background:#DBE8E7; color:#3D5654;
-  border-radius:12px 12px 0 0;
-  box-shadow:0 2px 8px rgba(0,0,0,0.1);
-  height:55px !important; position:fixed; top:0; width:100%; z-index:1000;
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 15px;
-}
-.header-left { display:flex; align-items:center; gap:12px; }
-.orglogo      { width:30px; height:30px; }
-.header-title { font-size:20px; font-weight:650; }
-#toggleBtn    { background:transparent; border:none; font-size:20px; cursor:pointer; }
-
-/* SIDEBAR */
-.sidebar {
-  width:280px; background:#425C5A;
-  position:fixed; top:55px !important; left:0;
-  height:calc(100vh - 55px);
-  border-top-right-radius:20px;
-  border-bottom-right-radius:20px;
-  overflow:hidden; transition:left var(--transition-speed);
-  z-index:100;
-}
-.sidebar.sidebar-hidden { left:-280px; }
-.admin-profile-area {
-  background:#425C5A; padding:30px 20px; text-align:center;
-}
-.admin-avatar {
-  width:80px; height:80px;
-  border-radius:50%; background:#D9D9D9;
-  margin:0 auto 15px;
-  border:2px double #ffd700;
-}
-.admin-profile-area h3 { color:#fff; margin:0; }
-.admin-email { color:#a0aec0; font-size:14px; margin-top:5px; }
-.nav-area { background:#3D5654; padding:20px; flex-grow:1; }
-.nav-menu { list-style:none; padding:0; margin:0; }
-.nav-item { margin:5px 0; }
-.nav-item a {
-  display:flex; align-items:center; gap:10px;
-  padding:12px 15px; border-radius:50px;
-  color:#fff; text-decoration:none;
-  transition:background .3s,color .3s;
-}
-.nav-item.active a,
-.nav-item:hover a {
-  background:#E3F2F1; color:#3D5654;
-}
-.nav-icon {
-  color:#FFD700; font-size:20px; width:24px; text-align:center;
-  transition:color .3s;
-}
-.nav-item.active .nav-icon,
-.nav-item:hover .nav-icon {
-  color:#3D5654;
-}
-
-/* ADJUST MAIN CONTENT */
-.main-content {
-  margin-top:55px; margin-left:280px;
-  padding:2rem; transition:margin-left var(--transition-speed);
-}
-.main-content.shifted { margin-left:0; }
-
-        .pie-chart {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            position: relative;
-            background: <?php echo $total_tasks == 0 ? '#D9D9D9' : "conic-gradient($gradient_string)"; ?>;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-
-
-     
-    </style>
+  h3 {
+    font-size: 22px;
+  }
+  .admin-profile-area { background:#425C5A; padding:30px 20px; text-align:center; }
+  .admin-avatar { width:80px; height:80px; border-radius:50%; background:#D9D9D9;
+                   margin:0 auto 15px; border:2px double #ffd700; }
+  .admin-profile-area h3 { color:#fff; margin:0; }
+  .admin-email { color:#a0aec0; font-size:14px; margin-top:5px; }
+  .nav-area { background:#3D5654; padding:20px; }
+  .nav-menu { list-style:none; padding:0; margin:0; }
+  .nav-item { margin:5px 0; }
+  .nav-item a { display:flex; align-items:center; gap:10px; padding:12px 15px;
+                 border-radius:50px; color:#fff; text-decoration:none;
+                 transition:background .3s,color .3s; }
+  .nav-item.active a, .nav-item:hover a { background:#E3F2F1; color:#3D5654; }
+  .nav-icon { color:#FFD700; font-size:20px; width:24px; text-align:center; }
+  .nav-item.active .nav-icon, .nav-item:hover .nav-icon { color:#3D5654; }
+  .main-content { margin-left:280px; width:calc(100% - 280px); padding:30px; margin-top:55px;
+                  transition:margin-left var(--transition-speed), width var(--transition-speed); }
+  .main-content.shifted { margin-left:0; width:100%; }
+  .stats-grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin-bottom:20px; }
+  .stat-card { background:white; padding:20px; border-radius:8px; border:1px solid #e2e8f0;
+               flex:1; min-width:200px; max-width:300px; text-align:center; }
+  .stat-icon { font-size:20px; color:#3c4b5b; margin-bottom:6px; }
+  .stat-number { font-size:26px; font-weight:600; line-height:1; margin-bottom:6px; }
+  .stat-label { color:#718096; font-size:13px; }
+  .dashboard-container { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+  .dashboard-card { background:white; padding:15px; border-radius:8px; border:1px solid #e2e8f0; }
+  .dashboard-card h2 { font-size:16px; font-weight:600; color:#2d3748; margin-bottom:10px; }
+  .pie-chart-container { display:flex; align-items:center; justify-content:center; gap:40px;
+                         margin:20px 0; flex-wrap:wrap; flex:1; }
+  .pie-chart { width:180px; height:180px; border-radius:50%; position:relative;
+               background: <?php echo $total_tasks == 0 ? '#D9D9D9' : "conic-gradient($gradient_string)"; ?>;
+               box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+  .chart-legend { display:flex; flex-direction:column; gap:10px; justify-content:center; }
+  .legend-item { display:flex; align-items:center; gap:8px; font-size:13px; }
+  .legend-color { width:10px; height:10px; border-radius:2px; }
+  .data-table { width:100%; border-collapse:collapse; font-size:14px; }
+  .data-table th, .data-table td { padding:8px; text-align:left; border-bottom:1px solid #e2e8f0; }
+  .data-table th { color:#718096; font-weight:500; }
+  .dropdown-menu { z-index:1050; }
+  @media (max-width: 1024px) {
+    .dashboard-container { grid-template-columns:1fr; }
+    .pie-chart-container { flex-direction:column; gap:20px; }
+  }
+  @media (max-width: 768px) {
+    .main-content { margin-left:0; width:100%; }
+    .main-content.shifted { margin-left:0; width:100%; }
+    .stats-grid { flex-direction:column; align-items:center; }
+    .stat-card { max-width:100%; }
+    .pie-chart { width:160px; height:160px; }
+    .legend-item { font-size:12px; }
+    .legend-color { width:8px; height:8px; }
+  }
+</style>
 </head>
 <body>
+
+<!-- HEADER -->
 <header class="header">
   <div class="header-left">
-    <button id="toggleBtn" aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+    <button id="toggleBtn"><i class="fa-solid fa-bars"></i></button>
     <img src="ORGanizepics/layers.png" class="orglogo" alt="Logo"/>
     <span class="header-title">ORGanize+</span>
   </div>
   <div class="dropdown">
-    <button class="btn rounded-circle user-btn text-dark" data-bs-toggle="dropdown">
+    <button class="btn rounded-circle user-btn text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
       <i class="fa-solid fa-user"></i>
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
@@ -224,6 +213,7 @@ body { font-family:'Inter',sans-serif; background:#E3F2F1; }
   </div>
 </header>
 
+<!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
   <div class="admin-profile-area">
     <div class="admin-avatar"></div>
@@ -232,96 +222,79 @@ body { font-family:'Inter',sans-serif; background:#E3F2F1; }
   </div>
   <div class="nav-area">
     <ul class="nav-menu">
-      <li class="nav-item <?= basename($_SERVER['PHP_SELF'])=='admin.php'?'active':'' ?>">
-        <a href="admin.php"><i class="fas fa-chart-bar nav-icon"></i>Dashboard</a>
-      </li>
-      <li class="nav-item <?= basename($_SERVER['PHP_SELF'])=='adminaccs.php'?'active':'' ?>">
-        <a href="adminaccs.php"><i class="fas fa-users nav-icon"></i>Accounts</a>
-      </li>
-      <li class="nav-item <?= basename($_SERVER['PHP_SELF'])=='admintasks.php'?'active':'' ?>">
-        <a href="admintasks.php"><i class="fas fa-flag nav-icon"></i>Tasks</a>
-      </li>
+      <li class="nav-item active"><a href="admin.php"><i class="fas fa-chart-bar nav-icon"></i>Dashboard</a></li>
+      <li class="nav-item"><a href="adminaccs.php"><i class="fas fa-users nav-icon"></i>Accounts</a></li>
+      <li class="nav-item"><a href="admintasks.php"><i class="fas fa-flag nav-icon"></i>Tasks</a></li>
     </ul>
   </div>
 </nav>
 
-    <main class="main-content">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <i class="fas fa-user-group stat-icon"></i>
-                <div class="stat-number"><?php echo $user_count; ?></div>
-                <div class="stat-label">User Accounts</div>
+<main class="main-content" id="mainContent">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <i class="fas fa-user-group stat-icon"></i>
+      <div class="stat-number"><?php echo $user_count; ?></div>
+      <div class="stat-label">User Accounts</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-list-check stat-icon"></i>
+      <div class="stat-number"><?php echo $task_count; ?></div>
+      <div class="stat-label">Tasks Created</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-sitemap stat-icon"></i>
+      <div class="stat-number"><?php echo $org_count; ?></div>
+      <div class="stat-label">Organizations</div>
+    </div>
+  </div>
+
+  <div class="dashboard-container">
+    <div class="dashboard-card">
+      <h2>Total Tasks Statistics</h2>
+      <div class="pie-chart-container">
+        <div class="pie-chart"></div>
+        <div class="chart-legend">
+          <?php foreach ($task_statuses as $status => $data): ?>
+            <div class="legend-item">
+              <span class="legend-color" style="background: <?php echo $data['color']; ?>;"></span>
+              <span><?php echo ucfirst($status); ?> (<?php echo $data['percentage']; ?>%)</span>
             </div>
-            <div class="stat-card">
-                <i class="fas fa-list-check stat-icon"></i>
-                <div class="stat-number"><?php echo $task_count; ?></div>
-                <div class="stat-label">Tasks Created</div>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-sitemap stat-icon"></i>
-                <div class="stat-number"><?php echo $org_count; ?></div>
-                <div class="stat-label">Organizations</div>
-            </div>
+          <?php endforeach; ?>
         </div>
+      </div>
+    </div>
+    <div class="dashboard-card">
+      <h2>Last 7 Days Registrations</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Registrations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($last_7_days as $date => $count): ?>
+            <tr>
+              <td><?php echo date('M d', strtotime($date)); ?></td>
+              <td><?php echo $count; ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
 
-        <div class="dashboard-container">
-            <div class="dashboard-card">
-                <h2>Total Tasks Statistics</h2>
-                <div class="pie-chart-container">
-                    <div class="pie-chart"></div>
-                    <div class="chart-legend">
-                        <?php foreach ($task_statuses as $status => $data): ?>
-                            <div class="legend-item">
-                                <span class="legend-color" style="background: <?php echo $data['color']; ?>;"></span>
-                                <span><?php echo ucfirst($status); ?> (<?php echo $data['percentage']; ?>%)</span>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
-            <div class="dashboard-card">
-                <h2>Last 7 Days Registrations</h2>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Registrations</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($last_7_days as $date => $count): ?>
-                            <tr>
-                                <td><?php echo date('M d', strtotime($date)); ?></td>
-                                <td><?php echo $count; ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Sidebar toggle
+  document.getElementById('toggleBtn').onclick = () => {
+    document.getElementById('sidebar').classList.toggle('sidebar-hidden');
+    document.getElementById('mainContent').classList.toggle('shifted');
+  };
+});
+</script>
 
-    <script>
-        document.getElementById('toggleBtn').onclick = () => {
-        document.getElementById('sidebar').classList.toggle('sidebar-hidden');
-        document.querySelector('.main-content').classList.toggle('shifted');
-        };
-
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdownToggle = document.getElementById('dropdownToggle');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            dropdownToggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                dropdownMenu.classList.toggle('show');
-            });
-            document.addEventListener('click', function() {
-                dropdownMenu.classList.remove('show');
-            });
-            dropdownMenu.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        });
-    </script>
 </body>
 </html>
