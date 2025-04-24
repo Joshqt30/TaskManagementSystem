@@ -119,286 +119,78 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ORGanize+ Admin Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="designs/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
+<style>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+:root { --transition-speed: 0.3s; }
+body { font-family:'Inter',sans-serif; background:#E3F2F1; }
 
-        body {
-            background-color: #E3F2F1;
-            display: flex;
-            position: relative;
-        }
+/* HEADER */
+.header {
+  background:#DBE8E7; color:#3D5654;
+  border-radius:12px 12px 0 0;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  height:55px !important; position:fixed; top:0; width:100%; z-index:1000;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 15px;
+}
+.header-left { display:flex; align-items:center; gap:12px; }
+.orglogo      { width:30px; height:30px; }
+.header-title { font-size:20px; font-weight:650; }
+#toggleBtn    { background:transparent; border:none; font-size:20px; cursor:pointer; }
 
-        .header {
-            background-color: #DBE8E7;
-            color: #3D5654;
-            padding: 0 15px;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
+/* SIDEBAR */
+.sidebar {
+  width:280px; background:#425C5A;
+  position:fixed; top:55px !important; left:0;
+  height:calc(100vh - 55px);
+  border-top-right-radius:20px;
+  border-bottom-right-radius:20px;
+  overflow:hidden; transition:left var(--transition-speed);
+  z-index:100;
+}
+.sidebar.sidebar-hidden { left:-280px; }
+.admin-profile-area {
+  background:#425C5A; padding:30px 20px; text-align:center;
+}
+.admin-avatar {
+  width:80px; height:80px;
+  border-radius:50%; background:#D9D9D9;
+  margin:0 auto 15px;
+  border:2px double #ffd700;
+}
+.admin-profile-area h3 { color:#fff; margin:0; }
+.admin-email { color:#a0aec0; font-size:14px; margin-top:5px; }
+.nav-area { background:#3D5654; padding:20px; flex-grow:1; }
+.nav-menu { list-style:none; padding:0; margin:0; }
+.nav-item { margin:5px 0; }
+.nav-item a {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 15px; border-radius:50px;
+  color:#fff; text-decoration:none;
+  transition:background .3s,color .3s;
+}
+.nav-item.active a,
+.nav-item:hover a {
+  background:#E3F2F1; color:#3D5654;
+}
+.nav-icon {
+  color:#FFD700; font-size:20px; width:24px; text-align:center;
+  transition:color .3s;
+}
+.nav-item.active .nav-icon,
+.nav-item:hover .nav-icon {
+  color:#3D5654;
+}
 
-        .header-center {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .orglogo {
-            height: 30px;
-            width: 30px;
-            margin-top: 4px;
-            margin-left: 1px;
-            margin-right: -5px;
-        }
-
-        .header-title {
-            font-family: "Inter Tight", sans-serif;
-            font-size: 20px;
-            font-weight: 650;
-            line-height: 50px;
-            color: var(--text-color);
-        }
-
-        #sidebarToggle {
-            background: transparent;
-            color: #3D5654;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            transition: all 0.3s;
-            margin-right: 0;
-            margin-left: -50px;
-        }
-
-        #sidebarToggle i {
-            font-weight: 5000;
-        }
-
-        #sidebarToggle:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-
-        #toggleIcon {
-            transition: transform 0.3s ease;
-        }
-
-        .sidebar {
-            width: 280px;
-            background-color: #425C5A;
-            height: calc(100vh - 70px);
-            padding: 0;
-            color: white;
-            position: fixed;
-            left: 0;
-            transition: left 0.3s ease-in-out;
-            z-index: 999;
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-            top: 70px;
-            display: flex;
-            flex-direction: column;
-            margin-top: -20px;
-        }
-
-        .sidebar.active {
-            left: -280px;
-        }
-
-        .admin-profile-area {
-            background-color: #425C5A;
-            padding: 30px 20px;
-            border-top-right-radius: 20px;
-        }
-
-        .nav-area {
-            background-color: #3D5654;
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            border-bottom-right-radius: 20px;
-        }
-
-        .admin-profile {
-            text-align: center;
-            margin-bottom: 0;
-        }
-
-        .admin-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: #D9D9D9;
-            margin: 0 auto 15px;
-            border: 2px double #ffd700;
-            background-image: url('default-avatar.jpg');
-            background-size: cover;
-        }
-
-        .admin-email {
-            color: #a0aec0;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .nav-menu {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .nav-item {
-            padding: 12px 15px;
-            margin: 5px 0;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: white;
-        }
-
-        .nav-item a {
-            color: inherit;
-            text-decoration: none;
-            display: block;
-            width: 100%;
-        }
-
-        .nav-icon {
-            color: #FFD700;
-            font-size: 20px;
-            width: 24px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item:hover,
-        .nav-item.active {
-            background-color: #E3F2F1;
-            color: #3D5654;
-        }
-
-        .nav-item:hover .nav-icon,
-        .nav-item.active .nav-icon {
-            color: #3D5654;
-        }
-
-        .nav-item i {
-            font-size: 18px;
-            width: 24px;
-            text-align: center;
-        }
-
-        .main-content {
-            margin-left: 280px;
-            width: calc(100% - 280px);
-            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
-            padding: 30px;
-            margin-top: 70px;
-        }
-
-        .main-content.shifted {
-            margin-left: 0;
-            width: 100%;
-        }
-
-        body {
-            overflow-x: hidden;
-        }
-
-        .stats-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-            flex: 1;
-            min-width: 200px;
-            max-width: 300px;
-        }
-
-        .stat-icon {
-            font-size: 20px;
-            color: #3c4b5b;
-            margin-bottom: 6px;
-        }
-
-        .stat-number {
-            font-size: 26px;
-            font-weight: 600;
-            line-height: 1;
-            margin-bottom: 6px;
-        }
-
-        .stat-label {
-            color: #718096;
-            font-size: 13px;
-        }
-
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .dashboard-card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .dashboard-card h2 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 10px;
-        }
-
-        .pie-chart-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 40px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-            flex: 1;
-        }
+/* ADJUST MAIN CONTENT */
+.main-content {
+  margin-top:55px; margin-left:280px;
+  padding:2rem; transition:margin-left var(--transition-speed);
+}
+.main-content.shifted { margin-left:0; }
 
         .pie-chart {
             width: 180px;
@@ -409,198 +201,49 @@ try {
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-        .chart-legend {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            justify-content: center;
-        }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-        }
-
-        .legend-color {
-            width: 10px;
-            height: 10px;
-            border-radius: 2px;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        .data-table th, .data-table td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .data-table th {
-            color: #718096;
-            font-weight: 500;
-        }
-
-        @media (max-width: 1024px) {
-            .dashboard-container {
-                grid-template-columns: 1fr;
-            }
-
-            .pie-chart-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .main-content.shifted {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .stats-grid {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .stat-card {
-                max-width: 100%;
-            }
-
-            .pie-chart {
-                width: 160px;
-                height: 160px;
-            }
-
-            .legend-item {
-                font-size: 12px;
-            }
-
-            .legend-color {
-                width: 8px;
-                height: 8px;
-            }
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 6px;
-            overflow: hidden;
-            padding: 0;
-            margin: 0;
-            list-style: none;
-            z-index: 1000;
-            white-space: nowrap;
-            margin-top: 15px;
-            margin-right: -40px;
-            margin-top: 8px;
-        }
-
-        .dropdown-menu.show {
-            display: block;
-        }
-
-        .dropdown-item {
-            padding: 10px 20px;
-            color: #333;
-            font-size: 14px;
-            text-decoration: none;
-            display: block;
-            white-space: nowrap;
-            transition: background-color 0.2s;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f1f1f1;
-        }
-
-        .dropdown-divider {
-            margin: 5px 0;
-            border-top: 1px solid #eee;
-        }
-
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .user-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            margin-right: -50px;
-        }
-
-        .user-btn:hover {
-            opacity: 0.9;
-        }
+     
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-center" style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
-            <div class="header-left" style="display: flex; gap: 12px; align-items: center;">
-                <button id="sidebarToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <img src="ORGanizepics/layers.png" class="orglogo" alt="Logo" />
-                <span class="header-title">ORGanize+</span>
-            </div>
-            <div class="dropdown" id="userDropdown">
-                <button class="btn rounded-circle user-btn text-dark" id="dropdownToggle" type="button">
-                    <i class="fa-solid fa-user" style="font-size:20px;"></i>
-                </button>
-                <ul class="dropdown-menu" id="dropdownMenu">
-                    <li><a class="dropdown-item" href="adminsettings.php">Account Settings</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-                </ul>
-            </div>
-        </div>
-    </header>
+<header class="header">
+  <div class="header-left">
+    <button id="toggleBtn" aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+    <img src="ORGanizepics/layers.png" class="orglogo" alt="Logo"/>
+    <span class="header-title">ORGanize+</span>
+  </div>
+  <div class="dropdown">
+    <button class="btn rounded-circle user-btn text-dark" data-bs-toggle="dropdown">
+      <i class="fa-solid fa-user"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li><a class="dropdown-item" href="adminsettings.php">Account Settings</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+    </ul>
+  </div>
+</header>
 
-    <aside class="sidebar">
-        <div class="admin-profile-area">
-            <div class="admin-profile">
-                <div class="admin-avatar"></div>
-                <h3><?php echo htmlspecialchars($admin_username); ?></h3>
-                <p class="admin-email"><?php echo htmlspecialchars($admin_email); ?></p>
-            </div>
-        </div>
-        <div class="nav-area">
-            <nav>
-                <ul class="nav-menu">
-                    <li class="nav-item active">
-                        <i class="fas fa-chart-bar nav-icon"></i>
-                        <span><a href="admin.php">Dashboard</a></span>
-                    </li>
-                    <li class="nav-item">
-                        <i class="fas fa-users nav-icon"></i>
-                        <span><a href="adminaccs.php">Accounts</a></span>
-                    </li>
-                    <li class="nav-item">
-                        <i class="fas fa-flag nav-icon"></i>
-                        <span><a href="admintasks.php">Tasks</a></span>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </aside>
+<nav class="sidebar" id="sidebar">
+  <div class="admin-profile-area">
+    <div class="admin-avatar"></div>
+    <h3><?= htmlspecialchars($admin_username) ?></h3>
+    <p class="admin-email"><?= htmlspecialchars($admin_email) ?></p>
+  </div>
+  <div class="nav-area">
+    <ul class="nav-menu">
+      <li class="nav-item <?= basename($_SERVER['PHP_SELF'])=='admin.php'?'active':'' ?>">
+        <a href="admin.php"><i class="fas fa-chart-bar nav-icon"></i>Dashboard</a>
+      </li>
+      <li class="nav-item <?= basename($_SERVER['PHP_SELF'])=='adminaccs.php'?'active':'' ?>">
+        <a href="adminaccs.php"><i class="fas fa-users nav-icon"></i>Accounts</a>
+      </li>
+      <li class="nav-item <?= basename($_SERVER['PHP_SELF'])=='admintasks.php'?'active':'' ?>">
+        <a href="admintasks.php"><i class="fas fa-flag nav-icon"></i>Tasks</a>
+      </li>
+    </ul>
+  </div>
+</nav>
 
     <main class="main-content">
         <div class="stats-grid">
@@ -659,13 +302,11 @@ try {
     </main>
 
     <script>
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.main-content');
-            sidebar.classList.toggle('active');
-            mainContent.classList.toggle('shifted');
-            this.classList.toggle('active');
-        });
+        document.getElementById('toggleBtn').onclick = () => {
+        document.getElementById('sidebar').classList.toggle('sidebar-hidden');
+        document.querySelector('.main-content').classList.toggle('shifted');
+        };
+
 
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownToggle = document.getElementById('dropdownToggle');

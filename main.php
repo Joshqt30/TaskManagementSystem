@@ -121,7 +121,7 @@ $tasks = $stmt->fetchAll();
                 $task_stats['todo'],
                 $task_stats['in_progress'],
                 $task_stats['completed'],
-                $task_stats['expired'] // Idagdag
+                $task_stats['expired'] 
             ],
             'backgroundColor' => ["#EA2E2E", "#5BA4E5", "#54D376", "#999999"]
         ]]

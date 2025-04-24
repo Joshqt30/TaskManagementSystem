@@ -2,6 +2,13 @@
 session_start();
 include 'config.php';
 
+// Redirect to login if not authenticated
+if (!isset($_SESSION['user_id'])) {
+  header("Location: login.php");
+  exit;
+}
+
+
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_password = $_POST['new-password'];

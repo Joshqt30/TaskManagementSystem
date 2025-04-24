@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once __DIR__ . '/vendor/autoload.php';  
 
 // Load environment variables from .env file
@@ -75,8 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // Insert a new user record with role 'user'
             $stmt = $pdo->prepare("
-                INSERT INTO users (email, username, password, organization, otp, otp_expiry, is_verified, role, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, 'user', NOW())
+                INSERT INTO users (email, username, password, organization, otp, otp_expiry, is_verified, created_at, role)
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW(),'user')
             ");
             if (!$stmt->execute([$email, $username, $hashed_password, $organization, $otp, $otp_expiry, 0])) {
                 $error_message = "Registration failed. Please try again.";
