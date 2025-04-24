@@ -1,6 +1,6 @@
 <?php
 session_start();
-include(__DIR__ . '/../config.php');
+include __DIR__ . '/../config.php';
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);

@@ -109,6 +109,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
              transition:left var(--transition-speed); overflow:hidden; }
   .sidebar.sidebar-hidden { left:-280px; }
   .admin-profile-area { background:#425C5A; padding:30px 20px; text-align:center; }
+
+  h3 {
+    font-size: 22px;
+  }
   .admin-avatar { width:80px; height:80px; border-radius:50%; background:#D9D9D9;
                    margin:0 auto 15px; border:2px double #ffd700; }
   .admin-profile-area h3 { color:#fff; margin:0; }

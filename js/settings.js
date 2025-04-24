@@ -1,7 +1,8 @@
 // Navigation
-document.querySelector('.back-button').addEventListener('click', () => {
-    window.location.href = 'main.php';
-  });
+    document.querySelector(".back-button").addEventListener("click", () => {
+        history.back();
+      });
+    
   
   // General Info Elements
   const generalUpdateBtn       = document.getElementById('general-update-btn');

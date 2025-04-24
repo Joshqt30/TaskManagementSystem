@@ -83,6 +83,10 @@ unset($task);
     }
     .sidebar.sidebar-hidden { left:-280px; }
 
+    h3 {
+        font-size: 22px;
+    }
+
     /* profile area (dark) */
     .admin-profile-area {
       background:#425C5A; padding:30px 20px; text-align:center;

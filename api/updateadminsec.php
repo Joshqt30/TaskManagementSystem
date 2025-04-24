@@ -2,13 +2,13 @@
 session_start();
 include __DIR__ . '/../config.php';
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     http_response_code(401);
     echo json_encode(['error' => 'Unauthorized']);
     exit();
 }
 
-$userId = $_SESSION['user_id'];
+$adminId = $_SESSION['user_id'];
 $data = json_decode(file_get_contents("php://input"), true);
 
 $email = trim(strtolower($data['email'] ?? ''));
@@ -26,7 +26,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 // Check for email conflict
 $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
-$stmt->execute([$email, $userId]);
+$stmt->execute([$email, $adminId]);
 if ($stmt->fetch()) {
     echo json_encode(['error' => 'Email is already taken']);
     exit();
@@ -42,8 +42,8 @@ try {
         $params[] = $hashedPassword;
     }
 
-    $sql .= " WHERE id = ?";
-    $params[] = $userId;
+    $sql .= " WHERE id = ? AND role = 'admin'";
+    $params[] = $adminId;
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
