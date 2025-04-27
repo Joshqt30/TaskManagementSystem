@@ -106,12 +106,12 @@
     .dashboard-container { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
     .dashboard-card { background:white; padding:15px; border-radius:8px; border:1px solid #e2e8f0; }
     .dashboard-card h2 { font-size:16px; font-weight:600; color:#2d3748; margin-bottom:10px; }
-    .pie-chart-container { display:flex; align-items:center; justify-content:center; gap:40px;
-                          margin:20px 0; flex-wrap:wrap; flex:1; }
+    .pie-chart-container { display:flex; align-items:center; justify-content:center; gap:50px;
+                          margin:65px 0; flex-wrap:wrap; flex:1; }
     .pie-chart { width:180px; height:180px; border-radius:50%; position:relative;
                 background: <?php echo $total_tasks == 0 ? '#D9D9D9' : "conic-gradient($gradient_string)"; ?>;
                 box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-    .chart-legend { display:flex; flex-direction:column; gap:10px; justify-content:center; }
+    .chart-legend { display:flex; flex-direction:column; gap:10px; justify-content:center; margin-top: -8px; }
     .legend-item { display:flex; align-items:center; gap:8px; font-size:13px; }
     .legend-color { width:10px; height:10px; border-radius:2px; }
     .data-table { width:100%; border-collapse:collapse; font-size:14px; }
