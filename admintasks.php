@@ -72,9 +72,9 @@ unset($task);
       padding:0 15px;
     }
     .header-left { display:flex; align-items:center; gap:12px; }
-    .orglogo      { width:30px; height:30px; }
+    .orglogo      { width:30px; height: 30px; margin: 0; }
     .header-title { font-size:20px; font-weight:650; }
-    #toggleBtn    { background:transparent; border:none; font-size:20px; cursor:pointer; }
+    #toggleBtn    { background:transparent; border:none; font-size:20px; cursor:pointer; margin:0;  padding:0; }
 
     /* --------- SIDEBAR --------- */
     .sidebar {
