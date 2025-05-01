@@ -47,6 +47,20 @@ try {
     ]);
     $task_id = $pdo->lastInsertId();
 
+
+    // ➕ ADD ACTIVITY LOGGING HERE
+    try {
+        $desc = "Created task: " . substr(htmlspecialchars($_POST['title']), 0, 40);
+        $stmt = $pdo->prepare("
+            INSERT INTO activity_log 
+            (user_id, activity_type, description)
+            VALUES (?, 'task_create', ?)
+        ");
+        $stmt->execute([$_SESSION['user_id'], $desc]);
+    } catch(PDOException $e) {
+        error_log("Activity log failed: " . $e->getMessage());
+    }
+
 // ✅ STEP 1: Insert the task owner as a collaborator
 $stmtOwner = $pdo->prepare("
     INSERT INTO collaborators (task_id, user_id, email, status)

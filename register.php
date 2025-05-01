@@ -60,6 +60,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
             if (!$stmt->execute([$email, $username, $hashed_password, $otp, $otp_expiry, 0])) {
                 $error_message = "Registration failed. Please try again.";
+            } else
+            // After successful user insertion
+            $new_user_id = $pdo->lastInsertId();  // Get the newly created user's ID
+
+            // Log the activity
+            try {
+                $stmt = $pdo->prepare("
+                    INSERT INTO activity_log 
+                    (user_id, activity_type, description)
+                    VALUES (?, 'registration', 'New user registered')
+                ");
+                $stmt->execute([$new_user_id]);
+            } catch(PDOException $e) {
+                // Optional: Log error but don't break registration
+                error_log("Activity log failed: " . $e->getMessage());
             }
         }
 

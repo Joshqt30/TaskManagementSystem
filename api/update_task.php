@@ -70,6 +70,30 @@ $isOwner = ($task['user_id'] == $_SESSION['user_id']);
         $taskId
     ]);
 
+    // Log activity ONLY if status changed to completed
+    if ($_POST['status'] === 'completed' && $task['status'] !== 'completed') {
+        try {
+            // Get current task title (after update)
+            $stmt = $pdo->prepare("SELECT title FROM tasks WHERE id = ?");
+            $stmt->execute([$taskId]);
+            $taskTitle = $stmt->fetchColumn();
+
+            // Create activity description
+            $desc = "Completed task: " . substr(htmlspecialchars($taskTitle), 0, 40);
+            
+            // Insert into activity log
+            $logStmt = $pdo->prepare("
+                INSERT INTO activity_log 
+                (user_id, activity_type, description)
+                VALUES (?, 'task_complete', ?)
+            ");
+            $logStmt->execute([$_SESSION['user_id'], $desc]);
+            
+        } catch(PDOException $e) {
+            error_log("Activity log failed: " . $e->getMessage());
+        }
+    }
+
 
     // ======== COLLABORATOR HANDLING ========
     if (!empty($_POST['collaborators'])) {

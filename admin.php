@@ -16,7 +16,6 @@
 
   // — Summary stats —
   $user_count = (int)$pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
-  $org_count  = (int)$pdo->query("SELECT COUNT(DISTINCT organization) FROM users")->fetchColumn();
   $task_count=0;
   try { $task_count = (int)$pdo->query("SELECT COUNT(*) FROM tasks")->fetchColumn(); } catch(PDOException $e){}
       
@@ -45,13 +44,31 @@
   ")->fetchAll(PDO::FETCH_ASSOC);
   foreach($regs as $r) $last7[$r['d']]=$r['c'];
 
-  // — Users per org —
-  $orgStats = $pdo->query("SELECT organization,COUNT(*) cnt FROM users GROUP BY organization")->fetchAll(PDO::FETCH_ASSOC);
+
 
   // — Fetch admin for sidebar —
   $stmt=$pdo->prepare("SELECT username,email FROM users WHERE id=?");
   $stmt->execute([$_SESSION['user_id']]);
   $admin=$stmt->fetch(PDO::FETCH_ASSOC);
+
+  // Get recent activities (last 7 days)
+  $activities = $pdo->query("
+  SELECT 
+      a.*,
+      u.username,
+      DATE(a.created_at) AS activity_date
+  FROM activity_log a
+  JOIN users u ON a.user_id = u.id
+  WHERE a.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+  ORDER BY a.created_at DESC
+  ")->fetchAll(PDO::FETCH_ASSOC);
+
+  // Group activities by date
+  $grouped_activities = [];
+  foreach($activities as $a) {
+  $date = date('Y-m-d', strtotime($a['activity_date']));
+  $grouped_activities[$date][] = $a;
+  }
   ?>
   <!DOCTYPE html>
   <html lang="en">
@@ -118,6 +135,38 @@
     .data-table th, .data-table td { padding:8px; text-align:left; border-bottom:1px solid #e2e8f0; }
     .data-table th { color:#718096; font-weight:500; }
     .dropdown-menu { z-index:1050; }
+
+    .activity-feed { padding:10px; }
+.activity-date { 
+    color: #4a5568; 
+    font-weight: 600;
+    padding: 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 12px;
+}
+.activity-item {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f7fafc;
+}
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    background: #f7fafc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.activity-icon i { color: #48bb78; }
+.activity-content { flex-grow: 1; }
+.username { font-weight: 500; color: #2d3748; }
+.activity-time { 
+    font-size: 0.85rem;
+    color: #718096;
+    margin-top: 2px;
+}
     @media (max-width: 1024px) {
       .dashboard-container { grid-template-columns:1fr; }
       .pie-chart-container { flex-direction:column; gap:20px; }
@@ -184,7 +233,7 @@
       </div>
       <div class="stat-card">
         <i class="fas fa-sitemap stat-icon"></i>
-        <div class="stat-number"><?php echo $org_count; ?></div>
+        <div class="stat-number"></div>
         <div class="stat-label">Organizations</div>
       </div>
     </div>
@@ -240,22 +289,113 @@
         </div>
       </div>
     </div>
-    <div class="dashboard-card">
-      <h2>Users per Organization</h2>
-      <table class="data-table">
-        <thead><tr><th>Organization</th><th>Members</th></tr></thead>
-        <tbody>
-          <?php foreach($orgStats as $r): ?>
-            <tr>
-              <td><?= htmlspecialchars($r['organization']?:'—') ?></td>
-              <td><?= $r['cnt'] ?></td>
-            </tr>
+      <div class="dashboard-card">
+      <h2>Recent Activity</h2>
+      <div class="activity-feed">
+          <?php foreach($grouped_activities as $date => $items): ?>
+              <div class="activity-day">
+                  <div class="activity-date"><?= date('l, F j', strtotime($date)) ?></div>
+                  
+                  <?php foreach($items as $item): ?>
+                      <div class="activity-item">
+                          <div class="activity-icon">
+                              <?php switch($item['activity_type']):
+                                  case 'registration': ?>
+                                      <i class="fas fa-user"></i>
+                                  <?php case 'task_create': ?>
+                                      <i class="fas fa-tasks"></i>
+                                  <?php case 'task_complete': ?>
+                                      <i class="fas fa-check-circle"></i>
+                              <?php endswitch; ?>
+                          </div>
+                          <div class="activity-content">
+                              <span class="username"><?= $item['username'] ?></span>
+                              <?= $item['description'] ?>
+                              <div class="activity-time">
+                                  <?= date('h:i A', strtotime($item['created_at'])) ?>
+                              </div>
+                          </div>
+                      </div>
+                  <?php endforeach; ?>
+              </div>
           <?php endforeach; ?>
-        </tbody>
-      </table>
-    </div>
+      </div>
+      
+      <div class="text-center mt-3">
+          <a href="#viewAllActivities" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal">
+              View All Activity
+          </a>
+      </div>
+  </div>
+
   </div>
   </main>
+
+  <!-- Modal -->
+<div class="modal fade" id="viewAllActivities">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Full Activity Log</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="activity-feed" style="max-height: 70vh; overflow-y: auto;">
+                    <?php 
+                    // Get ALL activities (not just 7 days)
+                    $all_activities = $pdo->query("
+                        SELECT 
+                            a.*,
+                            u.username,
+                            DATE(a.created_at) AS activity_date
+                        FROM activity_log a
+                        JOIN users u ON a.user_id = u.id
+                        ORDER BY a.created_at DESC
+                    ")->fetchAll(PDO::FETCH_ASSOC);
+                    
+                    // Group all activities by date
+                    $grouped_all = [];
+                    foreach($all_activities as $a) {
+                        $date = date('Y-m-d', strtotime($a['activity_date']));
+                        $grouped_all[$date][] = $a;
+                    }
+                    
+                    foreach($grouped_all as $date => $items): 
+                    ?>
+                        <div class="activity-day">
+                            <div class="activity-date"><?= date('l, F j', strtotime($date)) ?></div>
+                            
+                            <?php foreach($items as $item): ?>
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <?php switch($item['activity_type']):
+                                        case 'registration': ?>
+                                            <i class="fas fa-user-plus"></i>
+                                        <?php break; ?>
+                                        <?php case 'task_create': ?>
+                                            <i class="fas fa-tasks"></i>
+                                        <?php break; ?>
+                                        <?php case 'task_complete': ?>
+                                            <i class="fas fa-check-circle"></i>
+                                        <?php break; ?>
+                                    <?php endswitch; ?>
+                                </div>
+                                <div class="activity-content">
+                                    <span class="username"><?= htmlspecialchars($item['username']) ?></span>
+                                    <?= htmlspecialchars($item['description']) ?>
+                                    <div class="activity-time">
+                                        <?= date('h:i A', strtotime($item['created_at'])) ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
