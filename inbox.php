@@ -511,12 +511,7 @@ if ($selected_contact_id) {
       <img src="ORGanizepics/layers.png" class="orglogo" alt="Logo" />
       <span class="header-title">ORGanize+</span>
     </div>
-    <div class="header-center">
-      <ul class="nav header-nav">
-        <li class="nav-item"><a class="nav-link" href="aboutus.php">About Us</a></li>
-        <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
-      </ul>
-    </div>
+
     <div class="header-right">
       <div class="dropdown">
         <button class="btn rounded-circle user-btn text-dark" type="button" data-bs-toggle="dropdown">
@@ -538,7 +533,7 @@ if ($selected_contact_id) {
       <div class="sidebar-middle">
       <div class="sidebar-profile">
       <?php if (!empty($user['profile_pic'])) : ?>
-        <img src="<?= htmlspecialchars($user['profile_pic']) ?>" 
+       <img src="uploads/profile_pics/<?= htmlspecialchars($user['profile_pic']) ?>"
             class="sidebar-profile-pic" 
             alt="Profile Picture">
       <?php else : ?>
