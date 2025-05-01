@@ -44,7 +44,7 @@ $totalTaskCount = $row['total'] ?? 0;
 
 
 try {
-    $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT username, profile_pic FROM users WHERE id = ?");
     $stmt->execute([$user_id]);
     $user = $stmt->fetch();
     if (!$user) {
@@ -160,13 +160,18 @@ while ($row = $stmt->fetch()) {
     <nav class="sidebar sidebar-expanded" id="sidebar">
       <!-- Sidebar Middle: Profile & Navigation Menu -->
       <div class="sidebar-middle">
-        <div class="sidebar-profile">
-          <i class="fa-solid fa-user-circle"></i>
-          <!-- Dynamic username placeholder -->
-          <div class="user-name">
-          <?= htmlspecialchars($user['username']) ?> <!-- Only username -->
-        </div>
-        </div>
+      <div class="sidebar-profile">
+      <?php if (!empty($user['profile_pic'])) : ?>
+        <img src="<?= htmlspecialchars($user['profile_pic']) ?>" 
+            class="sidebar-profile-pic" 
+            alt="Profile Picture">
+      <?php else : ?>
+        <i class="fa-solid fa-user-circle"></i>
+      <?php endif; ?>
+      <div class="user-name">
+        <?= htmlspecialchars($user['username']) ?>
+      </div>
+    </div>
         <ul class="nav flex-column sidebar-menu">
           <li class="nav-item">
             <a href="main.php" class="nav-link">

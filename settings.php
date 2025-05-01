@@ -1,5 +1,8 @@
 <?php
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: Thu, 01 Jan 1970 00:00:00 GMT");
 include 'config.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -7,15 +10,41 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// update last_active timestamp for this user
-$pdo
-  ->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
-  ->execute([ $_SESSION['user_id'] ]);
-  
 $userId = $_SESSION['user_id'];
 
+// Update last_active timestamp
+$pdo->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")->execute([$userId]);
+
+// Handle profile picture upload
+$uploadSuccess = false;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
+    $uploadDir = 'uploads/profile_pics/';
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+    
+    $fileName = uniqid('profile_') . '_' . basename($_FILES['profile_pic']['name']);
+    $targetPath = $uploadDir . $fileName;
+    
+    // Validate image
+    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+    $fileType = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
+    
+    if (in_array($fileType, $allowedTypes)) {
+        if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $targetPath)) {
+            // Update database
+            $stmt = $pdo->prepare("UPDATE users SET profile_pic = ? WHERE id = ?");
+            $stmt->execute([$fileName, $userId]); // Store $fileName instead of $targetPath
+            $_SESSION['profile_pic'] = $targetPath;
+            $uploadSuccess = true;
+            }
+        }
+    }
+
+
+// Get user data
 try {
-    $stmt = $pdo->prepare("SELECT username, organization, email FROM users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT username, email, profile_pic FROM users WHERE id = ?");
     $stmt->execute([$userId]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
@@ -27,67 +56,98 @@ try {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Profile Settings</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="designs/settings.css">
 </head>
 <body>
 
   <div class="header">
-    <button class="back-button">
+    <button class="back-button" onclick="window.history.back()">
       <span class="back-icon">←</span> Back
     </button>
     <h1 class="page-title">Profile Settings</h1>
   </div>
   
   <div class="container">
-    <!-- General Information Section -->
-    <div class="general-info">
-      <div class="section-header">
-        <h2>General information</h2>
-      </div>
-      
-      <div id="general-success" class="success-message">
-        Information updated successfully!
-      </div>
-      
-      <div class="info-fields">
-        <div class="field-group">
-          <label>Username</label>
-          <div id="name-display" class="field-value"><?= htmlspecialchars($user['username']) ?></div>
+    <!-- Profile and General Info Container -->
+    <div class="profile-general-container">
+        <!-- Profile Picture Section -->
+            <div class="profile-picture-section">
+        <div class="section-header">
+            <h2>Profile Picture</h2>
         </div>
-        <div class="field-group">
-          <label>Organization</label>
-          <div id="org-display" class="organization-value"><?= htmlspecialchars($user['organization']) ?></div>
+        <?php if ($uploadSuccess): ?>
+            <div class="success-message">Profile picture updated successfully!</div>
+        <?php endif; ?>
+        
+        <div class="profile-preview-container">
+        <div class="profile-preview">
+      <?php if (!empty($user['profile_pic'])): ?>
+        <button class="remove-profile-btn" id="removeProfileBtn">×</button>
+        <!-- NEW wrapper around the image -->
+        <div class="profile-image-wrapper">
+        <img src="uploads/profile_pics/<?= htmlspecialchars($user['profile_pic']) ?>" 
+              alt="Profile Picture"
+              class="profile-preview-img">
         </div>
-      </div>
-      
-      <div id="general-edit-form" class="edit-form">
-        <div class="edit-form-horizontal">
-          <div class="form-group">
-            <label for="name-input">Name</label>
-            <input
-              type="text"
-              id="name-input"
-              class="edit-input"
-              value="<?= htmlspecialchars($user['username']) ?>"
-              placeholder="Enter your name"
-            >
-          </div>
-          <div class="form-group">
-            <label>Organization</label>
-            <div class="field-value"><?= htmlspecialchars($user['organization']) ?></div>
-          </div>
-        </div>
-        <div class="btn-container">
-          <button id="general-cancel-btn" class="btn btn-sm btn-cancel">Cancel</button>
-          <button id="general-save-btn" class="btn btn-sm">Save</button>
-        </div>
-      </div>
-      
-      <button id="general-update-btn" class="btn">Update</button>
+      <?php else: ?>
+        <i class="fa-solid fa-user-circle default-profile"></i>
+      <?php endif; ?>
     </div>
-    
+
+    </div>
+        
+        <form method="POST" enctype="multipart/form-data" id="profile-pic-form">
+            <input type="file" 
+                  name="profile_pic" 
+                  id="profile-pic-input" 
+                  accept="image/*"
+                  class="visually-hidden">
+            <label for="profile-pic-input" class="btn upload-btn">
+                <i class="fas fa-upload me-2"></i>Upload Photo
+            </label>
+        </form>
+    </div>
+
+        <!-- General Information Section -->
+        <div class="general-info">
+            <div class="section-header">
+                <h2>General Information</h2>
+            </div>
+            
+            <div id="general-success" class="success-message">
+                Information updated successfully!
+            </div>
+            
+            <div class="info-fields">
+                <div class="field-group">
+                    <label>Username</label>
+                    <div id="name-display" class="field-value"><?= htmlspecialchars($user['username']) ?></div>
+                </div>
+            </div>
+            
+            <div id="general-edit-form" class="edit-form">
+                <div class="edit-form-horizontal">
+                    <div class="form-group">
+                        <label for="name-input">Name</label>
+                        <input type="text"
+                             id="name-input"
+                             class="edit-input"
+                             value="<?= htmlspecialchars($user['username']) ?>"
+                             placeholder="Enter your name">
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <button id="general-cancel-btn" class="btn btn-sm btn-cancel">Cancel</button>
+                    <button id="general-save-btn" class="btn btn-sm">Save</button>
+                </div>
+            </div>
+            
+            <button id="general-update-btn" class="btn">Update</button>
+        </div>
+    </div>
     <!-- Security Section -->
     <div class="security-section">
       <div class="section-header">
@@ -110,40 +170,34 @@ try {
       </div>
       
       <div id="security-edit-form" class="edit-form">
-        <!-- Full-width Email row -->
         <div class="edit-form-horizontal">
           <div class="form-group" style="flex:1; min-width:300px;">
             <label for="email-input">Email</label>
-            <input
-            type="email"
-            id="email-input"
-            class="edit-input"
-            style="width:320px; max-width:100%; box-sizing:border-box;"
-            value="<?= htmlspecialchars($user['email']) ?>"
-            placeholder="Enter your email"
-            />
-
+            <input type="email"
+                   id="email-input"
+                   class="edit-input"
+                   value="<?= htmlspecialchars($user['email']) ?>"
+                   placeholder="Enter your email">
           </div>
         </div>
-        <!-- Two-column Password row -->
         <div class="edit-form-horizontal">
           <div class="form-group password-wrapper">
             <label for="password-input">New Password</label>
             <div class="password-field">
-            <input type="password" id="password-input" class="edit-input"
-            style="width:320px; max-width:100%; box-sizing:border-box;"
-            placeholder="Enter new password">
-
+              <input type="password" 
+                     id="password-input" 
+                     class="edit-input"
+                     placeholder="Enter new password">
               <span id="toggle-password" class="toggle-eye">👁️</span>
             </div>
           </div>
           <div class="form-group password-wrapper">
             <label for="confirm-password-input">Confirm Password</label>
             <div class="password-field">
-            <input type="password" id="confirm-password-input" class="edit-input"
-             style="width:320px; max-width:100%; box-sizing:border-box;"
-            placeholder="Confirm new password">
-
+              <input type="password" 
+                     id="confirm-password-input" 
+                     class="edit-input"
+                     placeholder="Confirm new password">
               <span id="toggle-confirm-password" class="toggle-eye">👁️</span>
             </div>
           </div>
@@ -159,11 +213,17 @@ try {
     </div>
   </div>
 
-  
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Confirmation Modal -->
+<div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content">
+        <div class="modal-message" id="modalMessage">Are you sure you want to save changes?</div>
+        <div class="modal-buttons">
+            <button class="btn btn-cancel" id="modalCancel">Cancel</button>
+            <button class="btn" id="modalConfirm">Confirm</button>
+        </div>
+    </div>
+</div>
+
   <script src="js/settings.js"></script>
 </body>
 </html>

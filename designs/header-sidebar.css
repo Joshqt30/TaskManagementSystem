@@ -130,19 +130,26 @@ body {
   background-color: #425C5A;
   padding: 45px 10px;
   text-align: center;
-  margin-bottom: 55px;
+  margin-bottom: 45px;
   white-space: nowrap;
   transition: all 0.3s ease-in-out;
   overflow: hidden;
 }
-.sidebar-profile i {
-  font-size: 65px;
-  color: white;
-  border: 2px solid var(--gold-color);  /* Gold border for profile icon */
+.sidebar-profile-pic {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  padding: 5px;
-  white-space: nowrap;
+  object-fit: cover;
+  border: 2px solid var(--gold-color);
+  margin-bottom: 2px;
 }
+
+.sidebar-profile .fa-user-circle {
+  font-size: 80px;
+  color: #cccccc;
+  margin-bottom: 15px;
+}
+
 .user-name {
   margin-top: 15px;
   font-size: 16px;

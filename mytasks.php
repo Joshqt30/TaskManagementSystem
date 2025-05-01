@@ -14,7 +14,7 @@ $pdo
 // Get user data
 $user_id = $_SESSION['user_id'];
 try {
-  $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+  $stmt = $pdo->prepare("SELECT username, profile_pic, email FROM users WHERE id = ?");
   $stmt->execute([$user_id]);
   $user = $stmt->fetch();
   if (!$user) {
@@ -35,9 +35,7 @@ $user_id = $_SESSION['user_id'];
 
 // fetch username for sidebar
 // now fetching both username and email
-$stmtUser = $pdo->prepare("SELECT username, email
-                           FROM users
-                           WHERE id = ?");
+$stmtUser = $pdo->prepare("SELECT username, profile_pic, email FROM users WHERE id = ?");
 $stmtUser->execute([$user_id]);
 $user = $stmtUser->fetch();
 
@@ -150,11 +148,17 @@ $tasks = $stmt->fetchAll();
       <!-- Sidebar Middle: Profile & Navigation Menu -->
       <div class="sidebar-middle">
       <div class="sidebar-profile">
-        <i class="fa-solid fa-user-circle"></i>
-        <div class="user-name">
-          <?= htmlspecialchars($user['username']) ?> <!-- Only username -->
-        </div>
-      </div>
+    <?php if (!empty($user['profile_pic'])) : ?>
+      <img src="<?= htmlspecialchars($user['profile_pic']) ?>" 
+          class="sidebar-profile-pic" 
+          alt="Profile Picture">
+    <?php else : ?>
+      <i class="fa-solid fa-user-circle"></i>
+    <?php endif; ?>
+    <div class="user-name">
+      <?= htmlspecialchars($user['username']) ?>
+    </div>
+  </div>
         <ul class="nav flex-column sidebar-menu">
           <li class="nav-item">
             <a href="main.php" class="nav-link">
