@@ -40,7 +40,6 @@ if (isset($_POST['update_user'])) {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
     $role = $_POST['role'];
-    $organization = trim($_POST['organization']);
 
     // Validate role
     if (!in_array($role, ['admin', 'user'])) {
@@ -59,11 +58,9 @@ if (isset($_POST['update_user'])) {
         exit();
     }
 
-    // Organization can be empty; if empty, set to NULL
-    $organization = empty($organization) ? NULL : $organization;
-
-    $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, role = ?, organization = ? WHERE id = ?");
-    $stmt->execute([$username, $email, $role, $organization, $user_id]);
+    $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?");
+    $stmt->execute([$username, $email, $role, $user_id]);
+    
     
     // Redirect to avoid form resubmission
     header("Location: adminaccs.php");
@@ -79,7 +76,7 @@ if ($sort !== 'All') {
 }
 
 // Fetch users with organization
-$query = "SELECT id, username, role, email, organization FROM users" . $where_clause;
+$query = "SELECT id, username, role, email FROM users" . $where_clause;
 $stmt = $pdo->prepare($query);
 if ($sort !== 'All') {
     $stmt->execute([$sort_param]);
@@ -192,7 +189,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>Username</th>
                     <th>Role</th>
                     <th>Email</th>
-                    <th>Organization</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -213,13 +209,13 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php endif; ?>
                         </td>
                         <td class="editable" data-field="email"><?php echo htmlspecialchars($user['email']); ?></td>
-                        <td class="editable" data-field="organization"><?php echo htmlspecialchars($user['organization'] ?? ''); ?></td>
                         <td class="action-buttons">
                         <button type="button" class="edit-btn btn btn-sm btn-outline-primary">Edit</button>
-                            <form method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to remove this user?');">
-                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                <button type="submit" name="remove_user" class="remove-btn">Remove</button>
-                            </form>
+                        <form method="POST" style="display: inline;">
+                      <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                      <input type="hidden" name="remove_user" value="1">
+                      <button type="submit" name="remove_user" class="btn btn-danger btn-sm remove-btn">Remove</button>
+                  </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -232,6 +228,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
  <script>
+    let currentForm = null;
     let currentRow = null;
 
 
@@ -350,13 +347,6 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function (
         </select>`;
     } else {
       val = cell.textContent.trim();
-      if (field === 'organization') {
-      let options = organizations.map(org => 
-        `<option value="${org}" ${org === val ? 'selected' : ''}>${org}</option>`).join('');
-      cell.innerHTML = `<select class="edit-select form-select form-select-sm">${options}</select>`;
-    } else {
-      cell.innerHTML = `<input class="edit-input form-control form-control-sm" value="${val}">`;
-    }
 
     }
   });
@@ -376,15 +366,12 @@ function saveChanges(row) {
 
   const username = getValue('[data-field="username"] input', '[data-field="username"]');
   const email = getValue('[data-field="email"] input', '[data-field="email"]');
-  const orgSelect = row.querySelector('[data-field="organization"] select');
-  const org = orgSelect ? orgSelect.value : getValue('[data-field="organization"]', '[data-field="organization"]');
   const roleSelect = row.querySelector('[data-field="role"] select');
   const role = roleSelect ? roleSelect.value : getValue('[data-field="role"]', '[data-field="role"]');
 
   // Revert cells to read mode
   row.querySelector('[data-field="username"]').innerHTML = `<span>${username}</span>`;
   row.querySelector('[data-field="email"]').innerHTML = `<span>${email}</span>`;
-  row.querySelector('[data-field="organization"]').innerHTML = `<span>${org}</span>`;
   row.querySelector('[data-field="role"]').innerHTML = `<span class="badge-${role}">${role.charAt(0).toUpperCase() + role.slice(1)}</span>`;
 
   const editBtn = row.querySelector('.edit-btn');
@@ -402,7 +389,6 @@ function saveChanges(row) {
    ['update_user', '1'],
    ['username', username],
    ['email', email],
-   ['organization', org],
    ['role', role]
   ].forEach(([name, value]) => {
     const input = document.createElement('input');
@@ -419,28 +405,6 @@ function saveChanges(row) {
 
 </script>
 
-<script>
-const organizations = [
-  'QCU Creative Student Society',
-  'LIKHA Production',
-  'The QCU Times Publication',
-  'Tanghalang Quezon City University',
-  'QCU Peer Counselors Organization',
-  'QCU Gen. Z Learners',
-  'Youth on the Rock',
-  'QCU Iskolar Council',
-  'QCU College of Education_Official - BECED',
-  'Junior Philippine Institute of Accountants - QCU Chapter - BSA',
-  'Electronics Engineers of the Philippines - QCU Chapter - BSECE',
-  'PIIE ORSP QCU Student Chapter - BSIE',
-  'QCU - League of Excellent Students in Information Technology - BSIT',
-  'Qcu Syvsis - BSIS',
-  'QCU Young Entrepreneurs Society - BSEntrep',
-  'Junior Management Accountant Executives - QCU - BSMA',
-  'BSCS',
-  'BSCE',
-];
-</script>
 
 <!-- Edit Confirmation Modal -->
 <div class="modal fade" id="editConfirmModal" tabindex="-1" aria-labelledby="editConfirmLabel" aria-hidden="true">
