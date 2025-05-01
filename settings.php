@@ -1,55 +1,70 @@
 <?php
 session_start();
+
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Pragma: no-cache");
 header("Expires: Thu, 01 Jan 1970 00:00:00 GMT");
+
 include 'config.php';
 
+// ——— AUTH & CONTEXT ———
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
+$userId = $_SESSION['user_id'];   // ← Make sure this is here, before you use $userId
 
-$userId = $_SESSION['user_id'];
+// Update last_active
+$pdo->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
+    ->execute([$userId]);
 
-// Update last_active timestamp
-$pdo->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")->execute([$userId]);
-
-// Handle profile picture upload
+// ——— POST-Redirect-GET for profile_pic upload ———
 $uploadSuccess = false;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
     $uploadDir = 'uploads/profile_pics/';
-    if (!file_exists($uploadDir)) {
+    if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
-    
-    $fileName = uniqid('profile_') . '_' . basename($_FILES['profile_pic']['name']);
+
+    $fileName   = uniqid('profile_') . '_' . basename($_FILES['profile_pic']['name']);
     $targetPath = $uploadDir . $fileName;
-    
-    // Validate image
-    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
-    $fileType = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
-    
-    if (in_array($fileType, $allowedTypes)) {
-        if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $targetPath)) {
-            // Update database
-            $stmt = $pdo->prepare("UPDATE users SET profile_pic = ? WHERE id = ?");
-            $stmt->execute([$fileName, $userId]); // Store $fileName instead of $targetPath
-            $_SESSION['profile_pic'] = $targetPath;
-            $uploadSuccess = true;
-            }
-        }
+    $allowed    = ['jpg','jpeg','png','gif'];
+    $ext        = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
+
+    if (in_array($ext, $allowed) &&
+        move_uploaded_file($_FILES['profile_pic']['tmp_name'], $targetPath)) {
+        // Save only the filename in DB and session
+        $pdo->prepare("UPDATE users SET profile_pic = ? WHERE id = ?")
+            ->execute([$fileName, $userId]);
+        $_SESSION['profile_pic'] = $fileName;
     }
 
+    // Redirect away from POST to clear it from history
+    header('Location: settings.php?uploaded=1');
+    exit;
+}
 
-// Get user data
+// After redirect (on GET), look for our flag
+if (!empty($_GET['uploaded']) && $_GET['uploaded'] === '1') {
+    $uploadSuccess = true;
+}
+
+
+// ——— NOW fetch user data with the defined $userId ———
 try {
     $stmt = $pdo->prepare("SELECT username, email, profile_pic FROM users WHERE id = ?");
     $stmt->execute([$userId]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$user) {
+        throw new Exception("User not found.");
+    }
 } catch (Exception $e) {
-    die("Error fetching user data.");
+    die("Error fetching user data: " . $e->getMessage());
 }
+
+// … the rest of your HTML below …
+
 ?>
 
 <!DOCTYPE html>
@@ -64,7 +79,7 @@ try {
 <body>
 
   <div class="header">
-    <button class="back-button" onclick="window.history.back()">
+    <button class="back-button" onclick="window.href='main.php'">
       <span class="back-icon">←</span> Back
     </button>
     <h1 class="page-title">Profile Settings</h1>
@@ -83,7 +98,7 @@ try {
         <?php endif; ?>
         
         <div class="profile-preview-container">
-        <div class="profile-preview">
+        <div class="profile-preview" id="profile-preview">
       <?php if (!empty($user['profile_pic'])): ?>
         <button class="remove-profile-btn" id="removeProfileBtn">×</button>
         <!-- NEW wrapper around the image -->
@@ -223,6 +238,12 @@ try {
         </div>
     </div>
 </div>
+
+<script>
+  if (window.location.search.includes('uploaded=1')) {
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+</script>
 
   <script src="js/settings.js"></script>
 </body>

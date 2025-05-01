@@ -1,12 +1,7 @@
 // Navigation
 document.querySelector(".back-button").addEventListener("click", () => {
-  history.back();
+  window.location.href = 'main.php';
 });
-
-// — Prevent “Confirm Form Resubmission” on back/refresh —
-if (window.history.replaceState) {
-  window.history.replaceState(null, null, window.location.href);
-}
 
 // Add these variables at the top with other element declarations
 const confirmationModal = document.getElementById('confirmationModal');
@@ -42,35 +37,46 @@ const togglePassword = document.getElementById('toggle-password');
 const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
 const securitySuccessMessage = document.getElementById('security-success');
 
-// — Profile Picture Handling —
-document.getElementById('profile-pic-input').addEventListener('change', function(e) {
-  if (this.files && this.files[0]) {
-      const reader = new FileReader();
+const input = document.getElementById('profile-pic-input');
+input.addEventListener('change', async function () {
+  const file = this.files[0];
+  if (!file) return;
 
-      if (!confirm("Are you sure you want to upload this profile picture?")) {
-        this.value = ''; // Clear selected file
-        return;
-    }
-      
-    // In your file upload success handler
-    reader.onload = function(e) {
-      const container = document.querySelector('.profile-preview');
-      container.innerHTML = `
-        <button class="remove-profile-btn" id="removeProfileBtn">✕</button>
-        <img src="${e.target.result}" 
-            class="profile-preview-img"
-            id="profile-preview">
-      `;
-      
-      // Update session state
-      window.history.replaceState({}, '', window.location.href);
-    };
-      reader.readAsDataURL(this.files[0]);
-      
-      // Auto-submit the form when file is selected
-      document.getElementById('profile-pic-form').submit();
+  if (!confirm("Upload this as your profile picture?")) {
+    this.value = '';
+    return;
   }
+
+  // 1) Show preview immediately
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('profile-preview').innerHTML = `
+      <button class="remove-profile-btn" id="removeProfileBtn">✕</button>
+      <img src="${e.target.result}" class="profile-preview-img" />
+    `;
+  };
+  reader.readAsDataURL(file);
+
+  // 2) Upload in the background
+  const form = new FormData();
+  form.append('profile_pic', file);
+
+  try {
+    const res = await fetch('settings.php', { method: 'POST', body: form });
+    window.location.reload(); // Add this line here
+    if (!res.ok) throw new Error('Upload failed');
+  } catch (err) {
+    alert('Upload error: ' + err.message);
+    console.error(err);
+  }
+
+  // 3) Clean URL and reset input
+  window.history.replaceState({}, '', window.location.pathname);
+  this.value = '';
 });
+
+
+
 
 // Modified remove profile picture handler
 document.body.addEventListener('click', (e) => {
