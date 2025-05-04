@@ -14,12 +14,13 @@ $pdo->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
     ->execute([$admin_id]);
 
 // Fetch admin details
-$admin_id = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT username, email, profile_pic FROM users WHERE id = ?");
 $stmt->execute([$admin_id]);
 $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 $admin_username = htmlspecialchars($admin['username']);
 $admin_email    = htmlspecialchars($admin['email']);
+$admin_profile_pic = $admin['profile_pic'] ?? null; // Add this line
+
 
 // Status filter
 $status = $_GET['status'] ?? '';
@@ -57,6 +58,7 @@ unset($task);
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <style>
     :root { --transition-speed: 0.3s; }
@@ -160,6 +162,79 @@ unset($task);
     .badge.in-progress { background-color:#5BA4E5; }
     .badge.completed   { background-color:#54D376; }
     .badge.expired     { background-color:#999; }
+
+    .user-profile-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-thumbnail {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #3D5654;
+  transition: transform 0.2s;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+.caret-icon {
+  color: #3D5654;
+  transition: transform 0.2s;
+}
+
+.user-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+}
+
+.user-btn:hover .profile-thumbnail {
+  transform: scale(1.1);
+}
+
+.user-btn:hover .caret-icon {
+  transform: translateY(1px);
+}
+
+.dropdown-menu {
+  margin-top: 8px !important;
+  border: 1px solid #DBE8E7 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-size: 14px !important;
+}
+
+/* Update admin avatar styling */
+.admin-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px double #ffd700;
+  margin: 0 auto 15px;
+}
+
+.admin-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  font-size: 80px;
+  color: #D9D9D9;
+}
+
   </style>
 </head>
 <body>
@@ -171,25 +246,47 @@ unset($task);
       <img src="ORGanizepics/layers.png" class="orglogo" alt="Logo"/>
       <span class="header-title">ORGanize+</span>
     </div>
+
+
     <div class="dropdown">
-      <button class="btn rounded-circle user-btn text-dark" data-bs-toggle="dropdown">
-        <i class="fa-solid fa-user"></i>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="adminsettings.php">Account Settings</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-      </ul>
+  <button class="btn user-btn text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <div class="user-profile-wrapper">
+      <?php if(!empty($admin_profile_pic)): ?>
+        <img src="uploads/profile_pics/<?= htmlspecialchars($admin_profile_pic) ?>" 
+             class="profile-thumbnail"
+             alt="Profile">
+      <?php else: ?>
+        <i class="bi bi-person-circle fs-5 profile-thumbnail"></i>
+      <?php endif; ?>
+      <i class="bi bi-chevron-down caret-icon fs-6"></i>
     </div>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><a class="dropdown-item" href="adminsettings.php">Account Settings</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+  </ul>
+</div>
+
+
+
   </header>
 
   <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
     <div class="admin-profile-area">
-      <div class="admin-avatar"></div>
-      <h3><?= $admin_username ?></h3>
-      <p class="admin-email"><?= $admin_email ?></p>
+    <div class="admin-avatar">
+      <?php if(!empty($admin_profile_pic)): ?>
+        <img src="uploads/profile_pics/<?= htmlspecialchars($admin_profile_pic) ?>" 
+            class="admin-avatar-img"
+            alt="Profile Picture">
+      <?php else: ?>
+        <i class="fa-solid fa-user-circle default-avatar"></i>
+      <?php endif; ?>
     </div>
+    <h3><?= $admin_username ?></h3>
+    <p class="admin-email"><?= $admin_email ?></p>
+  </div>
     <div class="nav-area">
       <ul class="nav-menu">
         <li class="nav-item">

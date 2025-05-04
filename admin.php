@@ -82,6 +82,7 @@
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
       <style>
     :root { --transition-speed: .3s; }
     body { font-family:'Inter',sans-serif; background:#E3F2F1; }
@@ -247,6 +248,55 @@
   font-size: 80px;
   color: #D9D9D9;
 }
+
+/* Add these styles to the existing CSS */
+.user-profile-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-thumbnail {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #3D5654;
+  transition: transform 0.2s;
+}
+
+.dropdown-toggle::after {
+  display: none; /* Hide default Bootstrap caret */
+}
+
+.caret-icon {
+  color: #3D5654;
+  transition: transform 0.2s;
+}
+
+.user-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+}
+
+.user-btn:hover .profile-thumbnail {
+  transform: scale(1.1);
+}
+
+.user-btn:hover .caret-icon {
+  transform: translateY(1px);
+}
+
+.dropdown-menu {
+  margin-top: 8px !important;
+  border: 1px solid #DBE8E7 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-size: 14px;
+}
     @media (max-width: 1024px) {
       .dashboard-container { grid-template-columns:1fr; }
       .pie-chart-container { flex-direction:column; gap:20px; }
@@ -270,16 +320,28 @@
       <img src="ORGanizepics/layers.png" class="orglogo" alt="Logo"/>
       <span class="header-title">ORGanize+</span>
     </div>
+
     <div class="dropdown">
-      <button class="btn rounded-circle user-btn text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fa-solid fa-user"></i>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="adminsettings.php">Account Settings</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-      </ul>
+  <button class="btn user-btn text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <div class="user-profile-wrapper">
+      <?php if(!empty($admin['profile_pic'])): ?>
+        <img src="uploads/profile_pics/<?= htmlspecialchars($admin['profile_pic']) ?>" 
+             class="profile-thumbnail"
+             alt="Profile">
+      <?php else: ?>
+        <i class="bi bi-person-circle fs-5 profile-thumbnail"></i>
+      <?php endif; ?>
+      <i class="bi bi-chevron-down caret-icon fs-6"></i>
     </div>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><a class="dropdown-item" href="adminsettings.php">Account Settings</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+  </ul>
+</div>
+
+    
   </header>
   <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">

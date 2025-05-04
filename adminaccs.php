@@ -97,6 +97,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="designs/adminaccs.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <style>
   :root { --transition-speed: .3s; }
   body { font-family:'Inter',sans-serif; background:#E3F2F1; }
@@ -148,6 +150,129 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
   font-size: 80px;
   color: #D9D9D9;
 }
+
+.user-profile-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-thumbnail {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #3D5654;
+  transition: transform 0.2s;
+}
+
+.dropdown-toggle::after {
+  display: none; /* Hide default Bootstrap caret */
+}
+
+.caret-icon {
+  color: #3D5654;
+  transition: transform 0.2s;
+}
+
+/* Remove button background and padding */
+.user-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Hover effects */
+.user-btn:hover .profile-thumbnail {
+  transform: scale(1.1);
+}
+
+.user-btn:hover .caret-icon {
+  transform: translateY(1px);
+}
+
+/* Fix dropdown menu positioning */
+.dropdown-menu {
+  margin-top: 8px !important;
+  border: 1px solid #DBE8E7 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+
+/* Add to existing CSS */
+
+.account-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.action-column {
+  width: 150px; /* Fixed width for action column */
+  text-align: right;
+  padding-right: 25px !important;
+}
+
+
+.account-table th,
+.account-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end; /* Align buttons to the right */
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Ensure table uses Bootstrap's default styling */
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.account-table thead th {
+  background: #425C5A;
+  color: white;
+  font-weight: 600;
+}
+
+/* Add Bootstrap table class */
+table.table {
+  margin-bottom: 0;
+}
+
+td.vertical-align-middle {
+  vertical-align: middle !important;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.action-buttons form {
+  margin: 0;
+  display: flex;
+}
+
+td {
+  vertical-align: middle !important;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
 </style>
 
 </head>
@@ -160,16 +285,28 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <img src="ORGanizepics/layers.png" class="orglogo" alt="Logo"/>
     <span class="header-title">ORGanize+</span>
   </div>
+
+
   <div class="dropdown">
-    <button class="btn rounded-circle user-btn text-dark" data-bs-toggle="dropdown">
-      <i class="fa-solid fa-user"></i>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end">
-      <li><a class="dropdown-item" href="adminsettings.php">Account Settings</a></li>
-      <li><hr class="dropdown-divider"></li>
-      <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-    </ul>
-  </div>
+  <button class="btn rounded-circle user-btn text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <div class="user-profile-wrapper">
+      <?php if(!empty($admin_profile_pic)): ?>
+        <img src="uploads/profile_pics/<?= htmlspecialchars($admin_profile_pic) ?>" 
+             class="profile-thumbnail"
+             alt="Profile">
+      <?php else: ?>
+        <i class="bi bi-person-circle fs-5 profile-thumbnail"></i>
+      <?php endif; ?>
+      <i class="bi bi-chevron-down caret-icon fs-6"></i>
+    </div>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><a class="dropdown-item" href="adminsettings.php">Account Settings</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+  </ul>
+</div>
+
 </header>
 
 <!-- SIDEBAR -->
@@ -209,47 +346,50 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     
-        
+<!-- Updated Table Structure -->
       <div class="table-responsive">
-        <table class="account-table">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Email</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="total-users">
-                    <td colspan="5"><?php echo count($users); ?> Total Users</td>
-                </tr>
-                <?php foreach ($users as $user): ?>
-                    <tr data-id="<?php echo $user['id']; ?>">
-                      <td class="editable" data-field="username"><?php echo htmlspecialchars($user['username']); ?></td>
-                        <td class="editable" data-field="role">
-                            <?php if (!empty($user['role'])): ?>
-                                <span class="badge-<?php echo $user['role']; ?>">
-                                    <?php echo ucfirst($user['role']); ?>
-                                </span>
-                            <?php else: ?>
-                                <span class="badge-user">user</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="editable" data-field="email"><?php echo htmlspecialchars($user['email']); ?></td>
-                        <td class="action-buttons">
-                        <button type="button" class="edit-btn btn btn-sm btn-outline-primary">Edit</button>
-                        <form method="POST" style="display: inline;">
+        <table class="table table-hover account-table">
+          <thead class="align-middle">
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Email</th>
+              <th class="action-column">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="total-users">
+              <td colspan="4"><?php echo count($users); ?> Total Users</td>
+            </tr>
+            <?php foreach ($users as $user): ?>
+              <tr data-id="<?php echo $user['id']; ?>">
+                <td class="editable" data-field="username"><?php echo htmlspecialchars($user['username']); ?></td>
+                <td class="editable" data-field="role">
+                  <?php if (!empty($user['role'])): ?>
+                    <span class="badge badge-<?php echo $user['role'] === 'admin' ? 'admin' : 'user'; ?>">
+                      <?php echo ucfirst($user['role']); ?>
+                    </span>
+                  <?php else: ?>
+                    <span class="badge badge-user">user</span>
+                  <?php endif; ?>
+                </td>
+                <td class="editable" data-field="email"><?php echo htmlspecialchars($user['email']); ?></td>
+                <td class="action-column">
+                  <div class="action-buttons">
+                    <button type="button" class="edit-btn btn btn-sm btn-outline-primary">Edit</button>
+                    <form method="POST" class="d-inline">
                       <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
                       <input type="hidden" name="remove_user" value="1">
-                      <button type="submit" name="remove_user" class="btn btn-danger btn-sm remove-btn">Remove</button>
-                  </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
+                      <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
         </table>
-    </div>
+      </div>
+
     </div>
     </div>
     
@@ -331,13 +471,13 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function (
     };
 
     // User-dropdown toggle (unchanged)…
-    const ddToggle = document.querySelector('[data-bs-toggle="dropdown"]');
-    const ddMenu   = document.querySelector('.dropdown-menu');
-    ddToggle.addEventListener('click', e => {
-      e.stopPropagation();
-      ddMenu.classList.toggle('show');
-    });
-    document.addEventListener('click', () => ddMenu.classList.remove('show'));
+    // const ddToggle = document.querySelector('[data-bs-toggle="dropdown"]');
+    // const ddMenu   = document.querySelector('.dropdown-menu');
+    // ddToggle.addEventListener('click', e => {
+    //   e.stopPropagation();
+    //   ddMenu.classList.toggle('show');
+    // });
+    // document.addEventListener('click', () => ddMenu.classList.remove('show'));
 
     // ——— Edit/Save functionality ———
     // document.querySelectorAll('.edit-btn').forEach(btn => {
