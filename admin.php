@@ -49,9 +49,11 @@
   foreach($regs as $r) $last7[$r['d']]=$r['c'];
 
   // — Fetch admin for sidebar —
-  $stmt=$pdo->prepare("SELECT username,email FROM users WHERE id=?");
+  $stmt=$pdo->prepare("SELECT username, email, profile_pic FROM users WHERE id=?"); // ADD profile_pic
   $stmt->execute([$_SESSION['user_id']]);
   $admin=$stmt->fetch(PDO::FETCH_ASSOC);
+
+
   // Get recent activities (last 7 days)
   $activities = $pdo->query("
   SELECT 
@@ -174,8 +176,8 @@
 
 }.active-users-card {
   /* Para pantay sa kalahati ng Recent Activity height */
-  height: 300px; /* adjust mo depende sa actual height ng Recent Activity */
-  width: 450px;
+  height: 320px; /* adjust mo depende sa actual height ng Recent Activity */
+  width: 420px;
   background: white;
   border-radius: 15px;
   padding: 20px;
@@ -230,6 +232,21 @@
   font-size: 18px;
 }
 
+.admin-avatar {
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  font-size: 80px;
+  color: #D9D9D9;
+}
     @media (max-width: 1024px) {
       .dashboard-container { grid-template-columns:1fr; }
       .pie-chart-container { flex-direction:column; gap:20px; }
@@ -266,11 +283,22 @@
   </header>
   <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
+
     <div class="admin-profile-area">
-      <div class="admin-avatar"></div>
+      <div class="admin-avatar">
+          <?php if(!empty($admin['profile_pic'])): ?>
+          <img src="uploads/profile_pics/<?= htmlspecialchars($admin['profile_pic']) ?>" 
+              alt="Profile Picture"
+              class="admin-avatar-img">
+        <?php else: ?>
+          <i class="fa-solid fa-user-circle default-avatar"></i>
+        <?php endif; ?>
+      </div>
       <h3><?= htmlspecialchars($admin['username']) ?></h3>
       <p class="admin-email"><?= htmlspecialchars($admin['email']) ?></p>
     </div>
+
+
     <div class="nav-area">
       <ul class="nav-menu">
         <li class="nav-item active"><a href="admin.php"><i class="fas fa-chart-bar nav-icon"></i>Dashboard</a></li>

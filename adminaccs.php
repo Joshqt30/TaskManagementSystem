@@ -15,11 +15,12 @@ $pdo->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
 
 // Fetch admin details
 $admin_id = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT username, email, profile_pic FROM users WHERE id = ?"); // Add profile_pic
 $stmt->execute([$admin_id]);
 $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 $admin_username = $admin['username'];
 $admin_email = $admin['email'];
+$admin_profile_pic = $admin['profile_pic'] ?? null; // Get profile pic
 
 // Handle user removal
 if (isset($_POST['remove_user'])) {
@@ -128,6 +129,25 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
   .nav-item.active a, .nav-item:hover a { background:#E3F2F1; color:#3D5654; }
   .nav-icon { color:#FFD700; font-size:20px; width:24px; text-align:center; }
   .nav-item.active .nav-icon, .nav-item:hover .nav-icon { color:#3D5654; }
+
+  .admin-avatar {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  font-size: 80px;
+  color: #D9D9D9;
+}
 </style>
 
 </head>
@@ -155,7 +175,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
   <div class="admin-profile-area">
-    <div class="admin-avatar"></div>
+    <div class="admin-avatar">
+    <?php if(!empty($admin_profile_pic)): ?>
+        <img src="uploads/profile_pics/<?= htmlspecialchars($admin_profile_pic) ?>" 
+             alt="Profile Picture"
+             class="admin-avatar-img">
+      <?php else: ?>
+        <i class="fa-solid fa-user-circle default-avatar"></i>
+      <?php endif; ?>
+    </div>
     <h3><?= $admin_username ?></h3>
     <p class="admin-email"><?= $admin_email ?></p>
   </div>
