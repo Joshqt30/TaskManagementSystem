@@ -50,10 +50,7 @@ try {
         $statuses = explode(',', $task['collaborator_statuses']);
         $emails = explode(',', $task['collaborator_emails']);
         
-        $currentUserEmail = $_SESSION['email'];
-
         for ($i = 0; $i < count($ids); $i++) {
-            // All collaborators will be shown their emails
             $collaborators[] = [
                 'user_id' => $ids[$i],
                 'email' => $emails[$i],
@@ -61,6 +58,29 @@ try {
             ];
         }
     }
+
+            // Add owner as the first collaborator with 'owner' status if not already present
+        $ownerExists = false;
+        foreach ($collaborators as $collab) {
+            if ($collab['user_id'] == $task['user_id']) {
+                $ownerExists = true;
+                break;
+            }
+        }
+
+        if (!$ownerExists) {
+            array_unshift($collaborators, [
+                'user_id' => $task['user_id'],
+                'email' => $task['owner_email'],
+                'status' => 'owner'
+            ]);
+        }
+
+        // Structure final response
+        $response = [
+            // ... existing fields ...
+            'collaborators' => $collaborators,
+        ];
 
     // Structure final response
     $response = [

@@ -42,16 +42,23 @@ document.querySelectorAll('.edit-btn').forEach(button => {
       document.getElementById('editDueDate').value = task.due_date.split(' ')[0]; // Remove time
       document.getElementById('editStatus').value = task.status;
 
+            // +++ ADD THIS LINE HERE +++
+      document.getElementById('editOwnerEmail').textContent = task.owner.email;
+
       // Populate collaborators
       const container = document.getElementById('editCollaboratorContainer');
       container.innerHTML = ''; 
       
       if (task.is_owner) {
-        // *** only owners get those input fields! ***
+        // +++ MODIFY THIS FOREACH LOOP +++
         task.collaborators.forEach(collab => {
-          addCollaboratorField('edit', collab.email);
+          // Skip owner in collaborator inputs
+          if (collab.status !== 'owner') {
+            addCollaboratorField('edit', collab.email);
+          }
         });
       }
+
       // Show modal
       new bootstrap.Modal(document.getElementById('editTaskModal')).show();
     } catch (error) {
@@ -122,14 +129,29 @@ collabList.innerHTML = '';  // clear existing
 if (task.collaborators.length) {
   task.collaborators.forEach(c => {
     const li = document.createElement('li');
-    li.className = 'list-group-item';
+    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+    
+    // Determine if collaborator is owner
+    const isOwner = c.status === 'owner';
+    const badgeText = isOwner ? 'Owner' : (c.status === 'accepted' ? 'Accepted' : 'Pending');
+    const badgeClass = isOwner ? 'bg-success' : (c.status === 'accepted' ? 'bg-success' : 'bg-warning');
+    const iconClass = isOwner ? 'fa-crown text-warning' : 'fa-user-circle text-secondary';
+
+    // Build list item HTML
     li.innerHTML = `
-      <i class="fa fa-user-circle text-secondary"></i>
-      <span class="flex-grow-1">${c.email}</span>
-      <span class="badge ${c.status==='accepted'?'bg-success':'bg-warning'}">
-        ${c.status}
-      </span>`;
-    collabList.append(li);
+      <div>
+        <i class="fas ${iconClass} me-2"></i>
+        <span class="flex-grow-1">${c.email}</span>
+      </div>
+      <span class="badge ${badgeClass}">${badgeText}</span>
+    `;
+
+    // Add to list - owner first
+    if (isOwner) {
+      collabList.prepend(li); // Add at beginning
+    } else {
+      collabList.append(li); // Add at end
+    }
   });
 } else {
   collabList.innerHTML = `
@@ -574,19 +596,18 @@ if (task.collaborators.length) {
 
 });
 
-// Modified Collaborator Function (Works for Both Modals)
 window.addCollaboratorField = function(mode = 'create', email = '') {
   const containerId = mode === 'edit' ? 'editCollaboratorContainer' : 'collaboratorContainer';
   const container = document.getElementById(containerId); 
   
-  const newField = `
+  const newFieldHTML = `
     <div class="input-group mb-2">
       <input type="email" name="collaborators[]" 
             class="form-control" 
             placeholder="collaborator@example.com"
             value="${email}"
             pattern="[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
-  >
+      >
       <button type="button" class="btn btn-outline-danger" 
               onclick="this.parentElement.remove()">
         <i class="fas fa-times"></i>
@@ -594,5 +615,22 @@ window.addCollaboratorField = function(mode = 'create', email = '') {
     </div>
   `;
   
-  container.insertAdjacentHTML('beforeend', newField);
+  // Insert the HTML
+  container.insertAdjacentHTML('beforeend', newFieldHTML);
+  
+  // Get the newly added input element
+  const newInput = container.lastElementChild.querySelector('input');
+
+  // Add owner validation here ▼
+  const ownerEmail = document.getElementById('editOwnerEmail')?.textContent;
+  if (newInput) {
+    newInput.addEventListener('input', function(e) {
+      if (e.target.value === ownerEmail) {
+        e.target.setCustomValidity('Owner is automatically included');
+        e.target.reportValidity();
+      } else {
+        e.target.setCustomValidity('');
+      }
+    });
+  }
 };

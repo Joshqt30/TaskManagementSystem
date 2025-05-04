@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
 
     $fileName   = uniqid('profile_') . '_' . basename($_FILES['profile_pic']['name']);
     $targetPath = $uploadDir . $fileName;
-    $allowed    = ['jpg','jpeg','png','gif'];
+    $allowed    = ['jpg','jpeg','png','gif', 'jfif'];
     $ext        = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
 
     if (in_array($ext, $allowed) &&

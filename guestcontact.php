@@ -312,8 +312,6 @@
     </div>  
     <div class="header-center">
       <ul class="nav header-nav">
-        <li class="nav-item"><a class="nav-link" href="guestabtus.html">About Us</a></li>
-        <li class="nav-item"><a class="nav-link" href="landing.php">Back to Home</a></li>
       </ul>
     </div>
     <div class="header-right">

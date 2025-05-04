@@ -258,6 +258,75 @@ body {
   margin-left: .75rem;
 }
 
+/* Add these styles to your existing CSS */
+.user-profile-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-thumbnail {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #3D5654;
+  transition: transform 0.2s;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+.caret-icon {
+  color: #3D5654;
+  transition: transform 0.2s;
+}
+
+.user-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+}
+
+.user-btn:hover .profile-thumbnail {
+  transform: scale(1.1);
+}
+
+.user-btn:hover .caret-icon {
+  transform: translateY(1px);
+}
+
+.dropdown-menu {
+  margin-top: 8px !important;
+  border: 1px solid #DBE8E7 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-size: 14px !important;
+}
+
+/* Update sidebar profile styling */
+.sidebar-profile {
+  text-align: center;
+  padding: 20px;
+}
+
+.sidebar-profile-pic {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px double #ffd700;
+  margin-bottom: 10px;
+}
+
+.fa-user-circle {
+  font-size: 80px;
+  color: #D9D9D9;
+}
+
 @media screen and (max-width: 768px) {
   .main-content {
     padding: 15px;

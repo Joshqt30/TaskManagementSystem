@@ -111,13 +111,25 @@
 
         <hr/>
 
-        <!-- Collaborators -->
-        <h6 class="fw-semibold mb-2">
-          <i class="fa fa-users me-1 text-secondary"></i>Collaborators
-        </h6>
-        <ul id="detail-collaborators" class="list-group list-group-flush">
-          <!-- injected via JS -->
-        </ul>
+    <!-- Collaborators -->
+    <h6 class="fw-semibold mb-2">
+      <i class="fa fa-users me-1 text-secondary"></i>
+      Team
+      <small class="text-muted ms-2">(Owner + Collaborators)</small>
+    </h6>
+    <ul id="detail-collaborators" class="list-group list-group-flush">
+      <!-- Template for collaborator item -->
+      <template id="collaboratorTemplate">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <span class="collaborator-label badge me-2"></span>
+            <span class="collaborator-email"></span>
+          </div>
+          <!-- Add owner badge if needed -->
+          <span class="owner-badge badge bg-success" style="display: none;">Owner</span>
+        </li>
+      </template>
+    </ul>
       </div>
 
       <!-- Footer -->
@@ -171,15 +183,23 @@
             </select>
           </div>
 
-          <!-- Collaborators (New Section) -->
-        <!-- With this -->
-        <div class="mb-4" id="collaboratorSection" style="display: none;">
-          <label class="form-label fw-bold">Collaborators</label>
-          <div id="editCollaboratorContainer"></div>
-          <button type="button" class="btn btn-sm btn-success mt-2" onclick="addCollaboratorField('edit')">
-            <i class="fas fa-plus"></i> Add Collaborator
-          </button>
-        </div>
+          <!-- Add Owner Display Here -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">Task Owner</label>
+            <div class="form-control-plaintext ps-2">
+              <i class="fas fa-crown text-warning me-2"></i>
+              <span id="editOwnerEmail"></span>
+            </div>
+          </div>
+
+          <!-- Collaborators Section -->
+          <div class="mb-4" id="collaboratorSection" style="display: none;">
+            <label class="form-label fw-bold">Collaborators</label>
+            <div id="editCollaboratorContainer"></div>
+            <button type="button" class="btn btn-sm btn-success mt-2" onclick="addCollaboratorField('edit')">
+              <i class="fas fa-plus"></i> Add Collaborator
+            </button>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

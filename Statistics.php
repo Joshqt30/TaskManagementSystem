@@ -97,6 +97,7 @@ while ($row = $stmt->fetch()) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   
   <!-- Custom CSS -->
   <link rel="stylesheet" href="designs/Statistics.css" />
@@ -135,17 +136,25 @@ while ($row = $stmt->fetch()) {
     </div>
 
     <div class="header-right">
-      <div class="dropdown">
-        <button class="btn rounded-circle user-btn text-dark" type="button" data-bs-toggle="dropdown">
-          <i class="fa-solid fa-user" style="font-size:20px;"></i>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="settings.php">Account Settings</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
-
-        </ul>
-      </div>
+    <div class="dropdown">
+      <button class="btn user-btn text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="user-profile-wrapper">
+          <?php if(!empty($user['profile_pic'])): ?>
+            <img src="uploads/profile_pics/<?= htmlspecialchars($user['profile_pic']) ?>" 
+                class="profile-thumbnail"
+                alt="Profile">
+          <?php else: ?>
+            <i class="bi bi-person-circle fs-5 profile-thumbnail"></i>
+          <?php endif; ?>
+          <i class="bi bi-chevron-down caret-icon fs-6"></i>
+        </div>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="settings.php">Account Settings</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a></li>
+      </ul>
+    </div>
     </div>
   </header>
 
