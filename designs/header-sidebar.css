@@ -134,7 +134,7 @@ body {
   white-space: nowrap;
   transition: all 0.3s ease-in-out;
   overflow: hidden;
-}
+} 
 .sidebar-profile-pic {
   width: 80px;
   height: 80px;

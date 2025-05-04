@@ -132,6 +132,20 @@ for ($day = 1; $day <= $next_month_days; $day++) {
   <link rel="stylesheet" href="designs/main.css" />
 
   <style>
+
+    .sidebar-profile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background-color: #425C5A;
+      padding: 45px 10px;
+      text-align: center;
+      margin-bottom: 45px;
+      white-space: nowrap;
+      transition: all 0.3s ease-in-out;
+      overflow: hidden;
+    }
     .custom-calendar-container {
         display: flex;
         flex-wrap: wrap;

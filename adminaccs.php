@@ -1,6 +1,18 @@
 <?php
 session_start();
+
+$error = $_GET['error'] ?? '';
+$success = $_GET['success'] ?? '';
+
 include 'config.php';
+
+// <-- ADD CSRF PROTECTION
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['csrf_token'])) {
+  if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+      die("CSRF token validation failed");
+  }
+}
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Generate new token
 
 // Check if the user is logged in and has the admin role
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -35,32 +47,50 @@ if (isset($_POST['remove_user'])) {
     exit();
 }
 
-// Handle user update
 if (isset($_POST['update_user'])) {
-    $user_id = $_POST['user_id'];
-    $username = trim($_POST['username']);
-    $email = trim($_POST['email']);
-    $role = $_POST['role'];
+  $user_id = $_POST['user_id'];
+  $username = trim($_POST['username']);
+  $email = trim($_POST['email']);
+  $role = $_POST['role'];
 
-    // Validate role
-    if (!in_array($role, ['admin', 'user'])) {
-        $role = 'user'; // Default to user if invalid
-    }
+  // <-- ADD VALIDATION
+  if (empty($username) || strlen($username) < 3 || !preg_match('/^[A-Za-z0-9 ]+$/', $username)) {
+      header("Location: adminaccs.php?error=Invalid+username");
+      exit();
+  }
 
-    // Prevent admin from demoting themselves
-    if ($user_id == $admin_id && $role !== 'admin') {
-        header("Location: adminaccs.php?error=Cannot demote yourself");
-        exit();
-    }
+  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      header("Location: adminaccs.php?error=Invalid+email");
+      exit();
+  }
 
-    // Basic validation for username, email, and organization
-    if (empty($username) || empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        header("Location: adminaccs.php?error=Invalid input");
-        exit();
-    }
+  // <-- PREVENT SELF-EDIT
+  if ($user_id == $admin_id) {
+      // For admin's own account: keep original username/email
+      $stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
+      $stmt->execute([$admin_id]);
+      $admin_data = $stmt->fetch();
+      $username = $admin_data['username'];
+      $email = $admin_data['email'];
+  }
 
-    $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?");
-    $stmt->execute([$username, $email, $role, $user_id]);
+  // <-- AUDIT LOG
+  $stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
+  $stmt->execute([$user_id]);
+  $old_data = $stmt->fetch();
+
+  $log_message = sprintf(
+      "Admin %s edited user %s: Username %s→%s, Email %s→%s, Role %s→%s",
+      $admin_id,
+      $user_id,
+      $old_data['username'],
+      $username,
+      $old_data['email'],
+      $email,
+      $old_data['role'],
+      $role
+  );
+  file_put_contents('admin_audit.log', date('Y-m-d H:i:s') . " - $log_message" . PHP_EOL, FILE_APPEND);
     
     
     // Redirect to avoid form resubmission
@@ -76,8 +106,8 @@ if ($sort !== 'All') {
     $sort_param = $sort;
 }
 
-// Fetch users with organization
-$query = "SELECT id, username, role, email FROM users" . $where_clause;
+// In the sorting section
+$query = "SELECT id, username, role, email FROM users WHERE is_verified = 1" . $where_clause;
 $stmt = $pdo->prepare($query);
 if ($sort !== 'All') {
     $stmt->execute([$sort_param]);
@@ -278,6 +308,12 @@ td {
 </head>
 <body>
 
+<?php if ($error): ?>
+    <div class="alert alert-danger">Error: <?= htmlspecialchars($error) ?></div>
+<?php elseif ($success): ?>
+    <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+<?php endif; ?>
+
 <!-- HEADER -->
 <header class="header">
   <div class="header-left">
@@ -375,15 +411,16 @@ td {
                 </td>
                 <td class="editable" data-field="email"><?php echo htmlspecialchars($user['email']); ?></td>
                 <td class="action-column">
-                  <div class="action-buttons">
-                    <button type="button" class="edit-btn btn btn-sm btn-outline-primary">Edit</button>
-                    <form method="POST" class="d-inline">
-                      <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
-                      <input type="hidden" name="remove_user" value="1">
-                      <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                    </form>
-                  </div>
-                </td>
+                <div class="action-buttons">
+                  <button type="button" class="edit-btn btn btn-sm btn-outline-primary">Edit</button>
+                  <button type="button" class="btn btn-danger btn-sm remove-btn">Remove</button>
+                  <form method="POST" class="d-inline delete-form">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                    <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                    <input type="hidden" name="remove_user" value="1">
+                  </form>
+                </div>
+              </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
@@ -435,33 +472,30 @@ document.getElementById('confirmEditBtn').addEventListener('click', function () 
     currentRow.classList.add('editing');
     currentRow.querySelector('.edit-btn').textContent = 'Save';
   }
-});
-
-document.querySelectorAll('.remove-btn').forEach(btn => {
-  btn.type = 'button';
-  btn.addEventListener('click', function(e) {
-    e.preventDefault();
-    currentRow = this.closest('tr');
-    currentForm = this.closest('form'); // ✅ This is the correct way!
-
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-    deleteModal.show();
   });
-});
 
-document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-  const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
-  deleteModal.hide();
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      currentForm = this.nextElementSibling; // Get the adjacent form
+      const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+      deleteModal.show();
+    });
+  });
 
-  if (currentForm) {
-    currentForm.submit(); // ✅ Form found, now this will work.
-  } else {
-    console.error("No form found for deletion.");
-  }
-});
+  document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+    const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+    deleteModal.hide();
+
+    if (currentForm) {
+      currentForm.submit(); // ✅ Form found, now this will work.
+    } else {
+      console.error("No form found for deletion.");
+    }
+  });
 
 
-});
+  });
 
 
     // Sidebar toggle (unchanged)…
@@ -502,26 +536,46 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function (
     //   });
     // });
 
-  function enterEditMode(row) {
+// In the existing enterEditMode() function - REPLACE WITH:
+function enterEditMode(row) {
   row.querySelectorAll('.editable').forEach(cell => {
     const field = cell.dataset.field;
-    let val;
-    if (field === 'role') {
-      val = cell.querySelector('span').textContent.trim().toLowerCase();
-      cell.innerHTML = `
-        <select class="edit-select form-select form-select-sm">
-          <option value="admin" ${val === 'admin' ? 'selected' : ''}>Admin</option>
-          <option value="user" ${val === 'user' ? 'selected' : ''}>User</option>
-        </select>`;
-    } else {
-      val = cell.textContent.trim();
+    const value = cell.textContent.trim();
 
+    if (field === 'username') {
+      cell.innerHTML = `
+        <input type="text" 
+               class="form-control form-control-sm" 
+               value="${value}"
+               pattern="[A-Za-z0-9 ]{3,30}" 
+               title="3-30 characters (letters, numbers, spaces)"
+               required>`;
+    } else if (field === 'email') {
+      cell.innerHTML = `
+        <input type="email" 
+               class="form-control form-control-sm" 
+               value="${value}"
+               required>`;
+    } else if (field === 'role') {
+      const currentRole = cell.querySelector('span').textContent.trim().toLowerCase();
+      cell.innerHTML = `
+        <select class="form-select form-select-sm">
+          <option value="admin" ${currentRole === 'admin' ? 'selected' : ''}>Admin</option>
+          <option value="user" ${currentRole === 'user' ? 'selected' : ''}>User</option>
+        </select>`;
     }
   });
 }
 
 
 function saveChanges(row) {
+
+
+  const saveModal = new bootstrap.Modal(document.getElementById('saveConfirmModal'));
+  saveModal.show();
+
+  document.getElementById('confirmSaveBtn').onclick = () => {
+
   const userId = row.dataset.id;
 
   const getValue = (selector, fallbackSelector) => {
@@ -568,8 +622,9 @@ function saveChanges(row) {
 
   document.body.appendChild(form);
   form.submit();
+  saveModal.hide();
 }
-
+}
 
 </script>
 
@@ -588,6 +643,25 @@ function saveChanges(row) {
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <button type="button" id="confirmEditBtn" class="btn btn-warning">Yes, Edit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Save Confirmation Modal -->
+<div class="modal fade" id="saveConfirmModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Confirm Changes</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to save these changes?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="confirmSaveBtn" class="btn btn-primary">Save Changes</button>
       </div>
     </div>
   </div>

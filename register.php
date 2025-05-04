@@ -117,6 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: verification.php?email=" . urlencode($email));
                 exit;
             } catch (Exception $e) {
+                error_log("Mailer Error: " . $e->getMessage());
+                error_log("Mailer Debug: " . $mail->ErrorInfo);
                 $error_message = "Email could not be sent. Please try again later.";
             }
         }

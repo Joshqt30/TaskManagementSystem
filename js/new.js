@@ -161,10 +161,15 @@ async function fetchTaskDetails(taskId) {
       });
     }
 
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'), {
-      focus: true // Let Bootstrap handle focus management
-    });
+    // — prepare and show the modal —
+    const detailModalEl = document.getElementById('taskDetailModal');
+    const modal = new bootstrap.Modal(detailModalEl, { focus: true });
+
+    // **➜ Remember who opened it** so we can return focus later:
+    detailModalEl._triggerElement = document
+      .querySelector(`.task-item[data-task-id="${taskId}"], .task-row[data-id="${taskId}"]`);
+
+    // **Now** show it
     modal.show();
 
   } catch (error) {
@@ -442,39 +447,39 @@ async function fetchTaskDetails(taskId) {
     });
   });
 
-   // Tab Switching Functionality
-   document.querySelectorAll('.task-tabs .nav-link').forEach(tab => {
-    tab.addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      // Remove active class from all tabs
-      document.querySelectorAll('.task-tabs .nav-link').forEach(t => {
-        t.classList.remove('active');
+    // Tab Switching Functionality
+    document.querySelectorAll('.task-tabs .nav-link').forEach(tab => {
+      tab.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Remove active class from all tabs
+        document.querySelectorAll('.task-tabs .nav-link').forEach(t => {
+          t.classList.remove('active');
+        });
+
+        // Add active to clicked tab
+        this.classList.add('active');
+        
+        // Hide all task groups
+        document.querySelectorAll('.task-group').forEach(group => {
+          group.style.display = 'none';
       });
 
-      // Add active to clicked tab
-      this.classList.add('active');
-      
-      // Hide all task groups
-      document.querySelectorAll('.task-group').forEach(group => {
-        group.style.display = 'none';
-    });
-
-      // Show selected group
-      const status = this.dataset.status;
-        const targetGroup = document.querySelector(`.${status}-group`);
-        if (targetGroup) {
-            targetGroup.style.display = 'block';
-            targetGroup.style.opacity = 0;
-            let opacity = 0;
-            const animation = setInterval(() => {
-                if (opacity >= 1) clearInterval(animation);
-                targetGroup.style.opacity = opacity;
-                opacity += 0.1;
-            }, 50);
-        }
-    });
-});
+        // Show selected group
+        const status = this.dataset.status;
+          const targetGroup = document.querySelector(`.${status}-group`);
+          if (targetGroup) {
+              targetGroup.style.display = 'block';
+              targetGroup.style.opacity = 0;
+              let opacity = 0;
+              const animation = setInterval(() => {
+                  if (opacity >= 1) clearInterval(animation);
+                  targetGroup.style.opacity = opacity;
+                  opacity += 0.1;
+              }, 50);
+          }
+      });
+  });
 
   // Initialize task interactions on page load
   initTaskInteractions();
@@ -587,9 +592,21 @@ async function fetchTaskDetails(taskId) {
         alert(`Error: ${error.message}`);
       }
     });
-  }
+    }
 
-});
+    const detailModalEl = document.getElementById('taskDetailModal');
+    const taskDetailModal = new bootstrap.Modal(detailModalEl, { focus: true });
+
+    detailModalEl.addEventListener('hidden.bs.modal', () => {
+      if (detailModalEl._triggerElement) {
+        detailModalEl._triggerElement.focus();
+        delete detailModalEl._triggerElement;
+      } else {
+        document.body.focus();
+      }
+    });
+
+  });
 
 window.addCollaboratorField = function(mode = 'create', email = '') {
   const containerId = mode === 'edit' ? 'editCollaboratorContainer' : 'collaboratorContainer';
@@ -632,6 +649,21 @@ window.addCollaboratorField = function(mode = 'create', email = '') {
 
 initTaskInteractions();
 
+
+// … after initTaskInteractions() and blur‑fix …
+
+// Blur all dismiss buttons so no focused element is hidden
 document
-  .querySelectorAll('#taskDetailModal .btn-close')
+  .querySelectorAll('#taskDetailModal .btn-close, #taskDetailModal [data-bs-dismiss="modal"]')
   .forEach(btn => btn.addEventListener('click', () => btn.blur()));
+
+// When the modal fully hides, return focus to the opener
+const detailModalEl = document.getElementById('taskDetailModal');
+detailModalEl.addEventListener('hidden.bs.modal', () => {
+  if (detailModalEl._triggerElement) {
+    detailModalEl._triggerElement.focus();
+    delete detailModalEl._triggerElement;
+  } else {
+    document.body.focus();
+  }
+});

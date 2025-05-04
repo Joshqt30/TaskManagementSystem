@@ -16,6 +16,10 @@ $options = [
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 
+define('MAX_USERNAME_LENGTH', 30);
+define('MIN_USERNAME_LENGTH', 3);
+define('EMAIL_MAX_LENGTH', 100);
+
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (PDOException $e) {

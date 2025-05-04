@@ -4,7 +4,7 @@ Array
     [title] => First Task
     [description] => hello! this is my first task.
     [due_date] => 2025-05-04
-    [status] => todo
+    [status] => in_progress
     [collaborators] => Array
         (
             [0] => randombutcute123@gmail.com
