@@ -200,8 +200,8 @@ $tasks = $stmt->fetchAll();
         <button class="btn btn-primary new-task-btn" data-bs-toggle="modal" data-bs-target="#createTaskModal">
           <i class="fa-solid fa-plus me-1"></i> New Task
         </button>
-        <div class="mb-3">
-        <label for="statusFilter" class="form-label"> Status</label>
+        <div class="d-flex align-items-center gap-3"> <!-- Added wrapper div -->
+        <div class="mb-2">
         <select class="form-select" id="statusFilter" onchange="filterStatus()">
           <option value="">All</option>
           <option value="todo">To Do</option>
@@ -215,7 +215,8 @@ $tasks = $stmt->fetchAll();
     </script>
 
       </div>
-        </div>
+    </div>
+  </div>
   
         <!-- Tasks Table -->
         <div class="table-responsive">

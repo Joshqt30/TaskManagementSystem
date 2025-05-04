@@ -142,28 +142,133 @@ unset($task);
 
     /* --------- TASK TABLE --------- */
     .minimal-table {
-      width:100%; border-collapse:separate; border-spacing:0 8px;
-      margin-top:1rem;
-    }
-    .minimal-table thead th {
-      background:#3D5654; color:#fff; padding:12px 15px;
-      position:sticky; top:0; border-radius:8px;
-    }
-    .minimal-table tbody td {
-      background:#fff; padding:12px 15px;
-      border-bottom:2px solid #E3F2F1;
-    }
-    .collaborator-list {
-      max-width:250px; line-height:1.3;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .status-cell { text-align:right; padding-right:25px; }
-    .badge.todo        { background-color:#EA2E2E; }
-    .badge.in-progress { background-color:#5BA4E5; }
-    .badge.completed   { background-color:#54D376; }
-    .badge.expired     { background-color:#999; }
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  margin: 1.5rem 0;
+}
 
-    .user-profile-wrapper {
+.minimal-table thead th {
+  background: #425C5A;
+  color: #fff;
+  padding: 16px 24px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  border: none;
+  position: sticky;
+  top: 55px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.minimal-table tbody td {
+  background: #fff;
+  padding: 18px 24px;
+  border: none;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.minimal-table tbody tr {
+  cursor: pointer;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.minimal-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(61,86,84,0.1);
+}
+
+.minimal-table tbody tr:hover td {
+  background: #F8FAFA;
+}
+
+/* Status badges */
+.badge {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.badge.todo        { background: #FFEBEE; color: #D32F2F; }
+.badge.in-progress { background: #E3F2FD; color: #1976D2; }
+.badge.completed   { background: #E8F5E9; color: #2E7D32; }
+.badge.expired     { background: #F5F5F5; color: #616161; }
+
+/* Collaborator list */
+.collaborator-list {
+  max-width: 250px;
+  line-height: 1.4;
+  font-size: 0.95rem;
+  color: #546E7A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Due date styling */
+.minimal-table td:nth-child(3) {
+  font-weight: 500;
+  color: #3D5654;
+}
+
+/* Header alignment */
+.minimal-table th:nth-child(1) { width: 30%; }
+.minimal-table th:nth-child(2) { width: 35%; }
+.minimal-table th:nth-child(3) { width: 20%; }
+.minimal-table th:nth-child(4) { width: 15%; text-align: right; }
+
+/* Cell alignment */
+.minimal-table td:last-child {
+  text-align: right;
+  padding-right: 32px;
+}
+
+/* Hover effect for collaborator list */
+.collaborator-list:hover {
+  white-space: normal;
+  overflow: visible;
+  position: relative;
+  z-index: 2;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .minimal-table thead { display: none; }
+  .minimal-table tbody td {
+    display: block;
+    text-align: right;
+    padding: 12px 16px;
+  }
+  
+  .minimal-table tbody td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: 600;
+    color: #3D5654;
+    margin-right: auto;
+  }
+  
+  .minimal-table tbody tr {
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  
+  .minimal-table tbody td:last-child {
+    border-radius: 0 0 12px 12px;
+  }
+}
+  .user-profile-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
