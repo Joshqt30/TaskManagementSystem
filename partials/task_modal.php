@@ -74,7 +74,7 @@
 </div>
 
 <!-- Task Detail Modal -->
-<div class="modal fade" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel">
+<div class="modal fade" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
       <!-- Header -->
@@ -120,13 +120,14 @@
     <ul id="detail-collaborators" class="list-group list-group-flush">
       <!-- Template for collaborator item -->
       <template id="collaboratorTemplate">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <div>
-            <span class="collaborator-label badge me-2"></span>
-            <span class="collaborator-email"></span>
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="text-truncate">
+              <i class="fas fa-user-circle me-2 text-muted"></i>
+              <span class="collaborator-email"></span>
+            </div>
+            <span class="collaborator-badge badge"></span>
           </div>
-          <!-- Add owner badge if needed -->
-          <span class="owner-badge badge bg-success" style="display: none;">Owner</span>
         </li>
       </template>
     </ul>
@@ -245,4 +246,58 @@ function addCollaboratorField(mode = 'create') {
 .add-collaborator, .remove-collaborator {
   border-radius: 0 0.375rem 0.375rem 0 !important;
 }
+/* Compact layout for list items */
+/* Adjust list item sizing */
+#detail-collaborators .list-group-item {
+  padding: 0.75rem 1.25rem; /* Increase padding */
+  font-size: 0.95rem; /* Slightly larger text */
+}
+#detail-collaborators .list-group-item div {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  min-width: 0;
+}
+.collaborator-badge {
+  font-size: 0.8em; /* Smaller badge text */
+  padding: 0.3em 0.6em; /* Better badge proportions */
+  margin-left: 0.5rem; /* Add spacing between email and badge */
+}
+
+.fa-crown, .fa-user-circle {
+  font-size: 1.8rem !important; /* Increased from 0.8-1em */
+  width: 1.8rem; /* Fixed width for consistent spacing */
+  text-align: center;
+  margin-right: 0.75rem;
+  vertical-align: middle;
+}
+
+/* For better visual hierarchy */
+.fa-crown {
+  color: #ffc107 !important; /* Gold color for crown */
+}
+
+.fa-user-circle {
+  color: #6c757d !important; /* Bootstrap's secondary color */
+}
+
+
+
+.owner-entry {
+  background-color: #f8f9fa; /* Subtle background for owner */
+}
+
+/* Email text truncation */
+.collaborator-email {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  max-width: none !important;
+}
+
+#detail-collaborators {
+  margin-bottom: 0;
+}
+
 </style>

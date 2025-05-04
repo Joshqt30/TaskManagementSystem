@@ -2,13 +2,20 @@
 
 // Initialize Task Interactions
 function initTaskInteractions() {
-  // Click handler for task details
-    document.querySelectorAll('.task-item').forEach(task => {
-    task.addEventListener('click', function(e) {
-      const taskId = this.dataset.taskId;
-      fetchTaskDetails(taskId);
+  // On main.php: <div class="task-item" data-task-id="…">
+  // On mytasks.php: <tr class="task-row" data-id="…">
+  document
+    .querySelectorAll('.task-item[data-task-id], .task-row[data-id]')
+    .forEach(el => {
+      el.addEventListener('click', function(e) {
+        // Don’t open details if they clicked an Edit or Delete button
+        if (e.target.closest('.edit-btn, .delete-btn')) return;
+
+        // Normalize the ID field
+        const taskId = el.dataset.taskId || el.dataset.id;
+        fetchTaskDetails(taskId);
+      });
     });
-  });
 
 
 // Edit Task Handler - Populate All Fields
@@ -101,77 +108,65 @@ async function fetchTaskDetails(taskId) {
     const response = await fetch(`/TaskManagementSystem/api/get_task.php?id=${taskId}`);
     const task = await response.json();
 
-   // — Populate Title & Description —
-document.getElementById('detail-title').textContent = task.title;
-document.getElementById('detail-description').textContent = task.description;
+    // — Populate Title & Description —
+    document.getElementById('detail-title').textContent = task.title;
+    document.getElementById('detail-description').textContent = task.description;
 
-// — Status badge with Bootstrap colors —
-const statusEl = document.getElementById('detail-status');
-statusEl.textContent = task.status.replace('_',' ');
-statusEl.className = 'badge ' + ({
-  todo: 'bg-danger',
-  in_progress: 'bg-warning',
-  completed: 'bg-success',
-  expired: 'bg-secondary'
-})[task.status];
+    // — Status badge —
+    const statusEl = document.getElementById('detail-status');
+    statusEl.textContent = task.status.replace('_',' ');
+    statusEl.className = 'badge ' + ({
+      todo: 'bg-danger',
+      in_progress: 'bg-warning',
+      completed: 'bg-success',
+      expired: 'bg-secondary'
+    })[task.status];
 
-// — Prettified Due Date —
-const date = new Date(task.due_date);
-document.getElementById('detail-due-date').textContent =
-  date.toLocaleDateString(undefined, {
-    year: 'numeric', month: 'short', day: 'numeric'
-  });
+    // — Due Date —
+    const date = new Date(task.due_date);
+    document.getElementById('detail-due-date').textContent = date.toLocaleDateString();
 
-// — Collaborators list using Bootstrap list‑group —
-const collabList = document.getElementById('detail-collaborators');
-collabList.innerHTML = '';  // clear existing
+    // — Collaborators List —
+    const collabList = document.getElementById('detail-collaborators');
+    collabList.innerHTML = '';
 
-if (task.collaborators.length) {
-  task.collaborators.forEach(c => {
-    const li = document.createElement('li');
-    li.className = 'list-group-item d-flex justify-content-between align-items-center';
-    
-    // Determine if collaborator is owner
-    const isOwner = c.status === 'owner';
-    const badgeText = isOwner ? 'Owner' : (c.status === 'accepted' ? 'Accepted' : 'Pending');
-    const badgeClass = isOwner ? 'bg-success' : (c.status === 'accepted' ? 'bg-success' : 'bg-warning');
-    const iconClass = isOwner ? 'fa-crown text-warning' : 'fa-user-circle text-secondary';
-
-    // Build list item HTML
-    li.innerHTML = `
+    // Owner Entry
+    const ownerLi = document.createElement('li');
+    ownerLi.className = 'list-group-item d-flex justify-content-between align-items-center';
+    ownerLi.innerHTML = `
       <div>
-        <i class="fas ${iconClass} me-2"></i>
-        <span class="flex-grow-1">${c.email}</span>
+        <i class="fas fa-user-circle me-2 text-primary"></i>
+        ${task.owner.email} <span class="text-muted">(owner)</span>
       </div>
-      <span class="badge ${badgeClass}">${badgeText}</span>
     `;
+    collabList.appendChild(ownerLi);
 
-    // Add to list - owner first
-    if (isOwner) {
-      collabList.prepend(li); // Add at beginning
-    } else {
-      collabList.append(li); // Add at end
+    // Collaborators
+    if (task.collaborators.length) {
+      task.collaborators.forEach(c => {
+        if (c.email === task.owner.email) return;
+
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        
+        const statusClass = c.status === 'accepted' ? 'bg-success' : 'bg-warning';
+        li.innerHTML = `
+          <div>
+            <i class="fas fa-user-circle me-2 text-secondary"></i>
+            ${c.email}
+          </div>
+          <span class="badge ${statusClass}">${c.status}</span>
+        `;
+        collabList.appendChild(li);
+      });
     }
-  });
-} else {
-  collabList.innerHTML = `
-    <li class="list-group-item text-muted">
-      <i class="fa fa-user-slash me-2"></i>No collaborators
-    </li>`;
-}
 
-  const modalEl = document.getElementById('taskDetailModal');
-  const modal = new bootstrap.Modal(modalEl);
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'), {
+      focus: true // Let Bootstrap handle focus management
+    });
+    modal.show();
 
-  // Show the modal first
-  modal.show();
-
-  // ⏳ Then focus inside it after 100ms (let Bootstrap finish animation + aria toggling)
-  setTimeout(() => {
-    modalEl.querySelector('button, [tabindex], input, textarea, select, a')?.focus();
-  }, 100);
-
-      
   } catch (error) {
     console.error('Error:', error);
     alert('Failed to load task details');
@@ -634,3 +629,9 @@ window.addCollaboratorField = function(mode = 'create', email = '') {
     });
   }
 };
+
+initTaskInteractions();
+
+document
+  .querySelectorAll('#taskDetailModal .btn-close')
+  .forEach(btn => btn.addEventListener('click', () => btn.blur()));

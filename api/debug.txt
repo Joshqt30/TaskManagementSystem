@@ -1,14 +1,15 @@
 Array
 (
-    [task_id] => 197
-    [title] => sample bro
-    [description] => heehe
-    [due_date] => 2025-05-08
+    [task_id] => 199
+    [title] => First Task
+    [description] => hello! this is my first task.
+    [due_date] => 2025-05-04
     [status] => todo
     [collaborators] => Array
         (
-            [0] => domingojoshua405@gmail.com
+            [0] => randombutcute123@gmail.com
+            [1] => domingojoshua439@gmail.com
         )
 
-    [validCollaborators] => ["domingojoshua405@gmail.com"]
+    [validCollaborators] => ["randombutcute123@gmail.com","domingojoshua439@gmail.com"]
 )
