@@ -7,16 +7,44 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-// update last_active
+// Update last_active
 $admin_id = $_SESSION['user_id'];
 $pdo->prepare("UPDATE users SET last_active = NOW() WHERE id = ?")
     ->execute([$admin_id]);
 
-$adminId = $_SESSION['user_id'];
+// Handle profile picture upload
+$uploadSuccess = false;
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
+    $uploadDir = 'uploads/profile_pics/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $fileName = uniqid('profile_') . '_' . basename($_FILES['profile_pic']['name']);
+    $targetPath = $uploadDir . $fileName;
+    $allowed = ['jpg','jpeg','png','gif'];
+    $ext = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
+
+    if (in_array($ext, $allowed) &&
+        move_uploaded_file($_FILES['profile_pic']['tmp_name'], $targetPath)) {
+        $pdo->prepare("UPDATE users SET profile_pic = ? WHERE id = ?")
+            ->execute([$fileName, $admin_id]);
+        $_SESSION['profile_pic'] = $fileName;
+    }
+
+    header('Location: adminsettings.php?uploaded=1');
+    exit;
+}
+
+if (!empty($_GET['uploaded']) && $_GET['uploaded'] === '1') {
+    $uploadSuccess = true;
+}
+
+// Fetch admin data with profile_pic
 try {
-    $stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ? AND role = 'admin'");
-    $stmt->execute([$adminId]);
+    $stmt = $pdo->prepare("SELECT username, email, profile_pic FROM users WHERE id = ?");
+    $stmt->execute([$admin_id]);
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     die("Error fetching admin data.");
@@ -38,6 +66,43 @@ try {
   </div>
 
   <div class="container">
+
+    <!-- Add this after the opening <div class="container"> -->
+  <div class="profile-picture-section">
+      <div class="section-card">
+          <h2 class="section-title">Profile Picture</h2>
+          
+          <?php if ($uploadSuccess): ?>
+          <div class="success-message">Profile picture updated successfully!</div>
+          <?php endif; ?>
+          
+          <div class="profile-preview-container">
+              <div class="profile-preview" id="profile-preview">
+                  <?php if (!empty($admin['profile_pic'])): ?>
+                  <button class="remove-profile-btn" id="removeProfileBtn">×</button>
+                  <div class="profile-image-wrapper">
+                      <img src="uploads/profile_pics/<?= htmlspecialchars($admin['profile_pic']) ?>" 
+                          alt="Profile Picture"
+                          class="profile-preview-img">
+                  </div>
+                  <?php else: ?>
+                  <i class="fa-solid fa-user-circle default-profile"></i>
+                  <?php endif; ?>
+              </div>
+          </div>
+          
+          <form method="POST" enctype="multipart/form-data" id="profile-pic-form">
+              <input type="file" 
+                  name="profile_pic" 
+                  id="profile-pic-input" 
+                  accept="image/*"
+                  class="visually-hidden">
+              <label for="profile-pic-input" class="btn btn-primary">
+                  <i class="fas fa-upload me-2"></i>Upload Photo
+              </label>
+          </form>
+      </div>
+  </div>
     
     <!-- General Info Section -->
     <div class="section-card">

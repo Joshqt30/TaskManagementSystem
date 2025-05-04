@@ -1,7 +1,6 @@
-  <?php
+<?php
   session_start();
   include 'config.php';
-
   // — Auth & last_active update —
   if (!isset($_SESSION['user_id']) || $_SESSION['role']!=='admin') {
     header("Location: login.php");
@@ -9,11 +8,9 @@
   }
   $pdo->prepare("UPDATE users SET last_active=NOW() WHERE id=?")
       ->execute([$_SESSION['user_id']]);
-
   // — Active users —
   $active_now        = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE last_active>=NOW()-INTERVAL 5 MINUTE")->fetchColumn();
   $active_last_hour  = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE last_active>=NOW()-INTERVAL 1 HOUR")->fetchColumn();
-
   // — Summary stats —
   $user_count = (int)$pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
   $task_count=0;
@@ -23,6 +20,14 @@
   $status_colors = ['todo'=>'#EA2E2E','in_progress'=>'#5BA4E5','completed'=>'#54D376','expired'=>'#999999'];
   $rows = $pdo->query("SELECT status,COUNT(*) c FROM tasks GROUP BY status")->fetchAll(PDO::FETCH_ASSOC);
   $total= array_sum(array_column($rows,'c'));
+  // -- Completed tasks count --
+  $completed_tasks = 0;
+  foreach($rows as $r) {
+      if($r['status'] === 'completed') {
+          $completed_tasks = $r['c'];
+          break;
+      }
+  }
   $gradient_segments=[]; $task_statuses=[];
   $cur=0;
   foreach($rows as $r){
@@ -33,7 +38,6 @@
     $task_statuses[$r['status']]=['percentage'=>$p,'color'=>$col];
   }
   $gradient = $gradient_segments? implode(',',$gradient_segments): '#D9D9D9';
-
   // — Last 7 days regs —
   $last7=[]; for($i=6;$i>=0;$i--){ $d=date('Y-m-d',strtotime("-$i days")); $last7[$d]=0; }
   $regs = $pdo->query("
@@ -44,13 +48,10 @@
   ")->fetchAll(PDO::FETCH_ASSOC);
   foreach($regs as $r) $last7[$r['d']]=$r['c'];
 
-
-
   // — Fetch admin for sidebar —
   $stmt=$pdo->prepare("SELECT username,email FROM users WHERE id=?");
   $stmt->execute([$_SESSION['user_id']]);
   $admin=$stmt->fetch(PDO::FETCH_ASSOC);
-
   // Get recent activities (last 7 days)
   $activities = $pdo->query("
   SELECT 
@@ -61,8 +62,8 @@
   JOIN users u ON a.user_id = u.id
   WHERE a.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
   ORDER BY a.created_at DESC
+  LIMIT 7
   ")->fetchAll(PDO::FETCH_ASSOC);
-
   // Group activities by date
   $grouped_activities = [];
   foreach($activities as $a) {
@@ -93,7 +94,6 @@
               height:calc(100vh - 55px); border-top-right-radius:20px; border-bottom-right-radius:20px;
               transition:left var(--transition-speed); overflow:hidden; }
     .sidebar.sidebar-hidden { left:-280px; }
-
     h3 {
       font-size: 22px;
     }
@@ -120,6 +120,12 @@
     .stat-icon { font-size:20px; color:#3c4b5b; margin-bottom:6px; }
     .stat-number { font-size:26px; font-weight:600; line-height:1; margin-bottom:6px; }
     .stat-label { color:#718096; font-size:13px; }
+    /* Add to existing styles */
+    .stat-icon-completed { color: #54D376; }  /* Green from pie chart */
+    .stat-icon-task { color:#d2b827; }       /* Dark teal from header */
+    .stat-icon-user { color: #5BA4E5; }       /* Blue from 'in progress' */
+    .stat-icon-theme { color: #FFD700; }      /* Gold accent from nav */
+    
     .dashboard-container { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
     .dashboard-card { background:white; padding:15px; border-radius:8px; border:1px solid #e2e8f0; }
     .dashboard-card h2 { font-size:16px; font-weight:600; color:#2d3748; margin-bottom:10px; }
@@ -135,7 +141,6 @@
     .data-table th, .data-table td { padding:8px; text-align:left; border-bottom:1px solid #e2e8f0; }
     .data-table th { color:#718096; font-weight:500; }
     .dropdown-menu { z-index:1050; }
-
     .activity-feed { padding:10px; }
 .activity-date { 
     color: #4a5568; 
@@ -166,7 +171,65 @@
     font-size: 0.85rem;
     color: #718096;
     margin-top: 2px;
+
+}.active-users-card {
+  /* Para pantay sa kalahati ng Recent Activity height */
+  height: 300px; /* adjust mo depende sa actual height ng Recent Activity */
+  width: 450px;
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
+
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #4CAF50;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  font-weight: 700; /* a bit bolder */
+  font-size: 18px;
+  color: #3D5654; /* subtle dark gray/green */
+  border-bottom: 1px solid #CFD8D7;
+  padding-bottom: 10px;
+}
+
+
+.active-users-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 15px;
+  padding: 0 20px;
+}
+.active-user-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+}
+.stat-label {
+  font-weight: 500;
+  color: #3D5654;
+  font-size: 14px;
+}
+.stat-value {
+  font-weight: 600;
+  color: #3D5654;
+  font-size: 18px;
+}
+
     @media (max-width: 1024px) {
       .dashboard-container { grid-template-columns:1fr; }
       .pie-chart-container { flex-direction:column; gap:20px; }
@@ -183,7 +246,6 @@
   </style>
   </head>
   <body>
-
   <!-- HEADER -->
   <header class="header">
     <div class="header-left">
@@ -202,7 +264,6 @@
       </ul>
     </div>
   </header>
-
   <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
     <div class="admin-profile-area">
@@ -218,26 +279,24 @@
       </ul>
     </div>
   </nav>
-
   <main class="main-content" id="mainContent">
-    <div class="stats-grid">
+      <div class="stats-grid">
       <div class="stat-card">
-        <i class="fas fa-user-group stat-icon"></i>
+        <i class="fas fa-user-group stat-icon stat-icon-user"></i>
         <div class="stat-number"><?php echo $user_count; ?></div>
         <div class="stat-label">User Accounts</div>
       </div>
       <div class="stat-card">
-        <i class="fas fa-list-check stat-icon"></i>
+        <i class="fas fa-list-check stat-icon stat-icon-task"></i>
         <div class="stat-number"><?php echo $task_count; ?></div>
         <div class="stat-label">Tasks Created</div>
       </div>
       <div class="stat-card">
-        <i class="fas fa-sitemap stat-icon"></i>
-        <div class="stat-number"></div>
-        <div class="stat-label">Organizations</div>
+        <i class="fas fa-clipboard-check stat-icon stat-icon-completed"></i>
+        <div class="stat-number"><?php echo $completed_tasks; ?></div>
+        <div class="stat-label">Total Completed Tasks</div>
       </div>
     </div>
-
   <!-- row 1: Last 7 Days Registrations + Pie Chart -->
   <div class="dashboard-container row-1">
     <div class="dashboard-card">
@@ -271,55 +330,42 @@
       </div>
     </div>
   </div>
-
-  <!-- row 2: Active Users + Users per Organization -->
+  <!-- row 2: Active Users + Recent Act -->
   <div class="dashboard-container row-2">
-    <div class="dashboard-card">
-      <h2>Active Users</h2>
-      <div class="stats-grid" style="justify-content:flex-start;gap:10px">
-        <div class="stat-card" style="min-width:120px">
-          <i class="fa fa-circle stat-icon" style="color:#38A169"></i>
-          <div class="stat-number"><?= $active_now ?></div>
-          <div class="stat-label">Now</div>
-        </div>
-        <div class="stat-card" style="min-width:120px">
-          <i class="fa fa-clock stat-icon"></i>
-          <div class="stat-number"><?= $active_last_hour ?></div>
-          <div class="stat-label">Last Hour</div>
-        </div>
-      </div>
-    </div>
-      <div class="dashboard-card">
+  <div class="dashboard-card">
       <h2>Recent Activity</h2>
       <div class="activity-feed">
-          <?php foreach($grouped_activities as $date => $items): ?>
-              <div class="activity-day">
-                  <div class="activity-date"><?= date('l, F j', strtotime($date)) ?></div>
-                  
-                  <?php foreach($items as $item): ?>
-                      <div class="activity-item">
-                          <div class="activity-icon">
-                              <?php switch($item['activity_type']):
-                                  case 'registration': ?>
-                                      <i class="fas fa-user"></i>
-                                  <?php case 'task_create': ?>
-                                      <i class="fas fa-tasks"></i>
-                                  <?php case 'task_complete': ?>
-                                      <i class="fas fa-check-circle"></i>
-                              <?php endswitch; ?>
-                          </div>
-                          <div class="activity-content">
-                              <span class="username"><?= $item['username'] ?></span>
-                              <?= $item['description'] ?>
-                              <div class="activity-time">
-                                  <?= date('h:i A', strtotime($item['created_at'])) ?>
-                              </div>
-                          </div>
-                      </div>
-                  <?php endforeach; ?>
-              </div>
-          <?php endforeach; ?>
-      </div>
+        <?php foreach($grouped_activities as $date => $items): ?>
+            <div class="activity-day">
+                <div class="activity-date"><?= date('l, F j', strtotime($date)) ?></div>
+                
+                <?php foreach($items as $item): ?>
+                    <div class="activity-item">
+                        <div class="activity-icon <?= $item['activity_type'] ?>">
+                            <?php switch($item['activity_type']):
+                                case 'registration': ?>
+                                    <i class="fas fa-user-plus"></i>
+                                    <?php break; ?>
+                                <?php case 'task_create': ?>
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <?php break; ?>
+                                <?php case 'task_complete': ?>
+                                    <i class="fas fa-check-circle"></i>
+                                    <?php break; ?>
+                            <?php endswitch; ?>
+                        </div>
+                        <div class="activity-content">
+                            <span class="username"><?= $item['username'] ?></span>
+                            <?= $item['description'] ?>
+                            <div class="activity-time">
+                                <?= date('h:i A', strtotime($item['created_at'])) ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
       
       <div class="text-center mt-3">
           <a href="#viewAllActivities" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal">
@@ -327,10 +373,25 @@
           </a>
       </div>
   </div>
+      <div class="dashboard-card active-users-card">
+      <h2 class="card-title">
+        <span class="status-dot"></span>
+        Active Users
+      </h2>
+      <div class="active-users-list">
+        <div class="active-user-stat">
+          <span class="stat-label">Active Now</span>
+          <span class="stat-value"><?= $active_now ?></span>
+        </div>
+        <div class="active-user-stat">
+          <span class="stat-label">Last Hour</span>
+          <span class="stat-value"><?= $active_last_hour ?></span>
+        </div>
+      </div>
+    </div>
 
   </div>
   </main>
-
   <!-- Modal -->
 <div class="modal fade" id="viewAllActivities">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -373,7 +434,7 @@
                                             <i class="fas fa-user-plus"></i>
                                         <?php break; ?>
                                         <?php case 'task_create': ?>
-                                            <i class="fas fa-tasks"></i>
+                                          <i class="fas fa-clipboard-list"></i>
                                         <?php break; ?>
                                         <?php case 'task_complete': ?>
                                             <i class="fas fa-check-circle"></i>
@@ -396,7 +457,6 @@
         </div>
     </div>
 </div>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -407,6 +467,5 @@
     };
   });
   </script>
-
   </body>
   </html>

@@ -1,14 +1,14 @@
 Array
 (
-    [task_id] => 191
-    [title] => new for shin
-    [description] => ahhwahwahwawa
+    [task_id] => 195
+    [title] => tms system for friday?
+    [description] => yeah, before def we need to conduct a survey bro
     [due_date] => 2025-05-09
-    [status] => completed
+    [status] => in_progress
     [collaborators] => Array
         (
-            [0] => domingojoshua439@gmail.com
+            [0] => domingojoshua405@gmail.com
         )
 
-    [validCollaborators] => ["domingojoshua439@gmail.com"]
+    [validCollaborators] => ["domingojoshua405@gmail.com"]
 )
