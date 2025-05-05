@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['csrf_token'])) {
 }
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Generate new token
 
+
 // Check if the user is logged in and has the admin role
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
@@ -129,6 +130,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+      <!-- ←← 4) EXPOSE PHP TOKEN TO JS -->
+  <script>
+    const CSRF_TOKEN = '<?= $_SESSION['csrf_token'] ?>';
+  </script>
+
     <style>
   :root { --transition-speed: .3s; }
   body { font-family:'Inter',sans-serif; background:#E3F2F1; }
@@ -188,13 +194,21 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 .profile-thumbnail {
-  width: 32px;
-  height: 32px;
+  width: 33px;
+  height: 33px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #3D5654;
   transition: transform 0.2s;
 }
+
+/* Add to existing styles */
+.bi-person-circle.profile-thumbnail {
+  font-size: 33px !important; /* Match container size */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
 
 .dropdown-toggle::after {
   display: none; /* Hide default Bootstrap caret */
@@ -402,9 +416,14 @@ td {
                 <td class="editable" data-field="username"><?php echo htmlspecialchars($user['username']); ?></td>
                 <td class="editable" data-field="role">
                   <?php if (!empty($user['role'])): ?>
-                    <span class="badge badge-<?php echo $user['role'] === 'admin' ? 'admin' : 'user'; ?>">
-                      <?php echo ucfirst($user['role']); ?>
-                    </span>
+                    <?php
+                    $role    = $user['role'] ?? 'user';
+                    $bgColor = ($role === 'admin' ? 'danger' : 'secondary');
+                  ?>
+                  <span class="badge bg-<?= $bgColor ?>">
+                    <?= ucfirst(htmlspecialchars($role)) ?>
+                  </span>
+
                   <?php else: ?>
                     <span class="badge badge-user">user</span>
                   <?php endif; ?>
@@ -413,12 +432,14 @@ td {
                 <td class="action-column">
                 <div class="action-buttons">
                   <button type="button" class="edit-btn btn btn-sm btn-outline-primary">Edit</button>
-                  <button type="button" class="btn btn-danger btn-sm remove-btn">Remove</button>
+
                   <form method="POST" class="d-inline delete-form">
-                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                    <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
-                    <input type="hidden" name="remove_user" value="1">
-                  </form>
+              <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+              <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+              <input type="hidden" name="remove_user" value="1">
+              <button type="button" class="btn btn-danger btn-sm remove-btn">Remove</button>
+            </form>
+
                 </div>
               </td>
               </tr>
@@ -429,204 +450,6 @@ td {
 
     </div>
     </div>
-    
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
- <script>
-    let currentForm = null;
-    let currentRow = null;
-
-
-  document.addEventListener('DOMContentLoaded', function(){
-
-// Handle Edit Button Click
-document.querySelectorAll('.edit-btn').forEach(btn => {
-  btn.type = 'button';
-  btn.addEventListener('click', function (e) {
-    e.preventDefault();
-
-    const row = this.closest('tr');
-    const isEditing = row.classList.contains('editing');
-
-    if (isEditing) {
-      // Save directly if already in edit mode
-      saveChanges(row);
-      row.classList.remove('editing');
-      this.textContent = 'Edit';
-    } else {
-      // Only show modal here, don't edit yet
-      currentRow = row;
-      const editModal = new bootstrap.Modal(document.getElementById('editConfirmModal'));
-      editModal.show();
-    }
-  });
-});
-
-// Confirm Edit Button in Modal
-document.getElementById('confirmEditBtn').addEventListener('click', function () {
-  const editModal = bootstrap.Modal.getInstance(document.getElementById('editConfirmModal'));
-  editModal.hide();
-
-  if (currentRow) {
-    enterEditMode(currentRow);
-    currentRow.classList.add('editing');
-    currentRow.querySelector('.edit-btn').textContent = 'Save';
-  }
-  });
-
-    document.querySelectorAll('.remove-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      currentForm = this.nextElementSibling; // Get the adjacent form
-      const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-      deleteModal.show();
-    });
-  });
-
-  document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-    const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
-    deleteModal.hide();
-
-    if (currentForm) {
-      currentForm.submit(); // ✅ Form found, now this will work.
-    } else {
-      console.error("No form found for deletion.");
-    }
-  });
-
-
-  });
-
-
-    // Sidebar toggle (unchanged)…
-    document.getElementById('toggleBtn').onclick = () => {
-      document.getElementById('sidebar').classList.toggle('sidebar-hidden');
-      document.getElementById('mainContent').classList.toggle('shifted');
-    };
-
-    // User-dropdown toggle (unchanged)…
-    // const ddToggle = document.querySelector('[data-bs-toggle="dropdown"]');
-    // const ddMenu   = document.querySelector('.dropdown-menu');
-    // ddToggle.addEventListener('click', e => {
-    //   e.stopPropagation();
-    //   ddMenu.classList.toggle('show');
-    // });
-    // document.addEventListener('click', () => ddMenu.classList.remove('show'));
-
-    // ——— Edit/Save functionality ———
-    // document.querySelectorAll('.edit-btn').forEach(btn => {
-    //   // ensure it never tries to submit any form:
-    //   btn.type = 'button';
-
-    //   btn.addEventListener('click', function(e) {
-    //     e.preventDefault();
-
-    //     const row = this.closest('tr');
-    //     const editing = row.classList.contains('editing');
-
-    //     if (editing) {
-    //       saveChanges(row);
-    //       row.classList.remove('editing');
-    //       this.textContent = 'Edit';
-    //     } else {
-    //       enterEditMode(row);
-    //       row.classList.add('editing');
-    //       this.textContent = 'Save';
-    //     }
-    //   });
-    // });
-
-// In the existing enterEditMode() function - REPLACE WITH:
-function enterEditMode(row) {
-  row.querySelectorAll('.editable').forEach(cell => {
-    const field = cell.dataset.field;
-    const value = cell.textContent.trim();
-
-    if (field === 'username') {
-      cell.innerHTML = `
-        <input type="text" 
-               class="form-control form-control-sm" 
-               value="${value}"
-               pattern="[A-Za-z0-9 ]{3,30}" 
-               title="3-30 characters (letters, numbers, spaces)"
-               required>`;
-    } else if (field === 'email') {
-      cell.innerHTML = `
-        <input type="email" 
-               class="form-control form-control-sm" 
-               value="${value}"
-               required>`;
-    } else if (field === 'role') {
-      const currentRole = cell.querySelector('span').textContent.trim().toLowerCase();
-      cell.innerHTML = `
-        <select class="form-select form-select-sm">
-          <option value="admin" ${currentRole === 'admin' ? 'selected' : ''}>Admin</option>
-          <option value="user" ${currentRole === 'user' ? 'selected' : ''}>User</option>
-        </select>`;
-    }
-  });
-}
-
-
-function saveChanges(row) {
-
-
-  const saveModal = new bootstrap.Modal(document.getElementById('saveConfirmModal'));
-  saveModal.show();
-
-  document.getElementById('confirmSaveBtn').onclick = () => {
-
-  const userId = row.dataset.id;
-
-  const getValue = (selector, fallbackSelector) => {
-    const inputEl = row.querySelector(selector);
-    if (inputEl) return inputEl.value.trim();
-
-    const fallbackEl = row.querySelector(fallbackSelector);
-    return fallbackEl ? fallbackEl.textContent.trim() : '';
-  };
-
-  const username = getValue('[data-field="username"] input', '[data-field="username"]');
-  const email = getValue('[data-field="email"] input', '[data-field="email"]');
-  const roleSelect = row.querySelector('[data-field="role"] select');
-  const role = roleSelect ? roleSelect.value : getValue('[data-field="role"]', '[data-field="role"]');
-
-  // Revert cells to read mode
-  row.querySelector('[data-field="username"]').innerHTML = `<span>${username}</span>`;
-  row.querySelector('[data-field="email"]').innerHTML = `<span>${email}</span>`;
-  row.querySelector('[data-field="role"]').innerHTML = `<span class="badge-${role}">${role.charAt(0).toUpperCase() + role.slice(1)}</span>`;
-
-  const editBtn = row.querySelector('.edit-btn');
-  const saveBtn = row.querySelector('.save-btn');
-  if (editBtn) editBtn.style.display = '';
-  if (saveBtn) saveBtn.style.display = 'none';
-
-  // Submit the hidden form
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = 'adminaccs.php';
-  form.style.display = 'none';
-
-  [['user_id', userId],
-   ['update_user', '1'],
-   ['username', username],
-   ['email', email],
-   ['role', role]
-  ].forEach(([name, value]) => {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = name;
-    input.value = value;
-    form.appendChild(input);
-  });
-
-  document.body.appendChild(form);
-  form.submit();
-  saveModal.hide();
-}
-}
-
-</script>
 
 
 <!-- Edit Confirmation Modal -->
@@ -687,5 +510,113 @@ function saveChanges(row) {
 </div>
 
 
-</body>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        let formToDelete = null;
+        let rowToActOn   = null;
+
+        // ─── Sidebar toggle ───
+        document.getElementById('toggleBtn').addEventListener('click', () => {
+          document.getElementById('sidebar').classList.toggle('sidebar-hidden');
+          document.getElementById('mainContent').classList.toggle('shifted');
+        });
+
+        // ─── DELETE FLOW ───
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+          btn.addEventListener('click', e => {
+            e.preventDefault();
+            formToDelete = btn.closest('td').querySelector('form.delete-form');
+            new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
+          });
+        });
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+          if (formToDelete) formToDelete.submit();
+        });
+
+        // ─── EDIT / SAVE FLOW ───
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+          btn.addEventListener('click', e => {
+            e.preventDefault();
+            rowToActOn = btn.closest('tr');
+            const whichModal = rowToActOn.classList.contains('editing')
+                             ? 'saveConfirmModal'
+                             : 'editConfirmModal';
+            new bootstrap.Modal(document.getElementById(whichModal)).show();
+          });
+        });
+
+        document.getElementById('confirmEditBtn').addEventListener('click', () => {
+          if (!rowToActOn) return;
+          enterEditMode(rowToActOn);
+          rowToActOn.classList.add('editing');
+          rowToActOn.querySelector('.edit-btn').textContent = 'Save';
+        });
+
+        document.getElementById('confirmSaveBtn').addEventListener('click', () => {
+          if (!rowToActOn) return;
+          const userId   = rowToActOn.dataset.id;
+          const username = rowToActOn.querySelector('[data-field="username"] input').value.trim();
+          const email    = rowToActOn.querySelector('[data-field="email"] input').value.trim();
+          const role     = rowToActOn.querySelector('[data-field="role"] select').value;
+
+          // revert cells
+          rowToActOn.querySelector('[data-field="username"]').innerHTML = `<span>${username}</span>`;
+          rowToActOn.querySelector('[data-field="email"]').innerHTML    = `<span>${email}</span>`;
+          rowToActOn.querySelector('[data-field="role"]').innerHTML     =
+            `<span class="badge bg-${role==='admin'?'danger':'secondary'}">`
+            + `${role.charAt(0).toUpperCase()+role.slice(1)}</span>`;
+
+          rowToActOn.classList.remove('editing');
+          rowToActOn.querySelector('.edit-btn').textContent = 'Edit';
+
+          // build & submit POST form
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = 'adminaccs.php';
+          form.style.display = 'none';
+
+          [
+            ['csrf_token',  CSRF_TOKEN],
+            ['user_id',     userId],
+            ['update_user','1'],
+            ['username',    username],
+            ['email',       email],
+            ['role',        role]
+          ].forEach(([name,val]) => {
+            const i = document.createElement('input');
+            i.type = 'hidden'; i.name = name; i.value = val;
+            form.appendChild(i);
+          });
+
+          document.body.appendChild(form);
+          form.submit();
+        });
+
+        // helper for edit mode
+        function enterEditMode(row) {
+          row.querySelectorAll('.editable').forEach(cell => {
+            const field = cell.dataset.field;
+            const val   = cell.textContent.trim();
+            if (field === 'username') {
+              cell.innerHTML = `<input type="text" class="form-control form-control-sm"
+                                      value="${val}" pattern="[A-Za-z0-9 ]{3,30}" required>`;
+            } else if (field === 'email') {
+              cell.innerHTML = `<input type="email" class="form-control form-control-sm"
+                                      value="${val}" required>`;
+            } else if (field === 'role') {
+              const cur = cell.querySelector('span').textContent.trim().toLowerCase();
+              cell.innerHTML = `<select class="form-select form-select-sm">
+                                  <option value="admin" ${cur==='admin'?'selected':''}>Admin</option>
+                                  <option value="user"  ${cur==='user'?'selected':''}>User</option>
+                                </select>`;
+            }
+          });
+        }
+      });
+    </script>
+  </body>
 </html>

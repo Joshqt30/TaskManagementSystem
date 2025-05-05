@@ -91,6 +91,22 @@ p {
     font-size: 16px;
 }
 
+/* Eye icon positioning */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+}
+/* Input padding adjustments */
+.log-con input[type="password"] {
+    padding-right: 40px !important; /* Space for eye icon */
+}
+
+
 .ics {
     width: 20px;
     height: 20px;

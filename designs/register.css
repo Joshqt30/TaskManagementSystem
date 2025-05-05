@@ -110,9 +110,20 @@ select.log::-ms-expand {
     background: transparent;
     flex-grow: 1;   
     font-size: 16px;
+    padding-right: 40px !important; /* Space for eye icon on the right */
 }
 
- 
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+}
+
+
 .ics {
     width: 20px;  
     height: 20px;

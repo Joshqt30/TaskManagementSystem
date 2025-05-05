@@ -2,19 +2,18 @@
 session_start();
 include 'config.php';
 
-// Redirect to login if not authenticated
-if (!isset($_SESSION['user_id'])) {
+// 🚨 Problem: Checking for logged-in user (user_id) instead of reset session
+// ✅ Fix: Check if the user is in the password reset flow via $_SESSION['reset_email']
+if (!isset($_SESSION['reset_email'])) { // 👈 Changed from $_SESSION['user_id']
   header("Location: login.php");
   exit;
 }
-
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_password = $_POST['new-password'];
     $confirm_password = $_POST['confirm-password'];
     
-    // Validate password strength
     if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/', $new_password)) {
         $error = "Password must meet complexity requirements!";
     } elseif ($new_password !== $confirm_password) {
@@ -23,6 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE email = ?");
         $stmt->execute([$hashed_password, $_SESSION['reset_email']]);
+        
+        // 🚨 Security: Clear reset session data after password change
+        unset($_SESSION['reset_email']); // 👈 Prevent session reuse
         
         echo "<script>
             alert('Password updated successfully!');
@@ -79,16 +81,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <!-- HTML for entering the new password -->
       <form action="newpass.php" method="POST">
+          <!-- In your form, replace the lock icons with eye icons -->
           <div class="input-group mb-4">
-              <input type="password" name="new-password" class="form-control" placeholder="Enter new password" required />
-                <span class="input-group-text"> <!-- 👈 Added icon wrapper -->
-                 <i class="fa-solid fa-lock"></i> <!-- Lock icon -->
-               </span>
+              <input type="password" name="new-password" class="form-control password-toggleable" 
+                    placeholder="Enter new password" required />
+              <span class="input-group-text">
+                  <img src="ORGanizepics/eye-closed.png" class="toggle-password" 
+                      alt="Toggle Password" style="cursor: pointer;">
+              </span>
           </div>
           <div class="input-group mb-4">
-              <input type="password" name="confirm-password" class="form-control" placeholder="Confirm new password" required />
-              <span class="input-group-text"> <!-- 👈 Added icon wrapper -->
-              <i class="fa-solid fa-lock"></i> <!-- Lock icon -->
+              <input type="password" name="confirm-password" class="form-control password-toggleable" 
+                    placeholder="Confirm new password" required />
+              <span class="input-group-text">
+                  <img src="ORGanizepics/eye-closed.png" class="toggle-password" 
+                      alt="Toggle Password" style="cursor: pointer;">
               </span>
           </div>
           <button type="submit" class="next-button">Save</button>
@@ -98,6 +105,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+
+            // Toggle password visibility for both pages
+    document.querySelectorAll('.toggle-password').forEach(icon => {
+        icon.addEventListener('click', function() {
+          const input = this.closest('.input-group').querySelector('input'); // ✅ Correct parent
+            if (input.type === 'password') {
+                input.type = 'text';
+                this.src = 'ORGanizepics/eye-open.png';
+            } else {
+                input.type = 'password';
+                this.src = 'ORGanizepics/eye-closed.png';
+            }
+        });
+    });
+
+  </script>
   <script src="js/new.js"></script>
 </body>
 </html>

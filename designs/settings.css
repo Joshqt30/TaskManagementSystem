@@ -90,7 +90,7 @@ width: 100%;
     .profile-preview-container {
         position: relative; /* Add this */
         margin: 15px 0;
-        display: flex;
+        display: inline-block;
         justify-content: center;
     }
 
@@ -98,10 +98,10 @@ width: 100%;
     /* Remove Profile Button */
     .remove-profile-btn {
         position: absolute;
-        top: 4px;                /* tweak these */
-        right: 4px;              
-        width: 28px;
-        height: 28px;
+        top: 6px;                /* tweak these */
+        right: 6px;              
+        width: 26px;
+        height: 26px;
         border-radius: 50%;
         background-color: #ff4444dd;
         color: white;
@@ -129,7 +129,7 @@ width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: visible;
+        overflow: hidden;
         position: relative;
         border: 2px solid #3D5654;
     }
@@ -140,6 +140,15 @@ width: 100%;
         height: 100%;
         border-radius: 50%;
         overflow: hidden;   /* ← image is clipped, preview container is not */
+    }
+
+    /* Ensure default icon stays circular */
+    .profile-preview .default-profile {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     /* 2.3: The existing img rule still applies */

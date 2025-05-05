@@ -98,20 +98,24 @@ try {
         <?php endif; ?>
         
         <div class="profile-preview-container">
-        <div class="profile-preview" id="profile-preview">
-      <?php if (!empty($user['profile_pic'])): ?>
-        <button class="remove-profile-btn" id="removeProfileBtn">×</button>
-        <!-- NEW wrapper around the image -->
-        <div class="profile-image-wrapper">
-        <img src="uploads/profile_pics/<?= htmlspecialchars($user['profile_pic']) ?>" 
-              alt="Profile Picture"
-              class="profile-preview-img">
-        </div>
-      <?php else: ?>
-        <i class="fa-solid fa-user-circle default-profile"></i>
-      <?php endif; ?>
-    </div>
+        <?php if (!empty($user['profile_pic'])): ?>
+            <!-- Move remove button HERE (outside profile-preview) -->
+            <button class="remove-profile-btn" id="removeProfileBtn">×</button>
+        <?php endif; ?>
 
+        <div class="profile-preview" id="profile-preview">
+            <?php if (!empty($user['profile_pic'])): ?>
+                <div class="profile-image-wrapper">
+                    <img src="uploads/profile_pics/<?= htmlspecialchars($user['profile_pic']) ?>" 
+                        alt="Profile Picture"
+                        class="profile-preview-img">
+                </div>
+            <?php else: ?>
+                <div class="profile-image-wrapper">
+                    <i class="fa-solid fa-user-circle default-profile"></i>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
         
         <form method="POST" enctype="multipart/form-data" id="profile-pic-form">

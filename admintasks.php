@@ -275,13 +275,21 @@ unset($task);
 }
 
 .profile-thumbnail {
-  width: 32px;
-  height: 32px;
+  width: 33px;
+  height: 33px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #3D5654;
   transition: transform 0.2s;
 }
+
+/* Add to existing styles */
+.bi-person-circle.profile-thumbnail {
+  font-size: 33px !important; /* Match container size */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
 
 .dropdown-toggle::after {
   display: none !important;

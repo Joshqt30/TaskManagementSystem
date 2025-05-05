@@ -9,10 +9,10 @@
   $pdo->prepare("UPDATE users SET last_active=NOW() WHERE id=?")
       ->execute([$_SESSION['user_id']]);
   // — Active users —
-  $active_now        = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE last_active>=NOW()-INTERVAL 5 MINUTE")->fetchColumn();
-  $active_last_hour  = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE last_active>=NOW()-INTERVAL 1 HOUR")->fetchColumn();
+  $active_now = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_verified = 1 AND last_active>=NOW()-INTERVAL 5 MINUTE")->fetchColumn();
+  $active_last_hour = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_verified = 1 AND last_active>=NOW()-INTERVAL 1 HOUR")->fetchColumn();
   // — Summary stats —
-  $user_count = (int)$pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+  $user_count = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE is_verified = 1")->fetchColumn();
   $task_count=0;
   try { $task_count = (int)$pdo->query("SELECT COUNT(*) FROM tasks")->fetchColumn(); } catch(PDOException $e){}
       
@@ -41,10 +41,11 @@
   // — Last 7 days regs —
   $last7=[]; for($i=6;$i>=0;$i--){ $d=date('Y-m-d',strtotime("-$i days")); $last7[$d]=0; }
   $regs = $pdo->query("
-    SELECT DATE(created_at)d,COUNT(*)c 
-    FROM users 
-    WHERE created_at>=DATE_SUB(NOW(),INTERVAL 7 DAY) 
-    GROUP BY DATE(created_at)
+  SELECT DATE(created_at)d,COUNT(*)c 
+  FROM users 
+  WHERE is_verified = 1  /* Add verification check */
+  AND created_at>=DATE_SUB(NOW(),INTERVAL 7 DAY) 
+  GROUP BY DATE(created_at)
   ")->fetchAll(PDO::FETCH_ASSOC);
   foreach($regs as $r) $last7[$r['d']]=$r['c'];
 
@@ -62,10 +63,12 @@
       DATE(a.created_at) AS activity_date
   FROM activity_log a
   JOIN users u ON a.user_id = u.id
-  WHERE a.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+  WHERE u.is_verified = 1  /* Add verification check */
+  AND a.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
   ORDER BY a.created_at DESC
   LIMIT 7
   ")->fetchAll(PDO::FETCH_ASSOC);
+
   // Group activities by date
   $grouped_activities = [];
   foreach($activities as $a) {
@@ -257,12 +260,20 @@
 }
 
 .profile-thumbnail {
-  width: 32px;
-  height: 32px;
+  width: 33px;
+  height: 33px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #3D5654;
   transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+/* Add to existing styles */
+.bi-person-circle.profile-thumbnail {
+  font-size: 33px !important; /* Match container size */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
 }
 
 .dropdown-toggle::after {
@@ -495,13 +506,14 @@
                     <?php 
                     // Get ALL activities (not just 7 days)
                     $all_activities = $pdo->query("
-                        SELECT 
-                            a.*,
-                            u.username,
-                            DATE(a.created_at) AS activity_date
-                        FROM activity_log a
-                        JOIN users u ON a.user_id = u.id
-                        ORDER BY a.created_at DESC
+                    SELECT 
+                        a.*,
+                        u.username,
+                        DATE(a.created_at) AS activity_date
+                    FROM activity_log a
+                    JOIN users u ON a.user_id = u.id
+                    WHERE u.is_verified = 1 
+                    ORDER BY a.created_at DESC
                     ")->fetchAll(PDO::FETCH_ASSOC);
                     
                     // Group all activities by date

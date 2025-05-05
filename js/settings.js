@@ -37,44 +37,49 @@ const togglePassword = document.getElementById('toggle-password');
 const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
 const securitySuccessMessage = document.getElementById('security-success');
 
+// Replace your existing profile-pic-input change handler with this modified version:
 const input = document.getElementById('profile-pic-input');
-input.addEventListener('change', async function () {
-  const file = this.files[0];
-  if (!file) return;
+input.addEventListener('change', async function() {
+    const file = this.files[0];
+    if (!file) return;
 
-  if (!confirm("Upload this as your profile picture?")) {
+    if (!confirm("Upload this as your profile picture?")) {
+        this.value = '';
+        return;
+    }
+
+    // 1) Show preview with proper structure
+    const reader = new FileReader();
+    reader.onload = e => {
+        const container = document.querySelector('.profile-preview-container');
+        container.innerHTML = `
+            <button class="remove-profile-btn" id="removeProfileBtn">✕</button>
+            <div class="profile-preview" id="profile-preview">
+                <div class="profile-image-wrapper">
+                    <img src="${e.target.result}" class="profile-preview-img" />
+                </div>
+            </div>
+        `;
+    };
+    reader.readAsDataURL(file);
+
+    // 2) Upload in the background (existing code remains)
+    const form = new FormData();
+    form.append('profile_pic', file);
+
+    try {
+        const res = await fetch('settings.php', { method: 'POST', body: form });
+        window.location.reload();
+        if (!res.ok) throw new Error('Upload failed');
+    } catch (err) {
+        alert('Upload error: ' + err.message);
+        console.error(err);
+    }
+
+    // 3) Clean URL and reset input (existing code remains)
+    window.history.replaceState({}, '', window.location.pathname);
     this.value = '';
-    return;
-  }
-
-  // 1) Show preview immediately
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('profile-preview').innerHTML = `
-      <button class="remove-profile-btn" id="removeProfileBtn">✕</button>
-      <img src="${e.target.result}" class="profile-preview-img" />
-    `;
-  };
-  reader.readAsDataURL(file);
-
-  // 2) Upload in the background
-  const form = new FormData();
-  form.append('profile_pic', file);
-
-  try {
-    const res = await fetch('settings.php', { method: 'POST', body: form });
-    window.location.reload(); // Add this line here
-    if (!res.ok) throw new Error('Upload failed');
-  } catch (err) {
-    alert('Upload error: ' + err.message);
-    console.error(err);
-  }
-
-  // 3) Clean URL and reset input
-  window.history.replaceState({}, '', window.location.pathname);
-  this.value = '';
 });
-
 
 
 
@@ -89,19 +94,22 @@ document.body.addEventListener('click', (e) => {
           method: 'POST',
         });
         
-        const result = await res.json(); // Parse response first
+        const result = await res.json();
         
         if (!res.ok) {
           throw new Error(result.details || result.error || 'Server error');
         }
 
         if (result.success) {
-          document.getElementById('profile-pic-input').value = '';
-          document.querySelector('.profile-preview').innerHTML = `
-            <i class="fa-solid fa-user-circle default-profile"></i>
+          // Update the ENTIRE container
+          document.querySelector('.profile-preview-container').innerHTML = `
+            <div class="profile-preview" id="profile-preview">
+              <div class="profile-image-wrapper">
+                <i class="fa-solid fa-user-circle default-profile"></i>
+              </div>
+            </div>
           `;
-          // Optional: Soft refresh instead of hard reload
-          window.location.reload();
+          document.getElementById('profile-pic-input').value = '';
         }
         
       } catch (err) {

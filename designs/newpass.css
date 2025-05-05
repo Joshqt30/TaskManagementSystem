@@ -127,6 +127,24 @@ body {
     text-align: center;
 }
 
+/* Consistent padding for password fields */
+.form-control.password-toggleable {
+  padding-right: 45px !important; /* Space for eye icon */
+  padding-left: 12px !important;
+}
+
+/* Position eye icon within Bootstrap's input-group */
+.input-group-text {
+  background: transparent;
+  border-left: none !important;
+  padding: 0 15px !important;
+}
+
+.toggle-password {
+  height: 20px;
+  width: 20px;
+}
+
   /* mobile tweak */
   @media (max-width: 480px) {
     .forgot-container {

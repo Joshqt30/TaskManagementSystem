@@ -162,18 +162,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required>
               <img src="ORGanizepics/user.png" class="ics" alt="User Icon">
           </div>
-          <div class="log-con">
-              <input type="password" name="password" class="log" placeholder="Password" required>
-              <img src="ORGanizepics/padlock.png" class="ics" alt="Padlock Icon">
-          </div>
-          <div class="log-con">
-              <input type="password" name="confirm_password" class="log" placeholder="Confirm Password" required>
-              <img src="ORGanizepics/padlock.png" class="ics" alt="Padlock Icon">
-          </div>
+            <!-- In your HTML form -->
+            <div class="log-con">
+                <input type="password" name="password" class="log" placeholder="Password" required>
+                <img src="ORGanizepics/eye-closed.png" class="toggle-password" alt="Toggle Password">
+            </div>
+            <div class="log-con">
+                <input type="password" name="confirm_password" class="log" placeholder="Confirm Password" required>
+                <img src="ORGanizepics/eye-closed.png" class="toggle-password" alt="Toggle Password">
+            </div>
           <button type="submit">Register</button>
       </form>
       <p>Already have an account? <a href="login.php">Login</a></p>
   </div>
+
+  <script>
+
+        document.querySelectorAll('.toggle-password').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const input = this.closest('.log-con').querySelector('input');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.src = 'ORGanizepics/eye-open.png';
+                } else {
+                    input.type = 'password';
+                    this.src = 'ORGanizepics/eye-closed.png';
+                }
+            });
+        });
+
+    </script>
+
   <script src="js/new.js"></script>
 </body>
 </html>

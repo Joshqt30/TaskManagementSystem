@@ -116,10 +116,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" name="username_or_email" class="log" placeholder="Username or Email" required>
                 <img src="ORGanizepics/user.png" class="ics" alt="User Icon">
             </div>
-            <div class="log-con"> 
-                <input type="password" name="password" class="log" placeholder="Password" required>
-                <img src="ORGanizepics/padlock.png" class="ics" alt="Padlock Icon">
-            </div>
+                <!-- In your login.php form -->
+                <div class="log-con"> 
+                    <input type="password" name="password" class="log" placeholder="Password" required>
+                    <img src="ORGanizepics/eye-closed.png" class="toggle-password" alt="Toggle Password">
+                </div>
             <div class="forgot-container">
                 <a href="forgot.php" class="forgot">Forgot password?</a> 
             </div>
@@ -127,6 +128,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
         <p>Don't have an account? <a href="register.php">Sign up</a></p>
     </div>
+
+    <script>
+            // Toggle password visibility for both pages
+                document.querySelectorAll('.toggle-password').forEach(icon => {
+                    icon.addEventListener('click', function() {
+                        const input = this.closest('.log-con').querySelector('input');
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            this.src = 'ORGanizepics/eye-open.png';
+                        } else {
+                            input.type = 'password';
+                            this.src = 'ORGanizepics/eye-closed.png';
+                        }
+                    });
+                });
+    </script>
+
+
     <script src="js/new.js"></script>
 </body>
 </html>
