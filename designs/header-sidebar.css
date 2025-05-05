@@ -122,36 +122,101 @@ body {
   flex-direction: column;
   height: 100%;
 }
+
 .sidebar-profile {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
   background-color: #425C5A;
-  padding: 45px 10px;
+  padding: 45px 10px !important;
   text-align: center;
   margin-bottom: 45px;
   white-space: nowrap;
   transition: all 0.3s ease-in-out;
   overflow: hidden;
 } 
-.sidebar-profile-pic {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--gold-color);
-  margin-bottom: 2px;
+/* ------------------------------------------------
+   Sidebar avatar (80×80px)
+   ------------------------------------------------ */
+   .sidebar-profile-pic {
+    text-align: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;        /* ← center vertically */
+    justify-content: center;    /* ← center horizontally */
+    object-fit: cover;         /* for <img> */
+    border: 2px solid var(--gold-color);
+    background: #e0e4e5;       /* placeholder bg */
+    color: #cccccc;            /* icon color */
+    margin: 0 auto; /* Ensure perfect centering */
+  }
+
+
+  /* when the <i> has both .sidebar-profile-pic and the font-icon class */
+.sidebar-profile-pic.fa-user-circle {
+  font-size: 40px;      
+  margin-bottom: 0;     
 }
 
-.sidebar-profile .fa-user-circle {
-  font-size: 80px;
-  color: #cccccc;
-  margin-bottom: 15px;
+.sidebar-profile-pic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
+
+i.sidebar-profile-pic.fa-user-circle::before {
+  font-size: 80px;  /* ~40px */
+  color: white;
+  line-height: 1;
+}
+
+
+/* ------------------------------------------------
+   Header avatar (40×40px in your navbar dropdown)
+   ------------------------------------------------ */
+   .profile-thumbnail {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e0e4e5;
+    overflow: hidden;
+    flex-shrink: 0 !important;
+    font-size: 40px !important; /* for the <i> fallback */  
+    margin-right: 0;
+  }
+
+  /* ===== HEADER PROFILE FIX ===== */
+  .user-profile-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important; /* Consistent gap */
+    width: auto !important; /* Remove fixed width */
+    margin: 0 !important; /* Remove margin */
+  }
+
+    /* Caret icon adjustments */
+  .caret-icon {
+    margin-left: 2px !important;
+    font-size: 14px !important;
+  }
+
+  i.profile-thumbnail.fa-user-circle::before {
+    font-size: 35px;  /* ~24px, tweak as you like */
+    color: white;
+    line-height: 1;
+  }
+  
+  
 
 .user-name {
-  margin-top: 15px;
+  margin-top: 10px;
   font-size: 16px;
   color: white;
   font-weight: 100;

@@ -154,7 +154,7 @@ $tasks = $stmt->fetchAll();
                 class="profile-thumbnail"
                 alt="Profile">
           <?php else: ?>
-            <i class="bi bi-person-circle fs-5 profile-thumbnail"></i>
+            <i class="fa-solid fa-user-circle profile-thumbnail"></i>
           <?php endif; ?>
           <i class="bi bi-chevron-down caret-icon fs-6"></i>
         </div>
@@ -180,7 +180,7 @@ $tasks = $stmt->fetchAll();
             class="sidebar-profile-pic" 
             alt="Profile Picture">
       <?php else : ?>
-        <i class="fa-solid fa-user-circle"></i>
+        <i class="fa-solid fa-user-circle sidebar-profile-pic"></i>
       <?php endif; ?>
       <div class="user-name">
         <?= htmlspecialchars($user['username']) ?>

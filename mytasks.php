@@ -132,7 +132,7 @@ $tasks = $stmt->fetchAll();
                 class="profile-thumbnail"
                 alt="Profile">
           <?php else: ?>
-            <i class="bi bi-person-circle fs-5 profile-thumbnail"></i>
+            <i class="fa-solid fa-user-circle profile-thumbnail"></i>
           <?php endif; ?>
           <i class="bi bi-chevron-down caret-icon fs-6"></i>
         </div>
@@ -153,17 +153,17 @@ $tasks = $stmt->fetchAll();
       <!-- Sidebar Middle: Profile & Navigation Menu -->
       <div class="sidebar-middle">
       <div class="sidebar-profile">
-    <?php if (!empty($user['profile_pic'])) : ?>
-      <img src="uploads/profile_pics/<?= htmlspecialchars($user['profile_pic']) ?>"
-          class="sidebar-profile-pic" 
-          alt="Profile Picture">
-    <?php else : ?>
-      <i class="fa-solid fa-user-circle"></i>
-    <?php endif; ?>
-    <div class="user-name">
-      <?= htmlspecialchars($user['username']) ?>
+      <?php if (!empty($user['profile_pic'])) : ?>
+        <img src="uploads/profile_pics/<?= htmlspecialchars($user['profile_pic']) ?>" 
+            class="sidebar-profile-pic" 
+            alt="Profile Picture">
+      <?php else : ?>
+        <i class="fa-solid fa-user-circle sidebar-profile-pic"></i>
+      <?php endif; ?>
+      <div class="user-name">
+        <?= htmlspecialchars($user['username']) ?>
+      </div>
     </div>
-  </div>
         <ul class="nav flex-column sidebar-menu">
           <li class="nav-item">
             <a href="main.php" class="nav-link">

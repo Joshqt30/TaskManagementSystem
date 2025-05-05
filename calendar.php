@@ -126,26 +126,11 @@ for ($day = 1; $day <= $next_month_days; $day++) {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="designs/calendar.css" />
-  <link rel="stylesheet" href="designs/header-sidebar.css" />
   <link rel="stylesheet" href="designs/mobile.css" />
   <link rel="stylesheet" href="designs/main.css" />
-
+  <!-- header/sidebar goes last so it can override anything above -->
+  <link rel="stylesheet" href="designs/header-sidebar.css" />
   <style>
-
-    .sidebar-profile {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      background-color: #425C5A;
-      padding: 45px 10px;
-      text-align: center;
-      margin-bottom: 45px;
-      white-space: nowrap;
-      transition: all 0.3s ease-in-out;
-      overflow: hidden;
-    }
     .custom-calendar-container {
         display: flex;
         flex-wrap: wrap;
@@ -318,7 +303,7 @@ for ($day = 1; $day <= $next_month_days; $day++) {
                 class="profile-thumbnail"
                 alt="Profile">
           <?php else: ?>
-            <i class="bi bi-person-circle fs-5 profile-thumbnail"></i>
+            <i class="fa-solid fa-user-circle profile-thumbnail"></i>
           <?php endif; ?>
           <i class="bi bi-chevron-down caret-icon fs-6"></i>
         </div>
@@ -339,11 +324,11 @@ for ($day = 1; $day <= $next_month_days; $day++) {
       <div class="sidebar-middle">
       <div class="sidebar-profile">
       <?php if (!empty($user['profile_pic'])) : ?>
-        <img src="uploads/profile_pics/<?= htmlspecialchars($user['profile_pic']) ?>"
+        <img src="uploads/profile_pics/<?= htmlspecialchars($user['profile_pic']) ?>" 
             class="sidebar-profile-pic" 
             alt="Profile Picture">
       <?php else : ?>
-        <i class="fa-solid fa-user-circle"></i>
+        <i class="fa-solid fa-user-circle sidebar-profile-pic"></i>
       <?php endif; ?>
       <div class="user-name">
         <?= htmlspecialchars($user['username']) ?>

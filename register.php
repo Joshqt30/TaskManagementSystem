@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
             if (!$stmt->execute([$email, $username, $hashed_password, $otp, $otp_expiry, 0])) {
                 $error_message = "Registration failed. Please try again.";
-            } else
+            } else {
             // After successful user insertion
             $new_user_id = $pdo->lastInsertId();  // Get the newly created user's ID
 
@@ -76,6 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Optional: Log error but don't break registration
                 error_log("Activity log failed: " . $e->getMessage());
             }
+          }
+
         }
 
         // If no error, send the OTP email
