@@ -41,6 +41,24 @@ try {
         }
     }
 
+        // Check for duplicate message within the last 5 seconds
+        $stmt = $pdo->prepare("
+        SELECT COUNT(*) FROM messages 
+        WHERE sender_id = ? 
+        AND receiver_id = ? 
+        AND content = ? 
+        AND (file_path = ? OR (file_path IS NULL AND ? IS NULL))
+        AND created_at >= NOW() - INTERVAL 5 SECOND
+    ");
+    $stmt->execute([$user_id, $receiver_id, $content, $file_path, $file_path]);
+    $duplicate_count = $stmt->fetchColumn();
+
+    if ($duplicate_count > 0) {
+        // Duplicate message found, return success but don't insert
+        echo json_encode(['success' => true, 'file_path' => $file_path, 'duplicate' => true]);
+        exit();
+    }
+
     // Insert the message into the database
     $stmt = $pdo->prepare("
         INSERT INTO messages (sender_id, receiver_id, content, file_path, created_at)
@@ -49,7 +67,7 @@ try {
     $stmt->execute([$user_id, $receiver_id, $content, $file_path]);
 
     // Return success response with file path if applicable
-    echo json_encode(['success' => true, 'file_path' => $file_path]);
+    echo json_encode(['success' => true, 'content' => $content, 'file_path' => $file_path]);
 } catch (PDOException $e) {
     error_log("PDOException in send_message.php: " . $e->getMessage(), 3, "error.log");
     http_response_code(500);

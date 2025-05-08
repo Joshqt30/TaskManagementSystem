@@ -556,44 +556,45 @@ td {
           rowToActOn.querySelector('.edit-btn').textContent = 'Save';
         });
 
+// In the save event listener - MODIFY THIS SECTION
         document.getElementById('confirmSaveBtn').addEventListener('click', () => {
           if (!rowToActOn) return;
-          const userId   = rowToActOn.dataset.id;
+          
+          // Get values directly from inputs
+          const userId = rowToActOn.dataset.id;
           const username = rowToActOn.querySelector('[data-field="username"] input').value.trim();
-          const email    = rowToActOn.querySelector('[data-field="email"] input').value.trim();
-          const role     = rowToActOn.querySelector('[data-field="role"] select').value;
+          const email = rowToActOn.querySelector('[data-field="email"] input').value.trim();
+          const role = rowToActOn.querySelector('[data-field="role"] select').value;
 
-          // revert cells
-          rowToActOn.querySelector('[data-field="username"]').innerHTML = `<span>${username}</span>`;
-          rowToActOn.querySelector('[data-field="email"]').innerHTML    = `<span>${email}</span>`;
-          rowToActOn.querySelector('[data-field="role"]').innerHTML     =
-            `<span class="badge bg-${role==='admin'?'danger':'secondary'}">`
-            + `${role.charAt(0).toUpperCase()+role.slice(1)}</span>`;
-
-          rowToActOn.classList.remove('editing');
-          rowToActOn.querySelector('.edit-btn').textContent = 'Edit';
-
-          // build & submit POST form
+          // Create hidden form
           const form = document.createElement('form');
           form.method = 'POST';
           form.action = 'adminaccs.php';
           form.style.display = 'none';
 
-          [
-            ['csrf_token',  CSRF_TOKEN],
-            ['user_id',     userId],
-            ['update_user','1'],
-            ['username',    username],
-            ['email',       email],
-            ['role',        role]
-          ].forEach(([name,val]) => {
-            const i = document.createElement('input');
-            i.type = 'hidden'; i.name = name; i.value = val;
-            form.appendChild(i);
+          // Add ALL required fields
+          const fields = [
+            ['csrf_token', CSRF_TOKEN],
+            ['user_id', userId],
+            ['update_user', '1'],
+            ['username', username],
+            ['email', email],
+            ['role', role]
+          ];
+
+          fields.forEach(([name, value]) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
           });
 
           document.body.appendChild(form);
           form.submit();
+
+          // Close modal
+          bootstrap.Modal.getInstance(document.getElementById('saveConfirmModal')).hide();
         });
 
         // helper for edit mode

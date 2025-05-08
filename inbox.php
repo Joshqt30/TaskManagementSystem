@@ -313,17 +313,18 @@ if ($selected_contact_id) {
       background-color: #ffffff;
       border-top: 1px solid #dee2e6;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: 10px;
       position: relative;
       z-index: 3;
     }
 
     .chat-input form {
-      display: contents;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       width: 100%;
     }
-
     .chat-input input[type="text"] {
       flex: 1;
       padding: 10px;
@@ -356,6 +357,49 @@ if ($selected_contact_id) {
       cursor: pointer;
       transition: background-color 0.2s;
       flex-shrink: 0;
+    }
+
+    .chat-input button:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+
+    .chat-input button:hover:not(:disabled) {
+      background-color: #218838;
+    }
+
+    .file-preview {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      position: relative;
+      width: 100%;
+    }
+
+    .file-preview img {
+      max-width: 100px;
+      max-height: 100px;
+      border-radius: 8px;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+
+    .file-preview .file-info {
+      flex: 1;
+      font-family: 'Inter', sans-serif;
+      color: #343a40;
+    }
+
+    .file-preview .remove-file {
+      background: none;
+      border: none;
+      color: #dc3545;
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: absolute;
+      right: 10px;
     }
 
     .chat-input button:hover {
@@ -679,6 +723,7 @@ if ($selected_contact_id) {
           
           <?php if ($selected_contact_id): ?>
             <div class="chat-input">
+            <div id="file-preview" class="file-preview" style="display: none;"></div>
               <form id="chat-form" enctype="multipart/form-data">
                 <input type="hidden" name="receiver_id" value="<?php echo $selected_contact_id; ?>" />
                 <input type="text" name="content" placeholder="Type a message..." autocomplete="off" />
@@ -686,7 +731,7 @@ if ($selected_contact_id) {
                   <i class="fa-solid fa-paperclip"></i>
                 </label>
                 <input id="file-upload" type="file" name="file" />
-                <button type="submit" title="Send Message">
+                <button type="submit" id="send-button" title="Send Message">
                   <i class="fa-solid fa-paper-plane"></i>
                 </button>
               </form>
@@ -775,9 +820,21 @@ if ($selected_contact_id) {
       });
     }
     
-    // Listen for new messages
-    socket.on('new_message', (message) => {
-      console.log('Received new_message:', message);
+  // Store processed message IDs to prevent duplicates
+      const processedMessageIds = new Set();
+      
+      // Listen for new messages
+      socket.on('new_message', (message) => {
+        console.log('Received new_message:', message);
+        
+        // Check if message has already been processed
+        if (processedMessageIds.has(message.message_id)) {
+          console.log('Duplicate message detected, ignoring:', message.message_id);
+          return;
+        }
+      
+      processedMessageIds.add(message.message_id);
+      
       const chatMessages = document.getElementById('chat-messages');
       const isSent = message.sender_id == window.currentUserId;
       const messageClass = isSent ? 'sent' : 'received';
@@ -877,15 +934,131 @@ if ($selected_contact_id) {
         });
       }
       
-      // File upload preview
-      const fileInput = document.getElementById('file-upload');
-      if (fileInput) {
+       // File preview functionality
+       const fileInput = document.getElementById('file-upload');
+      const filePreview = document.getElementById('file-preview');
+      const chatForm = document.getElementById('chat-form');
+      const sendButton = document.getElementById('send-button');
+      let isSending = false; // Flag to prevent duplicate submissions
+      const debounceTimeout = 500; // Debounce delay in milliseconds
+      
+      if (fileInput && filePreview) {
         fileInput.addEventListener('change', function() {
           if (this.files.length > 0) {
-            const fileName = this.files[0].name;
-            alert(`Selected file: ${fileName}`);
+            const file = this.files[0];
+            const fileExt = file.name.split('.').pop().toLowerCase();
+            const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(fileExt);
+            
+            filePreview.innerHTML = '';
+            
+            const previewContainer = document.createElement('div');
+            previewContainer.style.display = 'flex';
+            previewContainer.style.alignItems = 'center';
+            previewContainer.style.width = '100%';
+            
+            if (isImage) {
+              const img = document.createElement('img');
+              img.src = URL.createObjectURL(file);
+              img.alt = 'File preview';
+              previewContainer.appendChild(img);
+            }
+            
+            const fileInfo = document.createElement('div');
+            fileInfo.className = 'file-info';
+            fileInfo.textContent = file.name;
+            previewContainer.appendChild(fileInfo);
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-file';
+            removeBtn.innerHTML = '<i class="fa-solid fa-times"></i>';
+            removeBtn.addEventListener('click', function() {
+              fileInput.value = '';
+              filePreview.style.display = 'none';
+              filePreview.innerHTML = '';
+            });
+            previewContainer.appendChild(removeBtn);
+            
+            filePreview.appendChild(previewContainer);
+            filePreview.style.display = 'block';
+          } else {
+            filePreview.style.display = 'none';
+            filePreview.innerHTML = '';
           }
         });
+      }
+      
+      // Generate a unique message ID
+      function generateMessageId() {
+        return Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      }
+      
+      // Debounced form submission
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+      
+      // Handle form submission
+      if (chatForm) {
+        const submitForm = function(e) {
+          e.preventDefault();
+          
+          if (isSending) {
+            console.log('Submission already in progress, ignoring.');
+            return;
+          }
+          
+          isSending = true;
+          sendButton.disabled = true;
+          
+          const formData = new FormData(chatForm);
+          const messageId = generateMessageId();
+          
+          fetch('send_message.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              chatForm.querySelector('input[name="content"]').value = '';
+              fileInput.value = '';
+              filePreview.style.display = 'none';
+              filePreview.innerHTML = '';
+              
+              if (!data.duplicate) {
+                socket.emit('send_message', {
+                  sender_id: window.currentUserId,
+                  receiver_id: window.currentContactId,
+                  content: data.content || '',
+                  file_path: data.file_path || '',
+                  created_at: new Date().toISOString(),
+                  message_id: messageId
+                });
+              }
+              
+              window.location.replace(`inbox.php?contact_id=${window.currentContactId}`);
+            } else {
+              console.error('Error sending message:', data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Fetch error (send message):', error);
+          })
+          .finally(() => {
+            isSending = false;
+            sendButton.disabled = false;
+          });
+        };
+        
+        chatForm.addEventListener('submit', debounce(submitForm, debounceTimeout));
       }
 
       // Add Contact Modal functionality
