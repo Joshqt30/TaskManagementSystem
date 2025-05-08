@@ -1,15 +1,18 @@
 Array
 (
-    [task_id] => 199
-    [title] => First Task
-    [description] => hello! this is my first task.
-    [due_date] => 2025-05-04
-    [status] => in_progress
+    [task_id] => 211
+    [title] => test
+    [description] => gege
+    [due_date] => 2025-05-10
+    [status] => todo
     [collaborators] => Array
         (
-            [0] => randombutcute123@gmail.com
-            [1] => domingojoshua439@gmail.com
+            [0] => domingojoshua439@gmail.com
+            [1] => secretonlybro@gmail.com
+            [2] => randompurposes50@gmail.com
+            [3] => randombutcute123@gmail.com
+            [4] => domingojoshua405@gmail.com
         )
 
-    [validCollaborators] => ["randombutcute123@gmail.com","domingojoshua439@gmail.com"]
+    [validCollaborators] => ["domingojoshua439@gmail.com","secretonlybro@gmail.com","randompurposes50@gmail.com","randombutcute123@gmail.com","domingojoshua405@gmail.com"]
 )

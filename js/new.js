@@ -74,32 +74,8 @@ document.querySelectorAll('.edit-btn').forEach(button => {
   });
 });
 
-// Delete Handler
-// Replace your delete handler with:
-document.querySelectorAll('.delete-btn').forEach(button => {
-  button.addEventListener('click', async (e) => {
-    if (!confirm('Are you sure you want to delete this task?')) 
-      return;
 
-    const taskId = button.dataset.id;
-    try {
-      const res = await fetch('/TaskManagementSystem/api/delete_task.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ taskId })
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || 'Delete failed');
-      // On success, remove the row from the table:
-      button.closest('tr').remove();
-    } catch (err) {
-      alert('Error deleting task: ' + err.message);
-    }
-  });
-});
-
-
-}
+  }
 
 
 
@@ -648,6 +624,32 @@ window.addCollaboratorField = function(mode = 'create', email = '') {
 };
 
 initTaskInteractions();
+
+
+    // DELETE HANDLER - REPLACE THIS SECTION
+    document.body.addEventListener('click', async (e) => {
+      const deleteBtn = e.target.closest('.delete-btn');
+      if (!deleteBtn) return;
+
+      if (!confirm('Are you sure you want to delete this task?')) return;
+      
+      const taskId = deleteBtn.dataset.id;
+      try {
+        const res = await fetch('/TaskManagementSystem/api/delete_task.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ taskId })
+        });
+        const json = await res.json();
+        
+        if (!res.ok) throw new Error(json.message || 'Delete failed');
+        
+        // Remove the task row from UI
+        deleteBtn.closest('tr').remove();
+      } catch (err) {
+        alert('Error deleting task: ' + err.message);
+      }
+    });
 
 
 // … after initTaskInteractions() and blur‑fix …

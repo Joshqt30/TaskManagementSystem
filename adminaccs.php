@@ -50,72 +50,61 @@ if (isset($_POST['remove_user'])) {
 
 if (isset($_POST['update_user'])) {
   $user_id = $_POST['user_id'];
-  $username = trim($_POST['username']);
-  $email = trim($_POST['email']);
-  $role = $_POST['role'];
+  $new_role = $_POST['role'];
 
-  // <-- ADD VALIDATION
-  if (empty($username) || strlen($username) < 3 || !preg_match('/^[A-Za-z0-9 ]+$/', $username)) {
-      header("Location: adminaccs.php?error=Invalid+username");
-      exit();
-  }
-
-  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      header("Location: adminaccs.php?error=Invalid+email");
-      exit();
-  }
-
-  // <-- PREVENT SELF-EDIT
+  // Prevent admin from changing their own role
   if ($user_id == $admin_id) {
-      // For admin's own account: keep original username/email
-      $stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
-      $stmt->execute([$admin_id]);
-      $admin_data = $stmt->fetch();
-      $username = $admin_data['username'];
-      $email = $admin_data['email'];
+      header("Location: adminaccs.php?error=Cannot+edit+your+own+role");
+      exit();
   }
 
-  // <-- AUDIT LOG
-  $stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
+  // Fetch old data for audit
+  $stmt = $pdo->prepare("SELECT username, email, role FROM users WHERE id = ?");
   $stmt->execute([$user_id]);
-  $old_data = $stmt->fetch();
+  $old = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (!$old) {
+      header("Location: adminaccs.php?error=User+not+found");
+      exit();
+  }
 
-  $log_message = sprintf(
-      "Admin %s edited user %s: Username %s→%s, Email %s→%s, Role %s→%s",
-      $admin_id,
-      $user_id,
-      $old_data['username'],
-      $username,
-      $old_data['email'],
-      $email,
-      $old_data['role'],
-      $role
+  // Persist the new role
+  $upd = $pdo->prepare("UPDATE users SET role = ? WHERE id = ?");
+  $upd->execute([$new_role, $user_id]);
+
+  // Audit log
+  $log = sprintf(
+    "Admin %d changed user %d role: %s → %s",
+    $admin_id,
+    $user_id,
+    $old['role'],
+    $new_role
   );
-  file_put_contents('admin_audit.log', date('Y-m-d H:i:s') . " - $log_message" . PHP_EOL, FILE_APPEND);
-    
-    
-    // Redirect to avoid form resubmission
-    header("Location: adminaccs.php");
-    exit();
+  file_put_contents('admin_audit.log', date('[Y-m-d H:i:s] ') . $log . PHP_EOL, FILE_APPEND);
+
+  // Redirect with success
+  header("Location: adminaccs.php?success=Role+updated");
+  exit();
 }
 
-// Handle sorting
-$sort = isset($_GET['sort']) ? $_GET['sort'] : 'All';
-$where_clause = '';
+// Handle sorting/filtering
+$sort = $_GET['sort'] ?? 'All';
+
+$query  = "SELECT id, username, role, email
+           FROM users
+           WHERE is_verified = 1";
+$params = [];
+
 if ($sort !== 'All') {
-    $where_clause = " WHERE role = ?";
-    $sort_param = $sort;
+    // Add an AND, not a second WHERE
+    $query .= " AND role = ?";
+    $params[] = $sort;
 }
 
-// In the sorting section
-$query = "SELECT id, username, role, email FROM users WHERE is_verified = 1" . $where_clause;
+// Prepare and execute
 $stmt = $pdo->prepare($query);
-if ($sort !== 'All') {
-    $stmt->execute([$sort_param]);
-} else {
-    $stmt->execute();
-}
+$stmt->execute($params);
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -554,16 +543,18 @@ td {
           enterEditMode(rowToActOn);
           rowToActOn.classList.add('editing');
           rowToActOn.querySelector('.edit-btn').textContent = 'Save';
+           // 👇 hide the edit-confirmation modal
+            bootstrap.Modal.getInstance(
+              document.getElementById('editConfirmModal')
+            ).hide();
         });
 
-// In the save event listener - MODIFY THIS SECTION
+        // In the save event listener - MODIFY THIS SECTION
         document.getElementById('confirmSaveBtn').addEventListener('click', () => {
           if (!rowToActOn) return;
           
           // Get values directly from inputs
           const userId = rowToActOn.dataset.id;
-          const username = rowToActOn.querySelector('[data-field="username"] input').value.trim();
-          const email = rowToActOn.querySelector('[data-field="email"] input').value.trim();
           const role = rowToActOn.querySelector('[data-field="role"] select').value;
 
           // Create hidden form
@@ -577,8 +568,6 @@ td {
             ['csrf_token', CSRF_TOKEN],
             ['user_id', userId],
             ['update_user', '1'],
-            ['username', username],
-            ['email', email],
             ['role', role]
           ];
 
@@ -601,22 +590,19 @@ td {
         function enterEditMode(row) {
           row.querySelectorAll('.editable').forEach(cell => {
             const field = cell.dataset.field;
-            const val   = cell.textContent.trim();
-            if (field === 'username') {
-              cell.innerHTML = `<input type="text" class="form-control form-control-sm"
-                                      value="${val}" pattern="[A-Za-z0-9 ]{3,30}" required>`;
-            } else if (field === 'email') {
-              cell.innerHTML = `<input type="email" class="form-control form-control-sm"
-                                      value="${val}" required>`;
-            } else if (field === 'role') {
+            // Only the role cell becomes a <select>; leave others untouched
+            if (field === 'role') {
               const cur = cell.querySelector('span').textContent.trim().toLowerCase();
-              cell.innerHTML = `<select class="form-select form-select-sm">
-                                  <option value="admin" ${cur==='admin'?'selected':''}>Admin</option>
-                                  <option value="user"  ${cur==='user'?'selected':''}>User</option>
-                                </select>`;
+              cell.innerHTML = `
+                <select class="form-select form-select-sm">
+                  <option value="admin" ${cur === 'admin' ? 'selected' : ''}>Admin</option>
+                  <option value="user"  ${cur === 'user'  ? 'selected' : ''}>User</option>
+                </select>`;
             }
+            // if it's username or email, we do nothing (they stay as text)
           });
         }
+
       });
     </script>
   </body>
